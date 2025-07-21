@@ -1,0 +1,139 @@
+/* Updated NotebookCanvas.css */
+.notebook-container {
+  min-height: 100vh;
+  background-color: #1a202c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.notebook-canvas {
+  position: relative;
+  width: 100%;
+  min-width: 800px;
+  max-width: 1200px;
+  height: 600px;
+  background-color: #fffef0; /* Off-white like paper */
+  background-color: transparent; /* Off-white like paper */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0; 
+  bottom: 0;
+  pointer-events: none;
+  background-image: 
+    /* linear-gradient(to right, #e0e0e04a 1px, transparent 1px), */
+    linear-gradient(to bottom, #e0e0e048 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: default;
+}
+
+.text-box-container {
+  position: absolute;
+  padding: 4px;
+  border-radius: 4px;
+  transition: box-shadow 0.2s;
+  cursor: move;
+  z-index: 1;
+}
+
+.text-box-container.active {
+  box-shadow: 0 0 0 2px #81e6d975;
+  z-index: 10;
+}
+
+.drag-handle {
+  position: absolute;
+  top: -4px;
+  left:50% ;
+  color: rgba(148, 145, 145, 0.53);
+  cursor: grab;
+  font-size: 20px;
+  user-select: none;
+  z-index: 15;
+}
+
+.text-box {
+  position: relative;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #000000;
+  color: #e0e0e0;
+  font-size: 16px;
+  /* width: 100%; */
+  /* min-height: 28px; */
+  resize: none;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  line-height: 1.5;
+  padding: 4px;
+  padding-top: 20px; /* Space for drag handle */
+  overflow: hidden;
+}
+
+.text-box::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.text-box-buttons {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  display: flex;
+  gap: 4px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.text-box-container:hover .text-box-buttons,
+.text-box-container.active .text-box-buttons {
+  opacity: 1;
+}
+
+.delete-button, .ai-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%; 
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.delete-button {
+  background: transparent;
+}
+
+.ai-button {
+  background: #46404b;
+  background: linear-gradient(135deg, #81e6d9, #68d391);
+color: #1a202c;
+background-color: #9f7aea;
+color: #edf2f7;
+
+}
+
+.delete-button:hover, .ai-button:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}

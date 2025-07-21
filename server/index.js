@@ -7,6 +7,7 @@ import connectDB from './config/db.js';
 
 import { getGeminiResponse } from './utils/geminiClient.js';
 import pdfRoutes from './routes/pdfRoutes.js';
+import handwrittenNotesRoutes from './routes/handwrittenNotes.js';
 
 dotenv.config();
 
@@ -15,8 +16,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-app.use('/api/pdf', pdfRoutes);
 
 // connectDB();
 
@@ -30,7 +29,7 @@ app.get('/get', (req, res) => {
   res.send("hello server is responding at get");
 });
 
-app.get('/ask-code', async (req, res) => {
+app.get('/ask-code', async (req, res) => {   // ask-code 
   const prompt = "explain sliding window";
 
   if (!prompt) {
@@ -40,6 +39,14 @@ app.get('/ask-code', async (req, res) => {
   const response = await getGeminiResponse(prompt);
   res.send({ response });
 });
+
+
+
+app.use('/api/pdf', pdfRoutes);   // /api/pdf/mcq
+
+app.use('/api/notes', handwrittenNotesRoutes);  // post:/api/notes/upload  || get:/api/notes
+
+
 
 app.listen(PORT, () => {
   console.log('✅ Server running on port', PORT);

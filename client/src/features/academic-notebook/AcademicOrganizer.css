@@ -1,0 +1,367 @@
+/* ```css */
+/* ... (all previous styles remain unchanged unless noted) */
+
+/* Add styles for context menu */
+.ao-context-menu {
+  position: fixed;
+  background-color: #1a202c; /* Background */
+  border: 1px solid #2d3748; /* Border/Divider */
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.ao-context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #edf2f7; /* Text Primary */
+  padding: 8px 12px;
+  width: 100%;
+  text-align: left;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ao-context-menu-item:hover {
+  background-color: #68d391; /* Accent Primary */
+  color: #1a202c; /* Background for contrast */
+}
+
+.ao-context-delete {
+  color: #e53e3e; /* Danger/Error */
+}
+
+.ao-context-delete:hover {
+  background-color: #e53e3e; /* Danger/Error */
+  color: #edf2f7; /* Text Primary */
+}
+
+.ao-context-icon {
+  font-size: 0.9rem;
+  color: #68d391; /* Accent Primary */
+}
+
+.ao-important {
+  font-weight: bold;
+}
+
+.ao-important-icon {
+  margin-left: 5px ;
+  fill: #d3c668;
+}
+
+/* Existing styles (included for completeness, unchanged unless noted) */
+.ao-container {
+  display: flex;
+  height: 100vh;
+  background-color: #1a202c;
+  color: #edf2f7;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ao-sidebar {
+  width: 300px;
+  background-color: #2d3748;
+  padding: 16px;
+  border-right: 1px solid #2d3748;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.ao-title {
+  margin-bottom: 24px;
+  font-size: 1.25rem;
+  color: #68d391;
+}
+
+.ao-section {
+  margin-bottom: 16px;
+}
+
+.ao-subsection {
+  padding-left: 20px;
+}
+
+.ao-subitem {
+  margin-bottom: 8px;
+}
+
+.ao-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #edf2f7;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.ao-button:hover,
+.ao-button.active {
+  background-color: rgba(104, 211, 145, 0.273);
+  color: #edf2f7;
+}
+
+.ao-subbutton {
+  font-size: 0.85rem;
+}
+
+.ao-filebutton {
+  font-size: 0.8rem;
+}
+
+.ao-icon {
+  margin-right: 8px;
+  color: #68d391;
+}
+
+.ao-divider {
+  height: 1px;
+  background-color: #2d3748;
+  margin: 16px 0;
+}
+
+.ao-main {
+  flex: 1;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.ao-heading {
+  margin-bottom: 16px;
+  color: #68d391;
+  font-size: 1.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ao-close-btn {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+}
+
+.ao-close-btn:hover {
+  color: #fc8181;
+}
+
+.ao-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ao-action-btn {
+  display: flex;
+  align-items: center;
+  background-color: #68d391;
+  border: none;
+  color: #1a202c;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.ao-action-btn:hover {
+  background-color: #81e6d9;
+}
+
+.ao-action-btn.outline {
+  background: transparent;
+  border: 1px solid #68d391;
+  color: #68d391;
+}
+
+.ao-action-btn.outline:hover {
+  background: #81e6d9;
+  color: #1a202c;
+}
+
+.ao-select {
+  padding: 8px 12px;
+  background-color: #2d3748;
+  border: 1px solid #2d3748;
+  border-radius: 4px;
+  color: #edf2f7;
+  font-size: 0.9rem;
+  appearance: none;
+}
+
+.ao-select option {
+  background-color: #2d3748;
+  color: #edf2f7;
+}
+
+.ao-content-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 100px);
+  background-color: #2d3748;
+  border: 2px dashed #2d3748;
+  border-radius: 4px;
+  color: #a0aec0;
+  font-size: 1rem;
+}
+
+.ao-file-content-container {
+  height: calc(100vh - 200px);
+  overflow: auto;
+  background-color: #2d3748;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.ao-file-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #2d3748;
+  border-radius: 4px;
+  color: #edf2f7;
+  font-size: 1rem;
+}
+
+.ao-image {
+  max-width: 100%;
+  max-height: calc(100% - 100px);
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.ao-files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.ao-file-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #2d3748;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 140px;
+}
+
+.ao-file-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  background-color: #3c4757;
+}
+
+.ao-file-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  color: #68d391;
+}
+
+.ao-file-name {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #edf2f7;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 2.8em;
+  width: 100%;
+}
+
+.ao-create-section {
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: transparent;
+  border-radius: 4px;
+}
+
+.ao-create-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #68d391;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 4px;
+  opacity: 0.8;
+  transition: opacity 0.4s;
+}
+
+.ao-create-button:hover {
+  opacity: 1;
+}
+
+.ao-create-input {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.ao-create-input:focus-within {
+  border-color: #68d391;
+}
+
+.ao-create-input input {
+  flex: 1;
+  padding: 6px 10px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #edf2f7;
+  font-size: 0.9rem;
+}
+
+.ao-create-input button {
+  padding: 6px 10px;
+  background-color: #68d391;
+  border: none;
+  border-radius: 4px;
+  color: #1a202c;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.ao-create-input button:last-child {
+  background-color: #e53e3e;
+  color: #edf2f7;
+}
+/* ``` */

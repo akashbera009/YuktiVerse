@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent';
+// const GEMINI_API_URL = 'https://m.facebook.com/story.php?story_fbid=pfbid07GcWaxDU9dyTXbuh1pwEk3oLiUTY6RU3hTZMQcP9FgUkMp9K1cqSc36iNYPe4D3Cl&id=61555795563182&mibextid=6aamW6';
 
 
 export const getGeminiResponse = async (prompt) => {

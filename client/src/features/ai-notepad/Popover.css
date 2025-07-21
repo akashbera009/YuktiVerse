@@ -1,0 +1,53 @@
+/* Popover.css */
+/* .custom-popover input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+} */
+
+.custom-popover h4 {
+  margin: 0;
+  font-weight: 500;
+}
+
+.custom-popover p {
+  margin: 6px 0;
+  font-size: 0.875rem;
+}
+.ai-assistance-more {
+  background-color: #81e6d9; 
+  border: 1px solid #81e6d9; /* Secondary accent */
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.ai-assistance-more:hover {
+  background: #81e6d9; /* Secondary accent for hover */
+  color: #1a202c; /* Background for contrast */
+}
+
+
+/* Popup Bubble */
+.popup-bubble {
+  position: absolute;
+  bottom: -180%; /* show above the button */
+  left: 5%;
+  /* transform: translateX(-50%); */
+  transform: translateY(50%);
+  background-color:#1f1f1f;
+  border: 1px solid;
+  color: #b4b4b4;
+  padding: 10px 20px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+/* Arrow */
