@@ -7,14 +7,10 @@ const HandwrittenNoteSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  year: {
-    type: String,
-    enum: ['First Year', 'Second Year', 'Third Year', 'Fourth Year'],
-    required: true,
-  },
-  subject: {
-    type: String,
-    required: true,
+  chapter: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Chapter',
+    required: true
   },
   title: {
     type: String,
@@ -24,7 +20,7 @@ const HandwrittenNoteSchema = new mongoose.Schema({
   fileType: {
     type: String,
     enum: ['image', 'pdf'],
-    required: true,
+    // required: true,
   },
   fileUrl: {
     type: String,
@@ -45,4 +41,6 @@ HandwrittenNoteSchema.pre('save', function (next) {
   next();
 });
 
-export default mongoose.model('HandwrittenNote', HandwrittenNoteSchema);
+// export default mongoose.model('HandwrittenNote', HandwrittenNoteSchema);
+export default mongoose.models.HandwrittenNote || mongoose.model('HandwrittenNote', HandwrittenNoteSchema);
+

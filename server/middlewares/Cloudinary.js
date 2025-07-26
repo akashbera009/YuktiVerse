@@ -2,6 +2,7 @@
 
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
+// import path from 'path'
 
 // Cloudinary configuration
 cloudinary.config({
@@ -19,20 +20,24 @@ export const uploadOnCloudinary = async (localFilePath) => {
   if (!localFilePath) return null;
 
   try {
+    // const ext = path.extname(localFilePath).toLowerCase();
+    // const rawTypes = ['.pdf', '.docx', '.xlsx', '.csv', '.txt'];
+
+    // const resourceType = rawTypes.includes(ext) ? 'raw' : 'auto';
+
+
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: 'auto', // handles images, videos, pdf, etc.
     });
 
-    console.log('✅ File uploaded to Cloudinary:', response.secure_url);
+    console.log('✅ File uploaded to Cloudinary:', response);
 
-    // Remove local file after upload
     fs.unlinkSync(localFilePath);
 
     return response;
   } catch (error) {
     console.error('❌ Cloudinary upload failed:', error);
-
-    // Cleanup local file if upload failed
+    
     if (fs.existsSync(localFilePath)) {
       fs.unlinkSync(localFilePath);
     }

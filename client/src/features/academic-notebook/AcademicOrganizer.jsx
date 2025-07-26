@@ -1,6 +1,6 @@
 // ```jsx
 import React, { useState } from 'react';
-import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaUpload, FaCog, FaTimes, FaPlus, FaStar } from 'react-icons/fa';
+import { FaBars , FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaUpload, FaCog, FaTimes, FaPlus, FaStar } from 'react-icons/fa';
 import Notebook from '../ai-notepad/Notebook';
 import CreateMenu from './CreateMenu';
 import './AcademicOrganizer.css';
@@ -16,17 +16,65 @@ const initialSubjects = {
         important: false,
         chapters: {
           'Chapter 1: Calculus': [
-            { type: 'pdf', name: 'Calculus_Lecture1.pdf' },
+            { type: 'pdf', name: 'Calculus_Lecture1.pdf' , link : 'https://res.cloudinary.com/dilxiy8fa/image/upload/v1753271934/wong4xkfnj9nqbujwvis.pdf'},
             { type: 'image', name: 'Graph.png' },
-            { type: 'notebook', name: 'Calculus Notes' },
+            {
+              type: 'notebook',
+              name: 'Math Notes 3',
+              note_id: 'math-note-3',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Derivative formulas',
+                    x: 100,
+                    y: 50,
+                    width: 200,
+                    height: 80,
+                  },
+                ],
+              },
+            },
           ],
           'Chapter 2: Algebra': [
             { type: 'pdf', name: 'Algebra_Lecture1.pdf' },
-            { type: 'notebook', name: 'Algebra Notes' },
+            {
+              type: 'notebook',
+              name: 'Math Note 4 ',
+              note_id: 'math-note-4',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Matrix notes',
+                    x: 80,
+                    y: 40,
+                    width: 180,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [
             { type: 'pdf', name: 'Math_Formulas.pdf' },
-            { type: 'notebook', name: 'Key Notes' },
+            {
+              type: 'notebook',
+              name: 'Key Notes',
+              note_id: 'key-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Important math shortcuts',
+                    x: 50,
+                    y: 50,
+                    width: 160,
+                    height: 50,
+                  },
+                ],
+              },
+            },
           ],
         },
       },
@@ -39,7 +87,23 @@ const initialSubjects = {
             { type: 'image', name: 'Force_Diagram.png' },
           ],
           'Chapter 2: Thermodynamics': [
-            { type: 'notebook', name: 'Thermo Notes' },
+            {
+              type: 'notebook',
+              name: 'Thermo Notes',
+              note_id: 'thermo-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Heat transfer notes',
+                    x: 110,
+                    y: 60,
+                    width: 170,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [
             { type: 'pdf', name: 'Physics_Summary.pdf' },
@@ -53,11 +117,42 @@ const initialSubjects = {
           'Chapter 1: Organic': [
             { type: 'pdf', name: 'Organic_Lecture1.pdf' },
             { type: 'pdf', name: 'Organic_Lecture2.pdf' },
-            // { type: 'notebook', name: 'Organic_Lecture2.pdf' },
-            { type: 'notebook', name: 'Firewall Notes' },
+            {
+              type: 'notebook',
+              name: 'Firewall Notes',
+              note_id: 'firewall-note-4',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Organic reaction types',
+                    x: 90,
+                    y: 45,
+                    width: 200,
+                    height: 70,
+                  },
+                ],
+              },
+            },
           ],
           'Chapter 2: Inorganic': [
-            { type: 'notebook', name: 'Inorganic Notes' },
+            {
+              type: 'notebook',
+              name: 'uuuuuuuuuuu',
+              note_id: 'uuuuuuuuuuu835',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Periodic table trends',
+                    x: 100,
+                    y: 40,
+                    width: 190,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [
             { type: 'image', name: 'Periodic_Table.png' },
@@ -67,6 +162,7 @@ const initialSubjects = {
     ],
     important: false,
   },
+
   'Second Year': {
     subjects: [
       {
@@ -75,13 +171,45 @@ const initialSubjects = {
         chapters: {
           'Chapter 1: Arrays': [
             { type: 'pdf', name: 'Arrays_Lecture1.pdf' },
-            { type: 'notebook', name: 'Array Notes' },
+            {
+              type: 'notebook',
+              name: 'Array Notes',
+              note_id: 'array-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Array operations',
+                    x: 70,
+                    y: 30,
+                    width: 180,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Chapter 2: Trees': [
             { type: 'image', name: 'Tree_Diagram.png' },
           ],
           'Important Notes': [
-            { type: 'notebook', name: 'DS Key Notes' },
+            {
+              type: 'notebook',
+              name: 'DS Key Notes',
+              note_id: 'ds-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Key points about trees and graphs',
+                    x: 100,
+                    y: 40,
+                    width: 190,
+                    height: 70,
+                  },
+                ],
+              },
+            },
           ],
         },
       },
@@ -93,7 +221,23 @@ const initialSubjects = {
             { type: 'pdf', name: 'Sets_Lecture1.pdf' },
           ],
           'Chapter 2: Logic': [
-            { type: 'notebook', name: 'Logic Notes' },
+            {
+              type: 'notebook',
+              name: 'Logic Notes',
+              note_id: 'logic-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Truth tables and logic gates',
+                    x: 90,
+                    y: 55,
+                    width: 160,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [
             { type: 'pdf', name: 'Logic_Summary.pdf' },
@@ -108,7 +252,23 @@ const initialSubjects = {
             { type: 'image', name: 'Circuit_Diagram.png' },
           ],
           'Chapter 2: Signals': [
-            { type: 'notebook', name: 'Signals Notes' },
+            {
+              type: 'notebook',
+              name: 'Signals Notes',
+              note_id: 'signals-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Analog and digital signals',
+                    x: 80,
+                    y: 35,
+                    width: 170,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [],
         },
@@ -116,6 +276,7 @@ const initialSubjects = {
     ],
     important: false,
   },
+
   'Third Year': {
     subjects: [
       {
@@ -126,7 +287,23 @@ const initialSubjects = {
             { type: 'pdf', name: 'Processes_Lecture1.pdf' },
           ],
           'Chapter 2: Memory': [
-            { type: 'notebook', name: 'Memory Notes' },
+            {
+              type: 'notebook',
+              name: 'Memory Notes',
+              note_id: 'memory-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Paging and segmentation',
+                    x: 85,
+                    y: 50,
+                    width: 190,
+                    height: 70,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [],
         },
@@ -139,7 +316,23 @@ const initialSubjects = {
             { type: 'pdf', name: 'ML_Lecture1.pdf' },
           ],
           'Chapter 2: Neural Networks': [
-            { type: 'notebook', name: 'NN Notes' },
+            {
+              type: 'notebook',
+              name: 'NN Notes',
+              note_id: 'nn-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Perceptrons and layers',
+                    x: 110,
+                    y: 40,
+                    width: 180,
+                    height: 65,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [],
         },
@@ -152,7 +345,23 @@ const initialSubjects = {
             { type: 'pdf', name: 'Protocols_Lecture1.pdf' },
           ],
           'Chapter 2: Security': [
-            { type: 'notebook', name: 'Security Notes' },
+            {
+              type: 'notebook',
+              name: 'Security Notes',
+              note_id: 'security-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Encryption and authentication',
+                    x: 120,
+                    y: 60,
+                    width: 190,
+                    height: 70,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [],
         },
@@ -160,6 +369,7 @@ const initialSubjects = {
     ],
     important: false,
   },
+
   'Fourth Year': {
     subjects: [
       {
@@ -170,7 +380,23 @@ const initialSubjects = {
             { type: 'pdf', name: 'Plan_Document.pdf' },
           ],
           'Chapter 2: Execution': [
-            { type: 'notebook', name: 'Execution Notes' },
+            {
+              type: 'notebook',
+              name: 'Execution Notes',
+              note_id: 'execution-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Milestones and tasks',
+                    x: 100,
+                    y: 50,
+                    width: 200,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [],
         },
@@ -183,7 +409,23 @@ const initialSubjects = {
             { type: 'pdf', name: 'AWS_Lecture1.pdf' },
           ],
           'Chapter 2: Azure': [
-            { type: 'notebook', name: 'Azure Notes' },
+            {
+              type: 'notebook',
+              name: 'Azure Notes',
+              note_id: 'azure-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Azure fundamentals',
+                    x: 90,
+                    y: 40,
+                    width: 180,
+                    height: 70,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [],
         },
@@ -196,7 +438,23 @@ const initialSubjects = {
             { type: 'pdf', name: 'Crypto_Lecture1.pdf' },
           ],
           'Chapter 2: Firewalls': [
-            { type: 'notebook', name: 'Firewall Notes' },
+            {
+              type: 'notebook',
+              name: 'Firewall Notes',
+              note_id: 'firewall-notes-1',
+              content: {
+                textBoxes: [
+                  {
+                    id: 'box1',
+                    text: 'Firewall configurations',
+                    x: 110,
+                    y: 55,
+                    width: 200,
+                    height: 60,
+                  },
+                ],
+              },
+            },
           ],
           'Important Notes': [],
         },
@@ -205,6 +463,8 @@ const initialSubjects = {
     important: false,
   },
 };
+
+
 const templates = ['CSE Syllabus', 'ECE Syllabus', 'BCA Syllabus'];
 
 const ContextMenu = ({ x, y, onDelete, onToggleImportant, isImportant, onClose }) => {
@@ -237,7 +497,12 @@ const AcademicOrganizer = () => {
   const [newItemName, setNewItemName] = useState('');
   const [creatingType, setCreatingType] = useState(null); // 'year', 'subject:<year>', 'chapter:<year>:<subject>'
   const [contextMenu, setContextMenu] = useState(null);
-
+ const [sidebarOpen, setSidebarOpen] = useState(true);
+  console.log(selectedFile);
+  
+  const handleToggleSidebar = () => {
+    setSidebarOpen(open => !open);
+  };
   // Get files for the selected chapter
   const getFilesForChapter = () => {
     if (selectedYear && selectedSubject && selectedChapter) {
@@ -273,6 +538,7 @@ const AcademicOrganizer = () => {
     }
   };
 
+  
   const handleChapterClick = (chapter) => {
     if (selectedChapter === chapter) {
       setSelectedChapter(null);
@@ -464,10 +730,45 @@ const AcademicOrganizer = () => {
     });
   };
 
+  // Update handleSaveNotebook
+  const handleSaveNotebook = async (notebookData) => {
+    try {
+      const payload = {
+        ...notebookData,
+        user: user._id, // Add user ID
+        note_id: selectedFile?.note_id || `note_${Date.now()}` // Add note_id
+      };
+
+      const response = selectedFile?.note_id 
+        ? await axios.put(`/api/notebooks/${selectedFile.note_id}`, payload)
+        : await axios.post('/api/notebooks', payload);
+
+      // Update local state if needed
+    } catch (error) {
+      console.error('Save failed:', error);
+    }
+  };
+
   return (
-    <div className="ao-container" onClick={handleCloseContextMenu}>
-      {/* Sidebar */}
+    <div
+      className={`ao-container ${sidebarOpen ? '' : 'collapsed'}`}
+      onClick={handleCloseContextMenu}
+    >
+      
+ 
+{/* 
+        <button
+          className={`ao-toggle-btn ${sidebarOpen ? 'open' : 'closed'}`}
+          onClick={handleToggleSidebar}
+          title={sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
+        >
+          {sidebarOpen ? FaFolderOpen : FaFolder} 
+        </button> */}
+
+
+     {/* Sidebar */}
       <div className="ao-sidebar">
+
         <h2 className="ao-title">Academic Organizer</h2>
         {getSortedYears().map((year) => (
           <div key={year} className="ao-section">
@@ -548,6 +849,7 @@ const AcademicOrganizer = () => {
                     )}
                   </div>
                 ))}
+                
                 <div className="ao-create-section">
                   {creatingType === `subject:${year}` ? (
                     <div className="ao-create-input">
@@ -598,10 +900,14 @@ const AcademicOrganizer = () => {
             </button>
           )}
         </div>
+        
       </div>
+        
+
 
       {/* Main Panel */}
       <div className="ao-main">
+        
         <h3 className="ao-heading">
           {getFullPath()}
           {selectedFile && (
@@ -612,7 +918,7 @@ const AcademicOrganizer = () => {
         </h3>
         <div className="ao-actions">
           <CreateMenu onCreate={handleCreate} />
-          <select
+          {/* <select
             className="ao-select"
             value={selectedTemplate}
             onChange={(e) => setSelectedTemplate(e.target.value)}
@@ -625,12 +931,28 @@ const AcademicOrganizer = () => {
           </select>
           <button className="ao-action-btn outline">
             <FaCog className="ao-icon" /> Customize
-          </button>
+          </button> */}
+          <button
+          className={`ao-toggle-btn ${sidebarOpen ? 'open' : 'closed'}`}
+          onClick={handleToggleSidebar}
+          title={sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
+        >
+          {sidebarOpen ? 
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>
+          :
+          <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+         } 
+        </button>
         </div>
         {selectedFile ? (
           <div className="ao-file-content-container">
             {selectedFile.type === 'notebook' ? (
-              <Notebook />
+              // <Notebook notebookId={selectedFile._id} notebookName={selectedFile.name}  />
+               <Notebook 
+                notebookId={selectedFile.note_id} 
+                notebookName={selectedFile.name}
+                onSave={handleSaveNotebook}
+              />
             ) : selectedFile.type === 'pdf' ? (
               <div className="ao-file-content">
                 <p>Viewing PDF: {selectedFile.name}</p>

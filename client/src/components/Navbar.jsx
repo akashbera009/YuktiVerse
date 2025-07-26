@@ -9,7 +9,10 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <Link to="/">YuktiVerse</Link>
+        <Link to="/">
+          <img src="./src/assets/750003cb-fc39-41be-a28a-be393bf1013a.jpg" className='logo-image-top' alt="logo" /> 
+          <div className="logo-text"> YuktiVerse</div>
+           </Link>
       </div>
 
       <div className={`navbar-links ${isOpen ? 'active' : ''}`}>

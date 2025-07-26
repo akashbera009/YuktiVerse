@@ -1,12 +1,14 @@
 import React, { useState, useRef , useEffect } from 'react';
 import { FaPlus, FaFileAlt, FaFolderPlus, FaUpload, FaTimes } from 'react-icons/fa';
 import './CreateMenu.css';
+import axios from 'axios'
 
 const CreateMenu = ({ onCreate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState(null); // 'note' | 'folder' | 'upload'
   const [inputValue, setInputValue] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef();
   const menuRef = useRef(null);
   const modalRef = useRef(null);
@@ -59,25 +61,76 @@ const CreateMenu = ({ onCreate }) => {
     }
   };
 
+
+const createNotebook =  async(notebookId , notebookName)=>{ /// create notebook in the databse 
+  try{
+    setIsSaving(true);
+    const payload = {
+      note_id: notebookId, 
+      name: notebookName, 
+      content: {
+        textBoxes: [], 
+      },
+    };
+    const response = await axios.post(`/api/notebooks/`, payload);
+    console.log('new Notebook created :', response.data);
+  }
+  catch(e){
+    console.log(e);
+  }finally{
+    setIsSaving(false);
+  }
+}
+// const saveNotebook = async () => {
+//   try {
+//     setIsSaving(true);
+
+//     const payload = {
+//       name: notebookName, // assume you have this in state
+//       content: {
+//         textBoxes: textBoxes, // the current state
+//       },
+//     };
+
+//     const response = await axios.put(`/api/notebooks/${notebookId}`, payload);
+
+//     console.log('Notebook updated:', response.data);
+//     // Optionally show a toast or UI feedback
+//   } catch (error) {
+//     console.error('Error saving notebook:', error);
+//     // Optionally handle 404 or 500 errors
+//   } finally {
+//     setIsSaving(false);
+//   }
+// };
+
+  /// this needs updation 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // console.log(mode);
+        // console.log(inputValue);
     if (mode === 'upload') {
       const file = fileInputRef.current.files[0];
-      if (file) onCreate('upload', file);
+
+    // console.log(inputValue);
+      // if (file) onCreate('upload', file);
+      
     } else {
-      onCreate(mode, inputValue.trim());
+      onCreate(mode, inputValue.trim());      
+      createNotebook( inputValue + Math.floor( Math.random() * 1000),inputValue);
     }
     closeModal();
   };
 
   return (
     <div className="create-menu"  ref={menuRef}>
+      
       <button
         className="cm-button"
         onClick={() => setMenuOpen((o) => !o)}
         title="Create…"
       >
-        <FaPlus /> Create
+        <FaPlus /> 
       </button>
 
       {menuOpen && (

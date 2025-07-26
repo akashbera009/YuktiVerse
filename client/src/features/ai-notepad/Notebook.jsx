@@ -1,19 +1,86 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Notebook.css';
 import Popover from './Popover';
+import axios from 'axios'
 
-const Notebook = () => {
+const Notebook = ({notebookId, notebookName }) => {
   const [textBoxes, setTextBoxes] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const canvasRef = useRef(null);
   const dragOffset = useRef({ x: 0, y: 0 });
   const isDragging = useRef(false);
-
-  // pop over states 
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const [popoverBoxId, setPopoverBoxId] = useState(null);
-  // const [popoverBoxVisivle, setPopoverBoxVisivle] = useState(false);
-  const aiButtonRefs = useRef({});  // To store button refs by box id
+  const aiButtonRefs = useRef({});
 
+  const[data , setData] = useState(null);
+// console.log(textBoxes);
+
+    useEffect(() => {
+    const loadNotebook = async () => {
+      try {
+        setIsLoading(true);
+        if (notebookId) {
+          const response = await axios.get(`/api/notebooks/${notebookId}`);
+          const notebook = response.data;
+          
+          if (notebook.content?.textBoxes) {
+            setTextBoxes(notebook.content.textBoxes);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading notebook:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadNotebook();
+  }, [notebookId]);
+
+const createNotebook =  async()=>{ /// create notebook in the databse 
+  try{
+    setIsSaving(true);
+    const payload = {
+      note_id: notebookId, 
+      name: notebookName, 
+      content: {
+        textBoxes: textBoxes, 
+      },
+    };
+    const response = await axios.post(`/api/notebooks/`, payload);
+    console.log('Notebook updated:', response.data);
+  }
+  catch(e){
+    console.log(e);
+  }finally{
+    setIsSaving(false);
+  }
+}
+const saveNotebook = async () => {
+  try {
+    setIsSaving(true);
+
+    const payload = {
+      name: notebookName, // assume you have this in state
+      content: {
+        textBoxes: textBoxes, // the current state
+      },
+    };
+
+    const response = await axios.put(`/api/notebooks/${notebookId}`, payload);
+
+    console.log('Notebook updated:', response.data);
+    // Optionally show a toast or UI feedback
+  } catch (error) {
+    console.error('Error saving notebook:', error);
+    // Optionally handle 404 or 500 errors
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   // Handle canvas clicks to create new text boxes
   const handleCanvasClick = (e) => {
@@ -28,16 +95,21 @@ const Notebook = () => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    setTextBoxes([...textBoxes, { 
+    // Generate more unique ID
+    const newBox = { 
       x, 
       y, 
       text: '', 
-      id: Date.now(),
+      id: `${Date.now()}-${Math.random()}`,
       width: 200,
       height: 28
-    }]);
-    setActiveId(Date.now());
+    };
+    
+    setTextBoxes([...textBoxes, newBox]);
+    setActiveId(newBox.id);
   };
+
+
 
   // Handle text changes and auto-resize
   const handleTextChange = (id, e) => {
@@ -152,9 +224,27 @@ const handleAIButton = (id, e) => {
 
   return (
     <div className="notebook-container">
-      
+      {isLoading ? (
+        <div className="loading-indicator">Loading notebook...</div>
+      ) : (
+        <>
       <div className="notebook-canvas">
         <div className="grid-lines"></div>
+        
+        <div className="notebook-header">
+          <h2>{notebookName}</h2>
+          <div className="save-controls">
+            <button 
+              className="save-button" 
+              onClick={saveNotebook}
+              disabled={isSaving}
+            >
+              {isSaving ? 'Saving...' : 'Save Notebook'}
+            </button>
+            {saveStatus && <div className="save-status">{saveStatus}</div>}
+          </div>
+        </div>
+
         <div 
           className="canvas" 
           ref={canvasRef}
@@ -163,7 +253,7 @@ const handleAIButton = (id, e) => {
           {textBoxes.map(box => (
             <div
               key={box.id}
-              className={`text-box-container ${activeId === box.id ? 'active' : ''}`}
+              className={activeId === box.id ? 'text-box-container active' : 'text-box-container'}
               style={{ 
                 left: box.x, 
                 top: box.y,
@@ -220,8 +310,42 @@ const handleAIButton = (id, e) => {
           ))}
         </div>
       </div>
+      {/* Improved save status display */}
+          {saveStatus && (
+            <div className={`save-status ${saveStatus.includes('Failed') ? 'error' : 'success'}`}>
+              {saveStatus}
+            </div>
+          )}
+     </>
+      )}
     </div>
   );
 };
-
 export default Notebook;
+
+
+// Example notebook file structure
+// {
+//   type: 'notebook',
+//   name: 'Calculus Notes',
+//   content: {
+//     textBoxes: [
+//       {
+//         id: 123456789,
+//         text: 'Derivative formulas',
+//         x: 100,
+//         y: 50,
+//         width: 200,
+//         height: 80
+//       },
+//       {
+//         id: 987654321,
+//         text: 'Integration techniques',
+//         x: 150,
+//         y: 200,
+//         width: 250,
+//         height: 120
+//       }
+//     ]
+//   }
+// }

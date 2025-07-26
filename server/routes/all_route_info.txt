@@ -1,0 +1,32 @@
+    Action 	          Method	    URL Pattern                              req
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Create Year	      POST	        /years                                  {"title": "Third Year","important": false }
+    List Years	      GET	        /years
+    Add Subject	      POST	        /years/:yearId/subjects                 {"name": "Chemistry","important": true}
+    List Subjects	  GET	        /years/:yearId/subjects
+    Add Chapter	      POST	        /years/subjects/:subjectId/chapters     {"chapterTitle": "Chapter 2: Inorganic chem "}
+    List Chapters	  GET	        /years/subjects/:subjectId/chapters
+
+    Get Resources     GET           /years/:chapterId/materials 
+
+    create notebook POST            /api/notebooks/  
+    { "note_id": "derivative-notes-3",  "name": "jotto sob altu faltu ","chapter": "68812acd65e4bbfd1146f966","content": { "textBoxes": [{ "id": "1", "text": "sob jinis eta firewall er new mal ","x": 210, "y": 110, "width": 200, "height": 60 } ]}}
+    get noteBook      GET           api/notebooks/:note_id  {}
+    update noteBook   PUT           api/notebooks/:note_id  {}
+
+    // handwritten notes routes-----  
+    create pdf/img    POST          api/handwritten-notes/upload             form data [file , title , chapter]
+    get pdf/img       GET           api/handwritten-notes/?chapter=chapterId  {title , chapter} (do not require this i think , cause the /years/:chapterId/materials will bring everything)
+    😌 User → Year → Subject → Chapter ← [ Notebook, HandwrittenNote ] 😌
+
+
+    summerize pdf     POST         api/pdf-summerize/summerize                        (form-data [pdf	  File	abc.pdf])
+
+    // all gemini routes ---------------
+    mcq generator     POST         ai-help/mcq-gen                          raw { "prompt": "herer vast amount of text will be added from the summerized pdf "} 
+    resume analysis   POST         ai-help/resume-analysis              raw { "prompt": "{...resume data...}" }
+    ask code          POST         ai-help/ask-code                     raw { "prompt": "binary search algorithm" }
+    mcq generator     POST         ai-help/mcq-gen                      raw { "summaryText": "summarized text from pdf" }
+    short explain     POST         ai-help/short-explain                raw { "prompt": "Explain recursion in short" }
+    detailed explain  POST         ai-help/detailed-explain             raw { "prompt": "Explain recursion in detail" } 
+ 

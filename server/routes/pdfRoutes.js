@@ -2,12 +2,11 @@
 
 import express from 'express';
 import multer from 'multer';
-import { summarizePDF, generateMCQs } from '../controllers/pdfController.js';
+import { summarizePDF } from '../controllers/pdfSummarizer.js';
 
 const router = express.Router();
 const upload = multer();
 
-router.post('/summarize', upload.single('pdf'), summarizePDF);
-router.post('/mcq', generateMCQs );
+router.post('/summarize', upload.single('pdf'), summarizePDF);  
 
 export default router;

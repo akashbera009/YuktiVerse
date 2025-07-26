@@ -9,16 +9,19 @@
 }
 
 .notebook-canvas {
+  border: 1px solid   rgba(245, 245, 245, 0.208);
   position: relative;
   width: 100%;
   min-width: 800px;
-  max-width: 1200px;
-  height: 600px;
+  /* max-width: 1200px; */
+  min-height: 600px;
   background-color: #fffef0; /* Off-white like paper */
   background-color: transparent; /* Off-white like paper */
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  /* background-color: red; */
+  /* margin-top: -5rem; */
 }
 
 .grid-lines {
@@ -136,4 +139,75 @@ color: #edf2f7;
 .delete-button:hover, .ai-button:hover {
   transform: scale(1.1);
   opacity: 1;
+}
+
+
+/* Add these styles to your existing Notebook.css */
+.notebook-header {
+  display: flex;
+  justify-content: space-between;
+  position:sticky;
+  top: -1rem;
+  z-index: 12 ;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #2d3748;
+  border-bottom: 1px solid #4a5568;
+}
+
+.save-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.save-button {
+  background-color: #68d391;
+  color: #1a202c;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #81e6d9;
+}
+
+.save-button:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.save-status {
+  color: #68d391;
+  font-size: 14px;
+}
+
+/* Add to your existing CSS */
+.save-status {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.save-status.success {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.save-status.error {
+  background-color: #f44336;
+  color: white;
+}
+
+.loading-indicator {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.2rem;
 }
