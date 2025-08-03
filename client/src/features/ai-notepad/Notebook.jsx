@@ -1,3 +1,6 @@
+// npm install react-rnd                pore ekbar dekhar ache jinista ki 
+
+
 import React, { useState, useRef, useEffect } from 'react';
 import './Notebook.css';
 import Popover from './Popover';
@@ -40,25 +43,25 @@ const Notebook = ({notebookId, notebookName }) => {
     loadNotebook();
   }, [notebookId]);
 
-const createNotebook =  async()=>{ /// create notebook in the databse 
-  try{
-    setIsSaving(true);
-    const payload = {
-      note_id: notebookId, 
-      name: notebookName, 
-      content: {
-        textBoxes: textBoxes, 
-      },
-    };
-    const response = await axios.post(`/api/notebooks/`, payload);
-    console.log('Notebook updated:', response.data);
-  }
-  catch(e){
-    console.log(e);
-  }finally{
-    setIsSaving(false);
-  }
-}
+// const createNotebook =  async()=>{ /// create notebook in the databse 
+//   try{
+//     setIsSaving(true);
+//     const payload = {
+//       note_id: notebookId, 
+//       name: notebookName, 
+//       content: {
+//         textBoxes: textBoxes, 
+//       },
+//     };
+//     const response = await axios.post(`/api/notebooks/`, payload);
+//     console.log('Notebook updated:', response.data);
+//   }
+//   catch(e){
+//     console.log(e);
+//   }finally{
+//     setIsSaving(false);
+//   }
+// }
 const saveNotebook = async () => {
   try {
     setIsSaving(true);

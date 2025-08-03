@@ -26,6 +26,11 @@ const HandwrittenNoteSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+   important :{
+    type : Boolean , 
+    default : false,
+  },
+  cloudinaryPublicId: { type: String } , 
   createdAt: {
     type: Date,
     default: Date.now,

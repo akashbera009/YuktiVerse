@@ -1,0 +1,130 @@
+:root {
+   --primary: #6366f1;
+  --primary-light: #818cf8;
+  --secondary: #10b981;
+  --dark-bg: #0f172a;
+  --dark-card: #1e293b;
+  --dark-text: #e2e8f0;
+  --dark-border: #334155;
+  --light-bg: #f8fafc;
+  --light-card: #ffffff;
+  --light-text: #334155;
+  --light-border: #e2e8f0;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}
+
+.mm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.mm-modal {
+  background-color: var(--dark-card);
+  color: var(--light-text);
+  border: 1px solid var(--dark-border);
+  border-radius: 8px;
+  padding: 24px;
+  width: 340px;
+  max-width: 90%;
+  position: relative;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark .mm-modal {
+  background-color: var(--dark-card);
+  color: var(--dark-text);
+  border-color: var(--dark-border);
+}
+
+.mm-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.mm-title {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.mm-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mm-select {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid var(--dark-border);
+  border-radius: 4px;
+  background: var(--dark-bg);
+  color: var(--dark-text);
+  transition: border-color 0.2s;
+}
+
+body.dark .mm-select {
+  background: var(--dark-card);
+  color: var(--dark-text);
+  border-color: var(--dark-border);
+}
+
+.mm-select:focus {
+  outline: none;
+  border-color: var(--dark-border);
+}
+
+.mm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.mm-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.mm-cancel {
+  background-color: var(--light-border);
+  color: var(--light-text);
+}
+
+.mm-cancel:hover {
+  background-color: var(--danger);
+  color: white;
+}
+
+.mm-move {
+  background-color: var(--secondary);
+  color: white;
+}
+
+.mm-move:disabled {
+  background-color: var(--light-border);
+  cursor: not-allowed;
+}
+
+.mm-move:not(:disabled):hover {
+  /* slightly darker than secondary */
+  background-color: #0ca678;
+}
+
+

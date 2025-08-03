@@ -1,32 +1,68 @@
-    Action 	          Method	    URL Pattern                              req
---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    Create Year	      POST	        /years                                  {"title": "Third Year","important": false }
-    List Years	      GET	        /years
-    Add Subject	      POST	        /years/:yearId/subjects                 {"name": "Chemistry","important": true}
-    List Subjects	  GET	        /years/:yearId/subjects
-    Add Chapter	      POST	        /years/subjects/:subjectId/chapters     {"chapterTitle": "Chapter 2: Inorganic chem "}
-    List Chapters	  GET	        /years/subjects/:subjectId/chapters
+Action                 Method   URL Pattern                                      Request Body
+---------------------------------------------------------------------------------------------------------------------------
+Create Year            POST     /years                                           { "title": "Third Year", "important": false }
+List Years             GET      /years
+Rename Year            PATCH    /years/:id                                       { "title": "Updated Title", "important"?: true/false }
+Delete Year	           DELETE	/years/:id	                                    Deletes the year and all nested subjects, chapters, files
 
-    Get Resources     GET           /years/:chapterId/materials 
+Add Subject            POST     /years/:yearId/subjects                          { "name": "Chemistry", "important": true }
+List Subjects          GET      /years/:yearId/subjects
+Rename Subject         PATCH    /subjects/:id                                    { "name": "Updated Name", "important"?: true/false }
+Delete Subject	       DELETE	/subjects/:id	                                    Deletes subject and its chapters and file
 
-    create notebook POST            /api/notebooks/  
-    { "note_id": "derivative-notes-3",  "name": "jotto sob altu faltu ","chapter": "68812acd65e4bbfd1146f966","content": { "textBoxes": [{ "id": "1", "text": "sob jinis eta firewall er new mal ","x": 210, "y": 110, "width": 200, "height": 60 } ]}}
-    get noteBook      GET           api/notebooks/:note_id  {}
-    update noteBook   PUT           api/notebooks/:note_id  {}
+Add Chapter            POST     /years/subjects/:subjectId/chapters             { "chapterTitle": "Chapter 2: Inorganic chem" }
+List Chapters          GET      /years/subjects/:subjectId/chapters
+Rename Chapter         PATCH    /chapters/:id                                    { "title": "Updated Chapter Title", "important"?: true/false }
+Delete Chapter	       DELETE	/chapters/:id	                                    Deletes chapter and its files
 
-    // handwritten notes routes-----  
-    create pdf/img    POST          api/handwritten-notes/upload             form data [file , title , chapter]
-    get pdf/img       GET           api/handwritten-notes/?chapter=chapterId  {title , chapter} (do not require this i think , cause the /years/:chapterId/materials will bring everything)
-    😌 User → Year → Subject → Chapter ← [ Notebook, HandwrittenNote ] 😌
+Toggle Chapter Important PATCH  /chapters/:chapterId                             { "important": true/false }
 
+Get Chapter Resources  GET      /years/:chapterId/materials
 
-    summerize pdf     POST         api/pdf-summerize/summerize                        (form-data [pdf	  File	abc.pdf])
+---------------------------------------------------------------------------------------------------------------------------
+📝 Notebooks
 
-    // all gemini routes ---------------
-    mcq generator     POST         ai-help/mcq-gen                          raw { "prompt": "herer vast amount of text will be added from the summerized pdf "} 
-    resume analysis   POST         ai-help/resume-analysis              raw { "prompt": "{...resume data...}" }
-    ask code          POST         ai-help/ask-code                     raw { "prompt": "binary search algorithm" }
-    mcq generator     POST         ai-help/mcq-gen                      raw { "summaryText": "summarized text from pdf" }
-    short explain     POST         ai-help/short-explain                raw { "prompt": "Explain recursion in short" }
-    detailed explain  POST         ai-help/detailed-explain             raw { "prompt": "Explain recursion in detail" } 
- 
+Create Notebook        POST     /api/notebooks/                                  {
+                                                                                   "note_id": "derivative-notes-3",
+                                                                                   "name": "Jotto Sob Altu Faltu",
+                                                                                   "chapter": "68812acd65e4bbfd1146f966",
+                                                                                   "content": {
+                                                                                     "textBoxes": [
+                                                                                       { "id": "1", "text": "sob jinis eta firewall er new mal", "x": 210, "y": 110, "width": 200, "height": 60 }
+                                                                                     ]
+                                                                                   }
+                                                                                 }
+
+Get Notebook           GET      /api/notebooks/:note_id
+Update Notebook        PUT      /api/notebooks/:note_id
+Rename Notebook      PATCH    /api/notebooks/:note_id/rename                   { "name": "Updated Name" }
+Toggle Important     PATCH    /api/notebooks/:note_id/important                -- toggles `important` boolean
+Delete Notebook	     DELETE	  /api/notebooks/:id	                            Removes notebook from DB
+
+---------------------------------------------------------------------------------------------------------------------------
+📎 Handwritten Notes (PDF/Image)
+
+Upload Handwritten     POST     /api/handwritten-notes/upload                    (form-data: file, title, chapter)
+Get Notes by Chapter   GET      /api/handwritten-notes/?chapter=chapterId        ❗ You can skip this if using `/materials`
+Rename Handwritten    PATCH    /api/handwritten-notes/:noteId/rename           { "title": "Updated Title" }
+Toggle Important      PATCH    /api/handwritten-notes/:noteId/important         -- toggles `important` boolean
+Delete Handwritten   DELETE	    /api/handwritten-notes/:noteId	                Deletes file and removes it from Cloudinary (via public_id)
+
+---------------------------------------------------------------------------------------------------------------------------
+📌 Relationships
+😌 User → Year → Subject → Chapter ← [ Notebook, HandwrittenNote ] 😌
+
+---------------------------------------------------------------------------------------------------------------------------
+🧠 AI / Gemini Helpers
+
+Summarize PDF          POST     /api/pdf-summerize/summerize                     (form-data: pdf)
+
+MCQ Generator          POST     /ai-help/mcq-gen                                 { "summaryText": "summarized text from pdf" }
+
+Resume Analysis        POST     /ai-help/resume-analysis                         { "prompt": "{...resume text...}" }
+
+Ask Code               POST     /ai-help/ask-code                                { "prompt": "binary search algorithm" }
+
+Short Explanation      POST     /ai-help/short-explain                           { "prompt": "Explain recursion in short" }
+
+Detailed Explanation   POST     /ai-help/detailed-explain                        { "prompt": "Explain recursion in detail" }

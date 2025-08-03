@@ -1,0 +1,75 @@
+.notebook-editor-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(20, 20, 20, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.notebook-editor {
+  background: white;
+  width: 90%;
+  height: 85%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+.editor-header button {
+  background: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.editor-canvas {
+  flex: 1;
+  position: relative;
+  background: #f7f7f7;
+  overflow: auto;
+}
+
+.editor-canvas textarea {
+  font-size: 14px;
+  border: 1px solid #ccc;
+  resize: none;
+  padding: 6px;
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.add-box-btn {
+  margin: 12px;
+  align-self: flex-end;
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-box-btn:hover {
+  background: #218838;
+}

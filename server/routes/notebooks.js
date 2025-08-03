@@ -1,6 +1,6 @@
 import express from 'express';
 import { protect } from '../middlewares/auth.js';
-import { createNotebook, getNotebookById, updateNotebook } from '../controllers/notebookController.js';
+import { createNotebook, getNotebookById, updateNotebook , renameNotebook  , toggleImportantNotebook , deleteNotebook} from '../controllers/notebookController.js';
 
 const router = express.Router();
 
@@ -13,7 +13,10 @@ router.get('/:id', protect, getNotebookById);  // http://localhost:3000/api/note
 
 router.put('/:id', protect, updateNotebook);   // http://localhost:3000/api/notebooks/math-note-4
 
+router.patch('/:noteId/rename', renameNotebook);
+router.patch('/:noteId/important', toggleImportantNotebook);
 
+router.delete('/:id', deleteNotebook);
 // GET  /api/notebooks
 // router.get('/',  protect, getNotebooks);
 // router.get('/', getNotebooks);

@@ -1,0 +1,120 @@
+:root {
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --secondary: #10b981;
+  --dark-bg: #0f172a;
+  --dark-card: #1e293b;
+  --dark-text: #e2e8f0;
+  --dark-border: #334155;
+  --light-bg: #f8fafc;
+  --light-card: #ffffff;
+  --light-text: #334155;
+  --light-border: #e2e8f0;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background-color: var(--dark-card);
+  color: var(--dark-text);
+  border: 1px solid var(--dark-border);
+  border-radius: 8px;
+  padding: 24px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark .modal {
+  background-color: var(--dark-card);
+  color: var(--dark-text);
+  border: 1px solid var(--dark-border);
+}
+
+.modal h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.upload-btn {
+  background: transparent;
+  border: 2px dashed var(--primary);
+  color: var(--primary);
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.upload-btn:hover {
+  background-color: var(--primary-light);
+  color: white;
+}
+
+.modal button {
+  padding: 10px 14px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.modal button:hover {
+  background-color: var(--primary-light); /* Slightly darker than secondary */
+}
+
+.modal .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: inherit;
+}
+.close-btn1{
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: inherit;
+}
+.close-btn:hover{
+  background-color: transparent;
+}

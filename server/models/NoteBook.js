@@ -34,6 +34,10 @@ const NotebookSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  important :{
+    type : Boolean , 
+    default : false,
+  },
   content: {
     textBoxes: [TextBoxSchema],
   },
