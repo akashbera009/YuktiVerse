@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FaBook, FaFileAlt, FaUserCircle, FaMoon } from "react-icons/fa";
 import "./Sidebar.css";
+import { Link } from "react-router-dom";
+
 
 const Sidebar = () => {
 //   const [collapsed, setCollapsed] = useState(false);
@@ -10,34 +12,44 @@ const Sidebar = () => {
 
       {/* Menu Items */}
       <ul className="sidebar-menu">
-        <li className="menu-item active">
-          <FaFileAlt className="menu-icon" />
-          { <span>NoteBook</span>}
+        <li className="menu-item-logo ">
+          <img src="./src//assets/750003cb-fc39-41be-a28a-be393bf1013a.jpg" alt="" />
+        </li>
+        <li className="menu-item ">
+          <Link to="/academic-org">
+            <FaFileAlt className="menu-icon" />
+            <span>NoteBook</span>
+          </Link>
         </li>
         <li className="menu-item">
-          <FaBook className="menu-icon" />
-          { <span>Blogs</span>}
+          <Link to="/notebook">
+            <FaBook className="menu-icon" />
+            <span>Resume </span>
+          </Link>
         </li>
         <li className="menu-item">
-          <FaBook className="menu-icon" />
-          { (
-            <>
-              <span>Interview</span>
-              {/* <span className="new-badge">New</span> */}
-            </>
-          )}
+          <Link to="/interview">
+            <FaBook className="menu-icon" />
+            <span>Map</span>
+          </Link>
         </li>
+
       </ul>
 
       {/* Bottom Section */}
       <div className="sidebar-bottom">
         <div className="menu-item">
+         <Link to="/theme">
           <FaMoon className="menu-icon" />
+        </Link>
         </div>
         <div className="menu-item">
+         <Link to="/profile">
           <FaUserCircle className="menu-icon" />
+        </Link>
         </div>
       </div>
+
     </div>
   );
 };

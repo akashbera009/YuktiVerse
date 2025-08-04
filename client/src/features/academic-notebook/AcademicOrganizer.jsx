@@ -1,160 +1,242 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef , useMemo } from 'react';
+import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaPlus, FaStar, FaTrash, FaSearch, FaBars, FaTimes, FaEdit, FaArrowsAlt } from 'react-icons/fa';
+import './AcademicOrganizer.css';
+import NewModal from "./NewModal"
+// import NotebookEditor from "./NotebookEditor"
+import RenamePrompt from "./RenamePrompt"
+import MoveModal from "./MoveModal"
+// import ContextMenu from './ContextMenu';
+import Notebook from '../ai-notepad/Notebook';
 import axios from 'axios';
+import {DotsLoader,
+  RingLoader,
+  SquaresLoader,
+  BarsLoader,
+  OrbitLoader,
+  ProgressLoader,
+  HexagonLoader,
+  OverlayLoader,
+  InlineLoader,
+  SmartLoader,
+  useLoader,
+  withLoading,
+  LoaderShowcase} from '../../components/Loader';
+
+const STORAGE_KEY = 'academicOrganizerData';
 
 const AcademicOrganizer = () => {
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedChapter, setSelectedChapter] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState('notes');
+  const [recentFiles, setRecentFiles] = useState([]);
+  // const [importantFiles, setImportantFiles] = useState([]);
+  const [creatingType, setCreatingType] = useState(null);
+  const [newItemName, setNewItemName] = useState('');
+  const [contextMenu, setContextMenu] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  // const [confirmText, setConfirmText] = useState('');
+
+  const [showNewModal, setShowNewModal] = useState(false);
+  // const [editingNote, setEditingNote] = useState(null);''
+  const [moving, setMoving] = useState(null);
+  const [renaming, setRenaming] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // New states implemented 
   const [years, setYears] = useState([]);
   const [selectedYearId, setSelectedYearId] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [selectedChapterId, setSelectedChapterId] = useState(null);
-  const [materials, setMaterials] = useState([]);
+  const [materials, setMaterials] = useState({ notebooks: [], handwrittenNotes: [] });
   const [selectedNotebook, setSelectedNotebook] = useState(null);
 
+  const [viewerType, setViewerType] = useState(null);
+  const [notebookContent, setNotebookContent] = useState(null);
 
-const [selectedFile, setSelectedFile] = useState(null);
-const [viewerType, setViewerType] = useState(null);
-const [notebookContent, setNotebookContent] = useState(null);
+  // const [newYearTitle, setNewYearTitle] = useState('');
+  const [editingYearId, setEditingYearId] = useState(null);
+  // const [yearEditValue, setYearEditValue] = useState('');
 
+  // const [newSubjectName, setNewSubjectName] = useState('');
+  const [editingSubjectId, setEditingSubjectId] = useState(null);
+  // const [subjectEditValue, setSubjectEditValue] = useState('');
 
-const [newYearTitle, setNewYearTitle] = useState('');
-const [editingYearId, setEditingYearId] = useState(null);
-const [yearEditValue, setYearEditValue] = useState('');
+  // const [newChapterTitle, setNewChapterTitle] = useState('');
+  const [editingChapterId, setEditingChapterId] = useState(null);
+  // const [chapterEditValue, setChapterEditValue] = useState('');
 
-const [newSubjectName, setNewSubjectName] = useState('');
-const [editingSubjectId, setEditingSubjectId] = useState(null);
-const [subjectEditValue, setSubjectEditValue] = useState('');
+  const [showNotebookForm, setShowNotebookForm] = useState(false);
+  // const [notebookId, setNotebookId] = useState('');
+  const [notebookName, setNotebookName] = useState('');
+  const [textBoxes, setTextBoxes] = useState([]); // Mocking one by default
+  const [isSaving, setIsSaving] = useState(false);
 
-const [newChapterTitle, setNewChapterTitle] = useState('');
-const [editingChapterId, setEditingChapterId] = useState(null);
-const [chapterEditValue, setChapterEditValue] = useState('');
+const [allFiles, setAllFiles] = useState([]);
+const [filesLoading, setFilesLoading] = useState(false);
 
-
-const [showNotebookForm, setShowNotebookForm] = useState(false);
-const [notebookId, setNotebookId] = useState('');
-const [notebookName, setNotebookName] = useState('');
-const [textBoxes, setTextBoxes] = useState([]); // Mocking one by default
-const [isSaving, setIsSaving] = useState(false);
-
-
-
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // 🔹 Fetch all years on mount
-    useEffect(() => {
+  useEffect(() => {
     const fetchYears = async () => {
-        try {
+      try {
         const res = await axios.get('/years');
         setYears(res.data);
-        } catch (err) {
+      } catch (err) {
         console.error('Error fetching years:', err);
-        }
+      }
     };
-
     fetchYears();
-    }, []);
+  }, []);
 
-    const handleYearClick = (yearId) => {
-    if (selectedYearId === yearId) {
-        setSelectedYearId(null);
-        setSubjects([]);
-        setChapters([]);
-        setMaterials([]);
-    } else {
-        setSelectedYearId(yearId);
-        setSubjects([]);
-        setChapters([]);
-        setMaterials([]);
-    }
-    };
-  // 🔹 Fetch subjects when year is selected
+  // Fetch subjects when year is selected
+  const [subjectsLoading, setSubjectsLoading] = useState(false);
   useEffect(() => {
     if (selectedYearId) {
-      axios.get(`/years/${selectedYearId}/subjects`)
-        .then(res => setSubjects(res.data))
-        .catch(err => console.error('Error fetching subjects:', err));
+      const fetchSubjects = async () => {
+        try {
+          setSubjectsLoading(true);
+          const res = await axios.get(`/years/${selectedYearId}/subjects`);
+          setSubjects(res.data);
+        } catch (err) {
+          console.error('Error fetching subjects:', err);
+        }finally {
+        setSubjectsLoading(false);
+      }
+      };
+      fetchSubjects();
+    } else {
+      setSubjects([]);
     }
   }, [selectedYearId]);
 
-  // 🔹 Fetch chapters when subject is selected
+  // Fetch chapters when subject is selected
+  const [chaptersLoading, setChaptersLoading] = useState(false);
   useEffect(() => {
-    if (!selectedSubjectId) return;
-      axios.get(`/years/subjects/${selectedSubjectId}/chapters`)
-        .then(res => {
-          console.log("Chapters:", res.data);
+    if (selectedSubjectId) {
+      const fetchChapters = async () => {
+        try {
+           setChaptersLoading(true);
+          const res = await axios.get(`/years/subjects/${selectedSubjectId}/chapters`);
           setChapters(res.data);
-        })
-        .catch(err => console.error('Error fetching chapters:', err));
+        } catch (err) {
+          console.error('Error fetching chapters:', err);
+        }finally {
+          setChaptersLoading(false);
+        }
+      };
+      fetchChapters();
+    } else {
+      setChapters([]);
+    }
   }, [selectedSubjectId]);
 
-    // Example in materials fetch:
-    useEffect(() => {
+  // Fetch materials when chapter is selected
+  useEffect(() => {
     if (selectedChapterId) {
-        setLoading(true);
-        setError(null);
-        axios.get(`/years/${selectedChapterId}/materials`)
+      setLoading(true);
+      // setChaptersLoading(true);
+      setError(null);
+      axios.get(`/years/${selectedChapterId}/materials`)
         .then(res => setMaterials(res.data))
         .catch(err => {
-            console.error('Error fetching materials:', err);
-            setError("Failed to load materials");
+          console.error('Error fetching materials:', err);
+          setError("Failed to load materials");
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(true));
     }
-    }, [selectedChapterId]);
+  }, [selectedChapterId]);
 
-    const handleSubjectClick = (subjectId) => {
-        if (selectedSubjectId === subjectId) {
-            setSelectedSubjectId(null);
-        } else {
-            setSelectedSubjectId(subjectId);
-        }
+  const handleYearClick = (yearId) => {
+    const yearData = years.find(y => y._id === yearId);
+    if (selectedYearId === yearId) {
+      setSelectedYearId(null);
+      setSelectedYear(null);
+      setSubjects([]);
+      setChapters([]);
+      setMaterials({ notebooks: [], handwrittenNotes: [] });
+    } else {
+      setSelectedYearId(yearId);
+      setSelectedYear(yearData?.title);
+      setSubjects([]);
+      setChapters([]);
+      setMaterials({ notebooks: [], handwrittenNotes: [] });
+    }
+  };
 
-        // Clear dependent states
-        setChapters([]);
-        setMaterials([]);
-        setSelectedChapterId(null);
-        setSelectedNotebook(null);
-    };
+  const handleSubjectClick = (subjectId) => {
+    const subjectData = subjects.find(s => s._id === subjectId);
+    if (selectedSubjectId === subjectId) {
+      setSelectedSubjectId(null);
+      setSelectedSubject(null);
+    } else {
+      setSelectedSubjectId(subjectId);
+      setSelectedSubject(subjectData?.name);
+    }
 
-    const handleChapterClick = (chapterId) => {
-        if (selectedChapterId === chapterId) {
-            setSelectedChapterId(null);
-        } else {
-            setSelectedChapterId(chapterId);
-        }
+    // Clear dependent states
+    setChapters([]);
+    setMaterials({ notebooks: [], handwrittenNotes: [] });
+    setSelectedChapterId(null);
+    setSelectedNotebook(null);
+  };
 
-        // Clear previous materials + notebook
-        setMaterials([]);
-        setSelectedNotebook(null);
-    };
+  const handleChapterClick = (chapterId) => {
+    const chapterData = chapters.find(c => c._id === chapterId);
+    if (selectedChapterId === chapterId) {
+      setSelectedChapterId(null);
+      setSelectedChapter(null);
+    } else {
+      setSelectedChapterId(chapterId);
+      setSelectedChapter(chapterData?.title);
+    }
 
+    // Clear previous materials + notebook
+    setMaterials({ notebooks: [], handwrittenNotes: [] });
+    setSelectedNotebook(null);
+  };
+
+  const [fileLoading, setFileLoading] = useState(false);
+  const handleFileClick = async (file) => {
+    setSelectedFile(file);
+    setViewerType(null); // reset before loading new
+    setFileLoading(true);
+    // Track as a recent file
+    setRecentFiles(prev => [
+      { ...file, timestamp: new Date() },
+      ...prev.filter(f => f._id !== file._id).slice(0, 4)
+    ]);
     
-    const handleFileClick = async (file) => {
-      setSelectedFile(file);
-      setViewerType(null); // reset before loading new
-      
-      if (file.type === 'notebook') {
-        try {
-      const res = await axios.get(`/api/notebooks/${file.note_id}`);
-      setNotebookContent(res.data);
-      setViewerType('notebook');
-    } catch (err) {
-      console.error('Error loading notebook:', err);
+    if (file.type === 'notebook') {
+      try {
+        const res = await axios.get(`/api/notebooks/${file.note_id}`);
+        setNotebookContent(res.data);
+        // setFileLoading(false);
+        setViewerType('notebook');
+      } catch (err) {
+        console.error('Error loading notebook:', err);
+      }
+       finally {
+        // setFileLoading(false);
+      }
+    } else if (file.type === 'handwritten') {
+      setViewerType('pdf'); // we'll use file.fileUrl to view this
+    } else {
+      console.warn('Unknown file type');
     }
-  } else if (file.type === 'handwritten') {
-    setViewerType('pdf'); // we'll use file.fileUrl to view this
-  } else {
-    console.warn('Unknown file type');
-  }
-};
+  };
 
+  // Handle closing file view
   const handleCloseFile = () => {
     setSelectedFile(null);
   };
-  
-  
+
   const handleCreateYear = async (title) => {
     try {
       const res = await axios.post('/years', { title, important: false });
@@ -163,638 +245,1430 @@ const [isSaving, setIsSaving] = useState(false);
       console.error('Error creating year:', err);
       alert('Failed to create year');
     }
-};
-const handleToggleImportantYear = async (yearId) => {
-  try {
-    const year = years.find(y => y._id === yearId);
-    if (!year) return;
+  };
 
-    const updated = await axios.patch(`/years/${yearId}`, {
-      important: !year.important,
-    });
+  const handleToggleImportantYear = async (yearId) => {
+    try {
+      const year = years.find(y => y._id === yearId);
+      if (!year) return;
 
-    setYears(prev =>
-      prev.map(y => y._id === yearId ? { ...y, important: updated.data.important } : y)
-    );
-  } catch (err) {
-    console.error("Failed to toggle year importance:", err);
-    alert("Failed to update year");
-  }
-}
-const renameYear = async (yearId, newTitle) => {
-  try {
-    console.log(yearId , newTitle);
-    
-    await axios.patch(`/years/rename/${yearId}`, { title: newTitle });
-    setYears(prev => prev.map(y => y._id === yearId ? { ...y, title: newTitle } : y));
-    setEditingYearId(null);
-  } catch (err) {
-    console.error("Rename year failed", err);
-  }
-};
-const handleDeleteItem = async (type, id) => {
-  if (!window.confirm("Are you sure you want to delete this item and all its contents?")) return;
+      const updated = await axios.patch(`/years/${yearId}`, {
+        important: !year.important,
+      });
 
-  try {
-    if (type === 'year') {
-      await axios.delete(`/years/${id}`);
-      setYears(prev => prev.filter(y => y._id !== id));
-
-      if (selectedYearId === id) {
-        setSelectedYearId(null);
-        setSubjects([]);
-        setSelectedSubjectId(null);
-        setChapters([]);
-        setSelectedChapterId(null);
-        setMaterials({ notebooks: [], handwrittenNotes: [] });
-      }
+      setYears(prev =>
+        prev.map(y => y._id === yearId ? { ...y, important: updated.data.important } : y)
+      );
+    } catch (err) {
+      console.error("Failed to toggle year importance:", err);
+      alert("Failed to update year");
     }
-
-    else if (type === 'subject') {
-      await axios.delete(`/years/subjects/${id}`);
-      setSubjects(prev => prev.filter(s => s._id !== id));
-
-      if (selectedSubjectId === id) {
-        setSelectedSubjectId(null);
-        setChapters([]);
-        setSelectedChapterId(null);
-        setMaterials({ notebooks: [], handwrittenNotes: [] });
-      }
-    }
-
-    else if (type === 'chapter') {
-      await axios.delete(`/years/subjects/chapters/${id}`);
-      setChapters(prev => prev.filter(c => c._id !== id));
-
-      if (selectedChapterId === id) {
-        setSelectedChapterId(null);
-        setMaterials({ notebooks: [], handwrittenNotes: [] });
-      }
-    }
-    
-  } catch (err) {
-    alert("Deletion failed.");
-    console.error(err);
   }
-};
-const handleDeleteFile = async (file, type) => {
-  if (!window.confirm("Are you sure you want to delete this file?")) return;
 
-  try {
-    if (type === 'notebook') {
-      await axios.delete(`/api/notebooks/${file._id}`);
-      setMaterials(prev => ({
-        ...prev,
-        notebooks: prev.notebooks.filter(n => n._id !== file._id)
-      }));
-
-      if (selectedFile?.type === 'notebook' && selectedFile.fileUrl === file.note_id) {
-        handleCloseFile(); // optional: clear preview if open
-      }
-
-    } else if (type === 'handwritten') {
-      await axios.delete(`/api/handwritten-notes/${file._id}`);
-      setMaterials(prev => ({
-        ...prev,
-        handwrittenNotes: prev.handwrittenNotes.filter(n => n._id !== file._id)
-      }));
-
-      if (selectedFile?.type === 'handwritten' && selectedFile.name === file.title) {
-        handleCloseFile();
-      }
-    }
-  } catch (err) {
-    console.error("Failed to delete file:", err);
-    alert("Could not delete the file.");
-  }
-};
-
-
-
-const handleCreateSubject = async (name) => {
-  if (!selectedYearId) {
-    alert('Please select a year first.');
-    return;
-  }
-  
-  try {
-    const res = await axios.post(`/years/${selectedYearId}/subjects`, {
-      name,
-      important: false,
-    });
-    
-    setSubjects(prev => [...prev, res.data]);
-  } catch (err) {
-    console.error('Error creating subject:', err);
-    alert('Failed to create subject');
-  }
-};
-const handleToggleImportantSubject = async (subjectId) => {
-  try {
-    const subject = subjects.find(s => s._id === subjectId);
-    if (!subject) return;
-
-    const updated = await axios.patch(`years/subjects/${subjectId}`, {
-      important: !subject.important,
-    });
-
-    setSubjects(prev =>
-      prev.map(s => s._id === subjectId ? { ...s, important: updated.data.important } : s)
-    );
-  } catch (err) {
-    console.error("Failed to toggle subject importance:", err);
-    alert("Failed to update subject");
-  }
-};
-const renameSubject = async (subjectId, newName) => {
-  try {
-    const subject = subjects.find(s => s._id === subjectId);
-    if (!subject) return;
-// console.log(subject);
-
-  await axios.patch(`/years/subjects/rename/${subjectId}`, { name: newName });
-    setSubjects(prev => 
-      prev.map(s => s._id === subjectId ? { ...s, name:newName } : s));
-    setEditingSubjectId(null);
-  } catch (err) {
-    console.error("Rename subject failed", err);
-  }
-}
-
-const handleCreateChapter = async (chapterTitle) => {
-  if (!selectedSubjectId) {
-    alert("Please select a subject first.");
-    return;
-  }
-  
-  try {
-    const res = await axios.post(
-      `/years/subjects/${selectedSubjectId}/chapters`,
-      { chapterTitle } // ✅ correct key
-    );
-    
-    // Update local state — assuming chapters come directly
-    setChapters(prev => [...prev, res.data]);
-  } catch (err) {
-    console.error("Error creating chapter:", err);
-    alert("Failed to create chapter");
-  }
-};
-const handleToggleImportantChapter = async (chapterId) => {
-  try {
-    const chapter = chapters.find(ch => ch._id === chapterId);
-    if (!chapter) return;
-    console.log(chapter);
-    
-    const updated = await axios.patch(`years/subjects/chapters/${chapterId}`, {
-      important: !chapter.important,
-    });
-
-    setChapters(prev =>
-      prev.map(ch => ch._id === chapterId ? { ...ch, important: updated.data.important } : ch)
-    );
-  } catch (err) {
-    console.error("Failed to toggle chapter importance:", err);
-    // alert("Failed to update chapter");
-  }
-};
-const renameChapter = async (chapterId, newTitle) => {
-  try {
-    await axios.patch(`years/subjects/chapters/rename/${chapterId}`, { title: newTitle });
-    setChapters(prev => prev.map(c => c._id === chapterId ? { ...c, title: newTitle } : c));
-    setEditingChapterId(null);
-  } catch (err) {
-    console.error("Rename chapter failed", err);
-  }
-};
-
-//  note book function 
-const createNotebook = async () => {
-  try {
-    setIsSaving(true);
-    
-    const payload = {
-      name: notebookName,
-      chapter: selectedChapterId, 
-      content: {
-        textBoxes: textBoxes
-      }
-    };
-    
-    const response = await axios.post('/api/notebooks/', payload);
-    console.log('Notebook created:', response.data);
-    setMaterials(prev => ({
-      ...prev,
-      notebooks: [...(prev.notebooks || []), response.data]
-    }));
-    
-    setNotebookName('');
-    setTextBoxes([]);
-    setShowNotebookForm(false);
-    
-  } catch (err) {
-    console.error('Failed to create notebook:', err);
-  } finally {
-    setIsSaving(false);
-  }
-};
-const viewNotebookById = async (noteId) => {
-try {
-    const res = await axios.get(`/api/notebooks/${noteId}`);
-    setSelectedNotebook(res.data);
-    console.log('viewing  notebook:', res.data);
-} catch (err) {
-    console.error('Failed to fetch notebook:', err);
-}
-};
-
-
-// Rename notebook
-const renameNotebook = async (noteId, newName) => {
-  await axios.patch(`/api/notebooks/${noteId}/rename`, { name: newName });
-};
-
-// Toggle important notebook
-const toggleImportantNotebook = async (noteId) => {
-  await axios.patch(`/api/notebooks/${noteId}/important`);
-};
-
-// Rename scanned note
-const renameScannedNote = async (noteId, newTitle) => {
-  await axios.patch(`/api/handwritten-notes/${noteId}/rename`, { title: newTitle });
-};
-
-// Toggle important scanned note
-const toggleImportantScannedNote = async (noteId) => {
-  await axios.patch(`/api/handwritten-notes/${noteId}/important`);
-};
-const handleRename = async (file, type) => {
-  const currentName = type === 'notebook' ? file.name : file.title;
-  const newName = prompt("Enter new name:", currentName);
-  if (!newName || newName === currentName) return;
-
-  try {
-    if (type === 'notebook') {
-      await renameNotebook(file._id, newName);
-      setMaterials(prev => ({
-        ...prev,
-        notebooks: prev.notebooks.map(n =>
-          n._id === file._id ? { ...n, name: newName } : n
-        )
-      }));
-    } else {
-      await renameScannedNote(file._id, newName);
-      setMaterials(prev => ({
-        ...prev,
-        handwrittenNotes: prev.handwrittenNotes.map(n =>
-          n._id === file._id ? { ...n, title: newName } : n
-        )
-      }));
-    }
-  } catch (err) {
-    console.error("Rename failed:", err);
-    alert("Failed to rename");
-  }
-};
-
-const handleToggleImportant = async (file, type) => {
-  try {
-    if (type === 'notebook') {
-      await toggleImportantNotebook(file._id);
-      setMaterials(prev => ({
-        ...prev,
-        notebooks: prev.notebooks.map(n =>
-          n._id === file._id ? { ...n, important: !n.important } : n
-        )
-      }));
-    } else {
-      await toggleImportantScannedNote(file._id);
-      setMaterials(prev => ({
-        ...prev,
-        handwrittenNotes: prev.handwrittenNotes.map(n =>
-          n._id === file._id ? { ...n, important: !n.important } : n
-        )
-      }));
-    }
-  } catch (err) {
-    console.error("Failed to toggle important:", err);
-    alert("Could not update importance");
-  }
-};
-
-
-
-
-
-
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>Academic Organizer</h2>
-
-      {/* Years */}
-      <div>
-        <h3>Years</h3>
-        {years.map(year => (<div>
-            <button
-            key={year._id}
-            onClick={() => handleYearClick(year._id)}
-            style={{
-                backgroundColor: selectedYearId === year._id ? '#add8e6' : '',
-            }}
-            >
-            {year.title}{year.important ? '⭐' : ''}
-            </button>
-         
-            <button onClick={() => handleToggleImportantYear(year._id)} style={{ marginLeft: 8 }}>
-              {year.important ? 'Unmark' : 'Mark Important'}
-            </button>
-
-              <button onClick={() => {
-                setEditingYearId(year._id);
-                setYearEditValue(year.title);
-              }}>✏️ Rename</button>
-                <button onClick={() => handleDeleteItem('year', year._id)}>🗑️</button>
+  const renameYear = async (yearId, newTitle) => {
+    try {
+      console.log(yearId, newTitle);
       
-      {/* year rename modal  */}
-      {editingYearId === year._id && (
-      <>
-        <input
-          value={yearEditValue}
-          onChange={(e) => setYearEditValue(e.target.value)}
-        />
-        <button onClick={() => renameYear(year._id, yearEditValue)}>Save</button>
-        <button onClick={() => setEditingYearId(null)}>Cancel</button>
-      </>
-    )}
-        </div>))}
-      </div>
+      await axios.patch(`/years/rename/${yearId}`, { title: newTitle });
+      setYears(prev => prev.map(y => y._id === yearId ? { ...y, title: newTitle } : y));
+      setEditingYearId(null);
+    } catch (err) {
+      console.error("Rename year failed", err);
+    }
+  };
 
-      {/* // this section need to be replaced with the existing create year  😂😂😂*/}
-      <div style={{ marginTop: 10 }}>
-        <input
-          type="text"
-          placeholder="New Year Title"
-          value={newYearTitle}
-          onChange={(e) => setNewYearTitle(e.target.value)}
-        />
-        <button onClick={() => {
-          if (newYearTitle.trim()) {
-            handleCreateYear(newYearTitle);
-            setNewYearTitle('');
-          }
-        }}>
-          ➕ Add Year
-        </button>
+  // Delete function for the folders only 
+  const handleDeleteItem = async (type, id) => {
+    // if (!window.confirm("Are you sure you want to delete this item and all its contents?")) return;
+setDeleteTarget(true);
+    try {
+      if (type === 'year') {
+        await axios.delete(`/years/${id}`);
+        setYears(prev => prev.filter(y => y._id !== id));
+
+        if (selectedYearId === id) {
+          setSelectedYearId(null);
+          setSubjects([]);
+          setSelectedSubjectId(null);
+          setChapters([]);
+          setSelectedChapterId(null);
+          setMaterials({ notebooks: [], handwrittenNotes: [] });
+        }
+      }
+      else if (type === 'subject') {
+        await axios.delete(`/years/subjects/${id}`);
+        setSubjects(prev => prev.filter(s => s._id !== id));
+
+        if (selectedSubjectId === id) {
+          setSelectedSubjectId(null);
+          setChapters([]);
+          setSelectedChapterId(null);
+          setMaterials({ notebooks: [], handwrittenNotes: [] });
+        }
+      }
+      else if (type === 'chapter') {
+        await axios.delete(`/years/subjects/chapters/${id}`);
+        setChapters(prev => prev.filter(c => c._id !== id));
+
+        if (selectedChapterId === id) {
+          setSelectedChapterId(null);
+          setMaterials({ notebooks: [], handwrittenNotes: [] });
+        }
+      }
       
-      </div>
+    } catch (err) {
+      alert("Deletion failed.");
+      console.error(err);
+    }
+  }
 
-            {/* Subjects */}
-      {subjects.length > 0 && (
-        <div>
-          <h3>Subjects</h3>
-            {subjects.map(sub => (<>
-            <button key={sub._id} onClick={() => handleSubjectClick(sub._id)}>
-                {sub.name}  {sub.important ? '⭐' : ''}
-            </button>
-            <button onClick={() => handleToggleImportantSubject(sub._id)} style={{ marginLeft: 8 }}>
-              {sub.important ? 'Unmark' : 'Mark Important'}
-            </button>
-            <button onClick={() => {
-              setEditingSubjectId(sub._id);
-              setSubjectEditValue(sub.name);
-            }}>✏️ Rename</button>
-            <button onClick={() => handleDeleteItem('subject', sub._id)}>🗑️</button>
+  // For the notebook and written notes 
+  const handleDeleteFile = async (file, type) => {
+    // if (!window.confirm("Are you sure you want to delete this file?")) return;
+
+    try {
+      if (type === 'notebook') {
+        await axios.delete(`/api/notebooks/${file._id}`);
+        setMaterials(prev => ({
+          ...prev,
+          notebooks: prev.notebooks.filter(n => n._id !== file._id)
+        }));
+
+        if (selectedFile?.type === 'notebook' && selectedFile.fileUrl === file.note_id) {
+          handleCloseFile(); // optional: clear preview if open
+        }
+      } else if (type === 'handwritten') {
+        await axios.delete(`/api/handwritten-notes/${file._id}`);
+        setMaterials(prev => ({
+          ...prev,
+          handwrittenNotes: prev.handwrittenNotes.filter(n => n._id !== file._id)
+        }));
+
+        if (selectedFile?.type === 'handwritten' && selectedFile.name === file.title) {
+          handleCloseFile();
+        }
+      }
+    } catch (err) {
+      console.error("Failed to delete file:", err);
+      alert("Could not delete the file.");
+    }
+  };
+
+  const handleCreateSubject = async (name) => {
+    if (!selectedYearId) {
+      alert('Please select a year first.');
+      return;
+    }
+    
+    try {
+      const res = await axios.post(`/years/${selectedYearId}/subjects`, {
+        name,
+        important: false,
+      });
+      
+      setSubjects(prev => [...prev, res.data]);
+    } catch (err) {
+      console.error('Error creating subject:', err);
+      alert('Failed to create subject');
+    }
+  };
+
+  const handleToggleImportantSubject = async (subjectId) => {
+    try {
+      const subject = subjects.find(s => s._id === subjectId);
+      if (!subject) return;
+
+      const updated = await axios.patch(`years/subjects/${subjectId}`, {
+        important: !subject.important,
+      });
+
+      setSubjects(prev =>
+        prev.map(s => s._id === subjectId ? { ...s, important: updated.data.important } : s)
+      );
+    } catch (err) {
+      console.error("Failed to toggle subject importance:", err);
+      alert("Failed to update subject");
+    }
+  };
+
+  const renameSubject = async (subjectId, newName) => {
+    try {
+      const subject = subjects.find(s => s._id === subjectId);
+      if (!subject) return;
+
+      await axios.patch(`/years/subjects/rename/${subjectId}`, { name: newName });
+      setSubjects(prev => 
+        prev.map(s => s._id === subjectId ? { ...s, name: newName } : s));
+      setEditingSubjectId(null);
+    } catch (err) {
+      console.error("Rename subject failed", err);
+    }
+  }
+
+  const handleCreateChapter = async (chapterTitle) => {
+    if (!selectedSubjectId) {
+      alert("Please select a subject first.");
+      return;
+    }
+    
+    try {
+      const res = await axios.post(
+        `/years/subjects/${selectedSubjectId}/chapters`,
+        { chapterTitle } // ✅ correct key
+      );
+      
+      // Update local state — assuming chapters come directly
+      setChapters(prev => [...prev, res.data]);
+    } catch (err) {
+      console.error("Error creating chapter:", err);
+      alert("Failed to create chapter");
+    }
+  };
+
+  const handleToggleImportantChapter = async (chapterId) => {
+    try {
+      const chapter = chapters.find(ch => ch._id === chapterId);
+      if (!chapter) return;
+      console.log(chapter);
+      
+      const updated = await axios.patch(`years/subjects/chapters/${chapterId}`, {
+        important: !chapter.important,
+      });
+
+      setChapters(prev =>
+        prev.map(ch => ch._id === chapterId ? { ...ch, important: updated.data.important } : ch)
+      );
+    } catch (err) {
+      console.error("Failed to toggle chapter importance:", err);
+    }
+  };
+
+  const renameChapter = async (chapterId, newTitle) => {
+    try {
+      await axios.patch(`years/subjects/chapters/rename/${chapterId}`, { title: newTitle });
+      setChapters(prev => prev.map(c => c._id === chapterId ? { ...c, title: newTitle } : c));
+      setEditingChapterId(null);
+    } catch (err) {
+      console.error("Rename chapter failed", err);
+    }
+  };
+
+  const createNotebook = async () => {
+    try {
+      setIsSaving(true);
+      
+      const payload = {
+        name: notebookName,
+        chapter: selectedChapterId, 
+        content: {
+          textBoxes: textBoxes
+        }
+      };
+      
+      const response = await axios.post('/api/notebooks/', payload);
+      console.log('Notebook created:', response.data);
+      setMaterials(prev => ({
+        ...prev,
+        notebooks: [...(prev.notebooks || []), response.data]
+      }));
+      
+      setNotebookName('');
+      setTextBoxes([]);
+      setShowNotebookForm(false);
+      
+    } catch (err) {
+      console.error('Failed to create notebook:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const viewNotebookById = async (noteId) => {
+    try {
+      const res = await axios.get(`/api/notebooks/${noteId}`);
+      setSelectedNotebook(res.data);
+      console.log('viewing notebook:', res.data);
+    } catch (err) {
+      console.error('Failed to fetch notebook:', err);
+    }
+  };
+
+  // Rename notebook
+  const renameNotebook = async (noteId, newName) => {
+    await axios.patch(`/api/notebooks/${noteId}/rename`, { name: newName });
+  };
+
+  // Toggle important notebook
+  const toggleImportantNotebook = async (noteId) => {
+    await axios.patch(`/api/notebooks/${noteId}/important`);
+  };
+
+  // Rename scanned note
+  const renameScannedNote = async (noteId, newTitle) => {
+    await axios.patch(`/api/handwritten-notes/${noteId}/rename`, { title: newTitle });
+  };
+
+  // Toggle important scanned note
+  const toggleImportantScannedNote = async (noteId) => {
+    await axios.patch(`/api/handwritten-notes/${noteId}/important`);
+  };
+
+  const handleRename = async (file, type) => {
+    const currentName = type === 'notebook' ? file.name : file.title;
+    const newName = prompt("Enter new name:", currentName);
+    if (!newName || newName === currentName) return;
+
+    try {
+      if (type === 'notebook') {
+        await renameNotebook(file._id, newName);
+        setMaterials(prev => ({
+          ...prev,
+          notebooks: prev.notebooks.map(n =>
+            n._id === file._id ? { ...n, name: newName } : n
+          )
+        }));
+      } else {
+        await renameScannedNote(file._id, newName);
+        setMaterials(prev => ({
+          ...prev,
+          handwrittenNotes: prev.handwrittenNotes.map(n =>
+            n._id === file._id ? { ...n, title: newName } : n
+          )
+        }));
+      }
+    } catch (err) {
+      console.error("Rename failed:", err);
+      alert("Failed to rename");
+    }
+  };
+
+  // This toggle works for only the notebook and handwrittenNotes
+  const handleToggleImportant = async (file, type) => {
+    try {
+      if (type === 'notebook') {
+        await toggleImportantNotebook(file._id);
+        setMaterials(prev => ({
+          ...prev,
+          notebooks: prev.notebooks.map(n =>
+            n._id === file._id ? { ...n, important: !n.important } : n
+          )
+        }));
+
+      } else {
+        await toggleImportantScannedNote(file._id);
+        setMaterials(prev => ({
+          ...prev,
+          handwrittenNotes: prev.handwrittenNotes.map(n =>
+            n._id === file._id ? { ...n, important: !n.important } : n
+          )
+        }));
+      }
+      setAllFiles(prev =>
+        prev.map(f =>
+          f._id === file._id
+            ? { ...f, important: !f.important }
+            : f
+        )
+      );
+
+    //   setMaterials(prev => ({
+    //     ...prev,
+    //     notebooks: prev.notebooks.map(nb =>
+    //       nb._id === file._id ? { ...nb, important: !nb.important } : nb
+    //     ),
+    //     handwrittenNotes: prev.handwrittenNotes.map(h =>
+    //       h._id === file._id ? { ...h, important: !h.important } : h
+    //     )
+    // }));
+
+    } catch (err) {
+      console.error("Failed to toggle important:", err);
+      alert("Could not update importance");
+    }
+  };
+
+  // Handle context menu
+  const handleContextMenu = (e, type, item) => {
+    e.preventDefault();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      type,
+      item
+    });
+  };
+
+  // Close context menu
+  const handleCloseContextMenu = () => {
+    setContextMenu(null);
+  };
+
+  // Get full path for breadcrumb
+  const getFullPath = () => {
+    const path = [];
+    if (selectedYear) path.push(selectedYear);
+    if (selectedSubject) path.push(selectedSubject);
+    if (selectedChapter) path.push(selectedChapter);
+    if (selectedFile) path.push(selectedFile.name);
+    return path.join(' / ');
+  };
+
+  // Get all important files from materials
+  // const getAllImportantFiles = () => {
+  //   const importantNotebooks = materials.notebooks?.filter(n => n.important) || [];
+  //   const importantHandwritten = materials.handwrittenNotes?.filter(n => n.important) || [];
+  //   return [...importantNotebooks, ...importantHandwritten];
+  // };
+const getAllImportantFiles = () => {
+  const importantNotebooks = (materials.notebooks || [])
+    .filter(n => n.important)
+    .map(n => ({ ...n, type: 'notebook', name: n.name }));
+  const importantHandwritten = (materials.handwrittenNotes || [])
+    .filter(h => h.important)
+    .map(h => ({ ...h, type: 'handwritten', name: h.title }));
+  return [...importantNotebooks, ...importantHandwritten];
+};
+
+
+  const fetchAllFiles = async () => {
+  setFilesLoading(true);
+  try {
+    const allFilesData = [];
+    
+    // Get all years
+    const yearsRes = await axios.get('/years');
+    const years = yearsRes.data;
+    
+    // Loop through each year
+    for (const year of years) {
+      // Get subjects for this year
+      const subjectsRes = await axios.get(`/years/${year._id}/subjects`);
+      const subjects = subjectsRes.data;
+      
+      // Loop through each subject
+      for (const subject of subjects) {
+        // Get chapters for this subject
+        const chaptersRes = await axios.get(`/years/subjects/${subject._id}/chapters`);
+        const chapters = chaptersRes.data;
+        
+        // Loop through each chapter
+        for (const chapter of chapters) {
+          try {
+            // Get materials for this chapter
+            const materialsRes = await axios.get(`/years/${chapter._id}/materials`);
+            const materials = materialsRes.data;
             
-    {editingSubjectId === sub._id && (
-      <>
-        <input
-          value={subjectEditValue}
-          onChange={(e) => setSubjectEditValue(e.target.value)}
-        />
-        <button onClick={() => renameSubject(sub._id, subjectEditValue)}>Save</button>
-        <button onClick={() => setEditingSubjectId(null)}>Cancel</button>
-      </>
-    )}
-            <hr />
-            </>))}
+            // Process notebooks
+            if (materials.notebooks) {
+              materials.notebooks.forEach(notebook => {
+                allFilesData.push({
+                  ...notebook,
+                  type: 'notebook',
+                  yearId: year._id,
+                  yearTitle: year.title,
+                  subjectId: subject._id,
+                  subjectName: subject.name,
+                  chapterId: chapter._id,
+                  chapterTitle: chapter.title,
+                  fullPath: `${year.title} / ${subject.name} / ${chapter.title}`,
+                  searchableText: notebook.name.toLowerCase() // for easier searching
+                });
+              });
+            }
+            
+            // Process handwritten notes
+            if (materials.handwrittenNotes) {
+              materials.handwrittenNotes.forEach(note => {
+                allFilesData.push({
+                  ...note,
+                  type: 'handwritten',
+                  yearId: year._id,
+                  yearTitle: year.title,
+                  subjectId: subject._id,
+                  subjectName: subject.name,
+                  chapterId: chapter._id,
+                  chapterTitle: chapter.title,
+                  fullPath: `${year.title} / ${subject.name} / ${chapter.title}`,
+                  searchableText: note.title.toLowerCase() // for easier searching
+                });
+              });
+            }
+          } catch (chapterErr) {
+            console.warn(`Failed to fetch materials for chapter ${chapter.title}:`, chapterErr);
+            // Continue with other chapters even if one fails
+          }
+        }
+      }
+    }
+    
+    console.log(`Loaded ${allFilesData.length} files for search`);
+    setAllFiles(allFilesData);
+    
+  } catch (err) {
+    console.error('Error fetching all files:', err);
+  } finally {
+    setFilesLoading(false);
+  }
+};
+
+const [yearsLoading, setYearsLoading] = useState(true);
+useEffect(() => {
+  const fetchYears = async () => {
+    try {
+      setYearsLoading(true);
+      const res = await axios.get('/years');
+      setYears(res.data);
+      
+      // After years are loaded, fetch all files for search
+      fetchAllFiles();
+      
+    } catch (err) {
+      console.error('Error fetching years:', err);
+    }finally {
+      setYearsLoading(false);
+    }
+  };
+  fetchYears();
+}, []);
+const updateAllFilesCache = (chapterId, updatedMaterials, yearTitle, subjectName, chapterTitle, yearId, subjectId) => {
+  setAllFiles(prevFiles => {
+    prevFiles.map(f =>
+      f._id === f._id ? { ...f, important: !f.important } : f
+    )
+    // Remove old files from this chapter
+    const filteredFiles = prevFiles.filter(file => file.chapterId !== chapterId);
+    
+    // Add updated files
+    const newFiles = [];
+    
+    // Add notebooks
+    if (updatedMaterials.notebooks) {
+      updatedMaterials.notebooks.forEach(notebook => {
+        newFiles.push({
+          ...notebook,
+          type: 'notebook',
+          yearId,
+          yearTitle,
+          subjectId,
+          subjectName,
+          chapterId,
+          chapterTitle,
+          fullPath: `${yearTitle} / ${subjectName} / ${chapterTitle}`,
+          searchableText: notebook.name.toLowerCase()
+        });
+      });
+    }
+    
+    // Add handwritten notes
+    if (updatedMaterials.handwrittenNotes) {
+      updatedMaterials.handwrittenNotes.forEach(note => {
+        newFiles.push({
+          ...note,
+          type: 'handwritten',
+          yearId,
+          yearTitle,
+          subjectId,
+          subjectName,
+          chapterId,
+          chapterTitle,
+          fullPath: `${yearTitle} / ${subjectName} / ${chapterTitle}`,
+          searchableText: note.title.toLowerCase()
+        });
+      });
+    }
+    
+    return [...filteredFiles, ...newFiles];
+  });
+};
+
+// Update the existing materials fetch effect to also update the cache
+useEffect(() => {
+  if (selectedChapterId) {
+    // setLoading(true);
+    setFileLoading(true) ; 
+    // setFileLoading(false)
+    setError(null);
+    axios.get(`/years/${selectedChapterId}/materials`)
+      .then(res => {
+        setMaterials(res.data);
+        
+        // Update the all files cache
+        const yearTitle = years.find(y => y._id === selectedYearId)?.title || '';
+        const subjectName = subjects.find(s => s._id === selectedSubjectId)?.name || '';
+        const chapterTitle = chapters.find(c => c._id === selectedChapterId)?.title || '';
+        
+        updateAllFilesCache(
+          selectedChapterId, 
+          res.data, 
+          yearTitle, 
+          subjectName, 
+          chapterTitle,
+          selectedYearId,
+          selectedSubjectId
+        );
+      })
+      .catch(err => {
+        console.error('Error fetching materials:', err);
+        setError("Failed to load materials");
+      })
+      .finally(() => {
+        // setLoading(false) ;  
+         setFileLoading(false)
+        });
+  }
+}, [selectedChapterId, selectedYearId, selectedSubjectId, years, subjects, chapters]);
+
+// Updated search function that uses allFiles
+const searchAllFiles = (searchTerm) => {
+  if (!searchTerm.trim()) return [];
+  
+  const term = searchTerm.toLowerCase();
+  return allFiles.filter(file => 
+    file.searchableText.includes(term) || 
+    file.fullPath.toLowerCase().includes(term)
+  );
+};
+  // Get all files for search
+  const getAllFiles = () => {
+    const notebooks = materials.notebooks?.map(n => ({ ...n, type: 'notebook' })) || [];
+    const handwritten = materials.handwrittenNotes?.map(n => ({ ...n, type: 'handwritten' })) || [];
+    return [...notebooks, ...handwritten];
+  };
+
+  // Filter files based on search
+  const filteredFiles = () => {
+    const allFiles = getAllFiles();
+    // if (!searchTerm) return allFiles;
+    // return allFiles.filter(file => {
+    //   const fileName = file.type === 'notebook' ? file.name : file.title;
+    //   return fileName.toLowerCase().includes(searchTerm.toLowerCase());
+    // });
+    if (!searchTerm) {
+      const notebooks = materials.notebooks?.map(n => ({ ...n, type: 'notebook' })) || [];
+      const handwritten = materials.handwrittenNotes?.map(n => ({ ...n, type: 'handwritten' })) || [];
+      return [...notebooks, ...handwritten];
+    }
+  return searchAllFiles(searchTerm);
+  };
+  const loadChapterAndOpenFile = async (file) => {
+  try {
+    // If we're not in the right chapter context, navigate there first
+    if (selectedChapterId !== file.chapterId) {
+      // Set the hierarchy
+      setSelectedYearId(file.yearId);
+      setSelectedYear(file.yearTitle);
+      setSelectedSubjectId(file.subjectId);
+      setSelectedSubject(file.subjectName);
+      setSelectedChapterId(file.chapterId);
+      setSelectedChapter(file.chapterTitle);
+      
+      // Wait a bit for the materials to load, then open the file
+      setTimeout(() => {
+        handleFileClick(file);
+      }, 300);
+    } else {
+      // Already in the right context, just open the file
+      handleFileClick(file);
+    }
+  } catch (err) {
+    console.error('Failed to navigate to file:', err);
+  }
+};
+
+// Functions to update cache when files are created/deleted/renamed
+const addFileToCache = (newFile, type) => {
+  const yearTitle = years.find(y => y._id === selectedYearId)?.title || '';
+  const subjectName = subjects.find(s => s._id === selectedSubjectId)?.name || '';
+  const chapterTitle = chapters.find(c => c._id === selectedChapterId)?.title || '';
+  
+  const fileWithContext = {
+    ...newFile,
+    type,
+    yearId: selectedYearId,
+    yearTitle,
+    subjectId: selectedSubjectId,
+    subjectName,
+    chapterId: selectedChapterId,
+    chapterTitle,
+    fullPath: `${yearTitle} / ${subjectName} / ${chapterTitle}`,
+    searchableText: (type === 'notebook' ? newFile.name : newFile.title).toLowerCase()
+  };
+  
+  setAllFiles(prev => [...prev, fileWithContext]);
+};
+
+const removeFileFromCache = (fileId) => {
+  setAllFiles(prev => prev.filter(file => file._id !== fileId));
+};
+
+const updateFileInCache = (fileId, updates) => {
+  setAllFiles(prev => prev.map(file => {
+    if (file._id === fileId) {
+      const updatedFile = { ...file, ...updates };
+      // Update searchable text if name/title changed
+      if (updates.name || updates.title) {
+        updatedFile.searchableText = (updates.name || updates.title).toLowerCase();
+      }
+      return updatedFile;
+    }
+    return file;
+  }));
+};
+
+
+
+
+
+  // Upload purpose
+  const handleUploadFile = (file, type) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const fileObj = { type, name: file.name, dataUrl: reader.result };
+      // Handle upload logic here
+      setShowNewModal(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle saving notebook
+  const handleSaveNotebook = async (notebookData) => {
+    try {
+      // Save notebook logic hereb
+      console.log('Saving notebook:', notebookData);
+    } catch (err) {
+      console.error('Failed to save notebook:', err);
+    }
+  };
+
+    const tabsRef = useRef(null);
+  const sliderRef = useRef(null);
+  const [sliderStyle, setSliderStyle] = useState({});
+
+  const tabs = [
+    { id: 'notes', label: 'Notes' },
+    { id: 'recent', label: 'Recent' },
+    { id: 'important', label: 'Important' }
+  ];
+
+  // Update slider position when active tab changes
+  useEffect(() => {
+    if (tabsRef.current && sliderRef.current) {
+      const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+      const activeTabElement = tabsRef.current.children[activeTabIndex + 1]; // +1 because slider is first child
+      
+      if (activeTabElement) {
+        const { offsetLeft, offsetWidth } = activeTabElement;
+        setSliderStyle({
+          transform: `translateX(${offsetLeft}px)`,
+          width: `${offsetWidth}px`
+        });
+      }
+    }
+  }, [activeTab]);
+
+  // Initialize slider position on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (tabsRef.current) {
+        const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+        const activeTabElement = tabsRef.current.children[activeTabIndex + 1];
+        
+        if (activeTabElement) {
+          const { offsetLeft, offsetWidth } = activeTabElement;
+          setSliderStyle({
+            transform: `translateX(${offsetLeft}px)`,
+            width: `${offsetWidth}px`
+          });
+        }
+      }
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+  };
+  return (
+    <div className={`ao-container ${sidebarOpen ? '' : 'collapsed'}`} onClick={handleCloseContextMenu}>
+      {/* Top Navigation */}
+      <div className="top-nav">
+        <div className="nav-left">
+          <button className="nav-icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+            <FaBars />
+          </button>
+          <div className="app-name">Academic Organizer</div>
         </div>
-      )}
-         {/* this is also the create new subject  */}
-        {selectedYearId && (
-          <div style={{ marginTop: 10 }}>
-            <input
-              type="text"
-              placeholder="New Subject Name"
-              value={newSubjectName}
-              onChange={(e) => setNewSubjectName(e.target.value)}
-            />
-            <button onClick={() => {
-              if (newSubjectName.trim()) {
-                handleCreateSubject(newSubjectName);
-                setNewSubjectName('');
+        
+ <div className="tabs-sliding" ref={tabsRef}>
+        {/* Animated Background Slider */}
+        <div 
+          className="tab-slider" 
+          ref={sliderRef}
+          style={sliderStyle}
+        />
+        
+        {tabs.map(({ id, label }) => (
+          <button
+            key={id}
+            className={`tab-sliding ${activeTab === id ? 'active' : ''}`}
+            onClick={() => handleTabClick(id)}
+            onMouseDown={(e) => {
+              if (e.currentTarget) {
+                e.currentTarget.style.transform = 'translate3d(0, 1px, 0) scale(0.98)';
               }
-            }}>
-              ➕ Add Subject
+            }}
+            onMouseUp={(e) => {
+              setTimeout(() => {
+                if (e.currentTarget) {
+                  e.currentTarget.style.transform = 'translate3d(0, 0, 0) scale(1)';
+                }
+              }, 100);
+            }}
+            onMouseLeave={(e) => {
+              if (e.currentTarget) {
+                e.currentTarget.style.transform = 'translate3d(0, 0, 0) scale(1)';
+              }
+            }}
+
+          >
+            <span className="tab-text">{label}</span>
+          </button>
+        ))}
+      </div>
+        
+        <div className="global-search-container">
+          <div className="search-input-container">
+            <FaSearch className="search-icon" />
+            <input
+              className="global-search-bar"
+              placeholder="Search all files..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              onFocus={() => setShowSearchResults(true)}
+              onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
+            />
+          </div>
+
+          {/* Search Results Popup */}
+          {showSearchResults && searchTerm.trim() !== '' && (
+            <div className="global-search-results">
+              {filteredFiles().map((file, index) => (
+                <div
+                  key={`${file._id}-${index}`}
+                  className="search-result-item"
+                  onClick={() => {
+                    handleFileClick(file);
+                    setSearchTerm('');
+                    setShowSearchResults(false);
+                  }}
+                >
+                  <div className="search-result-icon">
+                    {file.type === 'notebook' && <FaStickyNote />}
+                    {file.type === 'handwritten' && <FaFilePdf />}
+                  </div>
+                  <div className="search-result-name">
+                    {file.type === 'notebook' ? file.name : file.title}
+                  </div>
+                  <div className="search-result-path">
+                    {`${selectedYear || ''} / ${selectedSubject || ''} / ${selectedChapter || ''}`}
+                  </div>
+                </div>
+              ))}
+
+              {filteredFiles().length === 0 && (
+                <div className="no-results">No matching files found.</div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <div className={`ao-sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-content">
+        {yearsLoading ? (
+          <SmartLoader context="card" text="" />
+           ) : (
+          years.map(year => (
+            <div key={year._id} className="ao-section">
+              <button
+                className={`ao-button ${selectedYearId === year._id ? 'active' : ''}`}
+                onClick={() => handleYearClick(year._id)}
+                onContextMenu={(e) => handleContextMenu(e, 'year', year)}
+              >
+                {selectedYearId === year._id ? (
+                  <FaFolderOpen className="ao-icon" />
+                ) : (
+                  <FaFolder className="ao-icon" />
+                )}
+                {year.title}
+                {year.important && <FaStar className="important-star" />}
+              </button>
+              
+              {selectedYearId === year._id && (
+                <div className="ao-subsection">
+                  {subjectsLoading ? (
+                    <div style={{ padding: '10px', marginLeft: '20px' }}>
+                      <InlineLoader type="dots" text="" />
+                    </div>
+                  ) : (subjects.map(subject => (
+                                  <div key={subject._id} className="ao-subitem">
+                      <button
+                        className={`ao-button ao-subbutton ${selectedSubjectId === subject._id ? 'active' : ''}`}
+                        onClick={() => handleSubjectClick(subject._id)}
+                        onContextMenu={(e) => handleContextMenu(e, 'subject', subject)}
+                      >
+                        {selectedSubjectId === subject._id ? (
+                          <FaFolderOpen className="ao-icon" />
+                        ) : (
+                          <FaFolder className="ao-icon" />
+                        )}
+                        {subject.name}
+                        {subject.important && <FaStar className="important-star" />}
+                      </button>
+                      
+                      {selectedSubjectId === subject._id && (
+                        <div className="ao-subsection">
+                          {chaptersLoading ? (
+                            <div style={{ padding: '8px', marginLeft: '40px' }}>
+                              <InlineLoader type="bars" text="Loading chapters..." />
+                            </div>
+                          ) : (
+                            chapters.map(chapter => (
+                            <div key={chapter._id} className="ao-subitem">
+                              <button
+                                className={`ao-button ao-subbutton ${selectedChapterId === chapter._id ? 'active' : ''}`}
+                                onClick={() => handleChapterClick(chapter._id)}
+                                onContextMenu={(e) => handleContextMenu(e, 'chapter', chapter)}
+                              >
+                                {selectedChapterId === chapter._id ? (
+                                  <FaFolderOpen className="ao-icon" />
+                                ) : (
+                                  <FaFolder className="ao-icon" />
+                                )}
+                                {chapter.title}
+                                {chapter.important && <FaStar className="important-star" />}
+                              </button>
+                            </div>
+                          )))
+                          }
+                          
+                          {/* Create Chapter Button */}
+                          <div className="ao-create-section">
+                            {creatingType === `chapter:${selectedSubjectId}` ? (
+                              <div className="ao-create-input">
+                                <input
+                                  value={newItemName}
+                                  onChange={e => setNewItemName(e.target.value)}
+                                  onKeyDown={async e => {
+                                    if (e.key === 'Enter' && newItemName.trim()) {
+                                      await handleCreateChapter(newItemName.trim());
+                                      setNewItemName('');
+                                      setCreatingType(null);
+                                    }
+                                    if (e.key === 'Escape') setCreatingType(null);
+                                  }}
+                                  placeholder="Enter chapter title"
+                                  autoFocus
+                                />
+                              </div>
+                            ) : (
+                              <button
+                                className="ao-create-button"
+                                onClick={() => {
+                                  setCreatingType(`chapter:${selectedSubjectId}`);
+                                  setNewItemName('');
+                                }}
+                              >
+                                <FaPlus /> New Chapter
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )))}
+                  
+                  {/* Create Subject Button */}
+                  <div className="ao-create-section">
+                    {creatingType === `subject:${selectedYearId}` ? (
+                      <div className="ao-create-input">
+                        <input
+                          value={newItemName}
+                          onChange={e => setNewItemName(e.target.value)}
+                          onKeyDown={async e => {
+                            if (e.key === 'Enter' && newItemName.trim()) {
+                              await handleCreateSubject(newItemName.trim());
+                              setNewItemName('');
+                              setCreatingType(null);
+                            }
+                            if (e.key === 'Escape') setCreatingType(null);
+                          }}
+                          placeholder="Enter subject name"
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <button
+                        className="ao-create-button ao-subbutton"
+                        onClick={() => {
+                          setCreatingType(`subject:${selectedYearId}`);
+                          setNewItemName('');
+                        }}
+                      >
+                        <FaPlus /> New Subject
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+         )
+         )}
+          
+          {/* Create Year Button */}
+          <div className="ao-create-section">
+            {creatingType === 'year' ? (
+              <div className="ao-create-input">
+                <input
+                  value={newItemName}
+                  onChange={e => setNewItemName(e.target.value)}
+                  onKeyDown={async e => {
+                    if (e.key === 'Enter' && newItemName.trim()) {
+                      await handleCreateYear(newItemName.trim());
+                      setNewItemName('');
+                      setCreatingType(null);
+                    }
+                    if (e.key === 'Escape') {
+                      setCreatingType(null);
+                    }
+                  }}
+                  placeholder="Enter year name"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <button
+                className="ao-create-button"
+                onClick={() => {
+                  setCreatingType('year');
+                  setNewItemName('');
+                }}
+              >
+                <FaPlus /> Create New Year
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="ao-main">
+        <div className="main-header">
+          <div className="breadcrumb">
+            {getFullPath() || 'Select a folder to begin'}
+          </div>
+          
+          <div className="actions">
+            <button className="action-btn" onClick={() => setShowNewModal(true)}>
+              <FaPlus /> New
             </button>
+            {showNewModal && (
+              <NewModal
+                onClose={() => setShowNewModal(false)}
+                onUploadFile={handleUploadFile}
+                onCreateNotebook={() => {
+                  setShowNotebookForm(true);
+                  setShowNewModal(false);
+                }}
+                selectedChapterId = {selectedChapterId}
+              />
+            )}
+          </div>
+        </div>
+        
+        {activeTab === 'recent' && (
+          <div className="recent-files">
+            <h3>Recently Accessed Files</h3>
+            <div className="recent-grid">
+              {recentFiles.map((file, index) => (
+                <div 
+                  key={index} 
+                  className="recent-card"
+                  onClick={() => handleFileClick(file)}
+                >
+                  <div className="file-icon">
+                    {file.type === 'notebook' && <FaStickyNote />}
+                    {file.type === 'handwritten' && <FaFilePdf />}
+                    {file.type === 'pdf' && <FaFilePdf />}
+                    {file.type === 'image' && <FaImage />}
+                  </div>
+                  <div className="file-info">
+                    <div className="file-name">
+                      {file.type === 'notebook' ? file.name : file.title || file.name}
+                    </div>
+                    <div className="file-date">Today</div>
+                  </div>
+                </div>
+              ))}
+              {recentFiles.length === 0 && (
+                <div className="empty-state">
+                  No recently accessed files
+                </div>
+              )}
+            </div>
           </div>
         )}
-
-
-      {/* Chapters */}
-      {chapters.length > 0 && (
-        <div>
-          <h3>Chapters</h3>
-            {chapters.map((chapter) => (
-            <div key={chapter._id}>
-                <button onClick={() => handleChapterClick(chapter._id)}>
-                {chapter.title} {chapter.important ? '⭐' : ''}
+        
+  {activeTab === 'important' && (
+    <div className="important-files">
+      <h3>Important Files</h3>
+      <div className="ao-files-grid">
+        {allFiles
+          .filter(f => f.important)
+          .map(file => (
+            <div
+              key={file._id}
+              className="ao-file-card"
+              onClick={() => handleFileClick(file)}
+            >
+              <div className="file-icon-container">
+                <div className="file-icon">
+                  {file.type === 'notebook'     ? <FaStickyNote />
+                  : file.type === 'handwritten' ? <FaFilePdf />
+                  : null}
+                </div>
+                <button
+                  className="file-action-btn active"
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleToggleImportant(file);
+                  }}
+                >
+                  <FaStar />
                 </button>
-            <button 
-            onClick={() => handleToggleImportantChapter(chapter._id)}
-            style={{ marginLeft: 10 }}
-          >
-            {chapter.important ? 'Unmark Important' : 'Mark Important'}
-          </button>
-          <button onClick={() => {
-          setEditingChapterId(chapter._id);
-          setChapterEditValue(chapter.title);
-        }}>✏️ Rename</button>
-        <button onClick={() => handleDeleteItem('chapter', chapter._id)}>🗑️</button>
-
-    {editingChapterId === chapter._id  && (
-      <>
-        <input
-          value={chapterEditValue}
-          onChange={(e) => setChapterEditValue(e.target.value)}
-        />
-        <button onClick={() => renameChapter(chapter._id, chapterEditValue)}>Save</button>
-        <button onClick={() => setEditingChapterId(null)}>Cancel</button>
-      </>
-    )}
+              </div>
+              <div className="ao-file-name">{file.name}</div>
             </div>
-            ))}
+          ))
+        }
 
-        </div>
-      )}
+        {allFiles.filter(f => f.important).length === 0 && (
+          <div className="empty-state">
+            No important files marked yet
+          </div>
+        )}
+      </div>
+    </div>
+  )}
 
 
-       {selectedSubjectId && (
-        <div style={{ marginTop: 10 }}>
-          <input
-            type="text"
-            placeholder="New Chapter Title"
-            value={newChapterTitle}
-            onChange={(e) => setNewChapterTitle(e.target.value)}
-          />
-          <button onClick={() => {
-            if (newChapterTitle.trim()) {
-              handleCreateChapter(newChapterTitle);
-              setNewChapterTitle('');
-            }
-          }}>
-            ➕ Add Chapter
+        {activeTab === 'notes' && selectedFile ? (
+          <div className="file-content-container">
+            <div className="file-header">
+              {/* <h3>{selectedFile.type === 'notebook' ? selectedFile.name : selectedFile.title}</h3> */}
+              <button className="close-btn" onClick={handleCloseFile}>
+                <FaTimes />
+              </button>
+            </div>
+            <div className="file-content">
+              {selectedFile.type === 'handwritten' ? (
+                <div className="pdf-preview">
+                  <FaFilePdf className="preview-icon" />
+                  <p>PDF content would be displayed here</p>
+                  {selectedFile.fileUrl && (
+                    <iframe 
+                      src={selectedFile.fileUrl} 
+                      width="100%" 
+                      height="600px"
+                      title="PDF Viewer"
+                    />
+                  )}
+                </div>
+              ) : selectedFile.type === 'image' ? (
+                <div className="image-preview">
+                  <div className="placeholder-image" />
+                </div>
+              ) : selectedFile.type === 'notebook' ? (
+                <div className="notebook-preview">
+                  <Notebook 
+                    notebookId={selectedFile.note_id} 
+                    notebookName={selectedFile.name}
+                    onSave={handleSaveNotebook}
+                  />
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ) : activeTab === 'notes' && (
+          <div className="content-area">
+            <div className="files-section">
+              <div className="section-header">
+                {/* <h3>{selectedChapter || 'Files'}</h3> */}
+                <span className='total-files'>{getAllFiles().length} items</span>
+              </div>
+                <div className="files-content-wrapper">
+                {fileLoading && (
+                  <div className="fileloader-overlay">
+                    <SmartLoader context="page" text="Loading file..." />
+                  </div>
+                )}
+              {error && <div className="error">{error}</div>}
+            {/* {getAllFiles().length === 0 && !fileLoading && (
+              <div className="empty-state">
+                {searchTerm ? 'No files match your search' : 'No files in this folder'}
+              </div>
+            ) } */}
+              <div className="ao-files-grid">
+                {/* Render Notebooks */}
+                {materials.notebooks?.map((notebook) => (
+                  <div
+                    key={notebook._id}
+                    className="ao-file-card"
+                    onClick={() => handleFileClick({ 
+                      ...notebook, 
+                      type: 'notebook',
+                      note_id: notebook._id 
+                    })}
+                    onContextMenu={(e) => handleContextMenu(e, 'file', { ...notebook, type: 'notebook' })}
+                  >
+                    <div className="file-icon-container">
+                      <div className="file-icon">
+                        <FaStickyNote />
+                      </div>
+                      <button 
+                        className={`file-action-btn ${notebook.important ? 'active' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleImportant(notebook, 'notebook');
+                        }}
+                      >
+                        <FaStar />
+                      </button>
+                    </div>
+                    <div className="ao-file-name">{notebook.name}</div>
+                  </div>
+                ))}
+                
+                {/* Render Handwritten Notes */}
+                {materials.handwrittenNotes?.map((note) => (
+                  <div
+                    key={note._id}
+                    className="ao-file-card"
+                    onClick={() => handleFileClick({ 
+                      ...note, 
+                      type: 'handwritten' 
+                    })}
+                    onContextMenu={(e) => handleContextMenu(e, 'file', { ...note, type: 'handwritten' })}
+                  >
+                    <div className="file-icon-container">
+                      <div className="file-icon">
+                        <FaFilePdf />
+                      </div>
+                      <button 
+                        className={`file-action-btn ${note.important ? 'active' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleImportant(note, 'handwritten');
+                        }}
+                      >
+                        <FaStar />
+                      </button>
+                    </div>
+                    <div className="ao-file-name">{note.title}</div>
+                  </div>
+                ))}
+                
+                {getAllFiles().length === 0 && !loading && (
+                  <div className="empty-state">
+                    {searchTerm ? 'No files match your search' : 'No files in this folder'}
+                  </div>
+                )}
+              </div>
+               </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div 
+          className="context-menu" 
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          {/* CREATE NEW under this folder */}
+          {contextMenu.type === 'year' && (
+            <button
+              className="context-menu-item"
+              onClick={() => {
+                setCreatingType(`subject:${contextMenu.item._id}`);
+                setContextMenu(null);
+              }}
+            >
+              <FaPlus /> New Subject
+            </button>
+          )}
+
+          {contextMenu.type === 'subject' && (
+            <button
+              className="context-menu-item"
+              onClick={() => {
+                setCreatingType(`chapter:${contextMenu.item._id}`);
+                setContextMenu(null);
+              }}
+            >
+              <FaPlus /> New Chapter
+            </button>
+          )}
+
+          {contextMenu.type === 'chapter' && (
+            <button
+              className="context-menu-item"
+              onClick={() => {
+                setShowNewModal(true);
+                setContextMenu(null);
+              }}
+            >
+              <FaPlus /> New File / Note
+            </button>
+          )}
+
+          <button 
+            className="context-menu-item" 
+            onClick={() => {
+              setRenaming(contextMenu);
+              setContextMenu(null);
+            }}
+          >
+            <FaEdit /> Rename
           </button>
+
+          <button 
+            className="context-menu-item" 
+            onClick={() => {
+              setMoving(contextMenu.item);
+              setContextMenu(null);
+            }}
+          >
+            <FaArrowsAlt /> Move
+          </button>
+          
+          <button 
+            className="context-menu-item"
+            onClick={() => {
+              if (contextMenu.type === 'file') {
+                handleToggleImportant(contextMenu.item, contextMenu.item.type);
+              } else if (contextMenu.type === 'year') {
+                handleToggleImportantYear(contextMenu.item._id);
+              } else if (contextMenu.type === 'subject') {
+                handleToggleImportantSubject(contextMenu.item._id);
+              } else if (contextMenu.type === 'chapter') {
+                handleToggleImportantChapter(contextMenu.item._id);
+              }
+              setContextMenu(null);
+            }}
+          >
+            <FaStar /> Toggle Important
+          </button>
+
+         <button
+            className="context-menu-item delete"
+            onClick={() => {
+              if (contextMenu.type === 'file') {
+                setDeleteTarget({
+                  mode: 'file',
+                  file: contextMenu.item,
+                  fileType: contextMenu.item.type,
+                  name: contextMenu.item.name || contextMenu.item.title
+                });
+              } else {
+                const id = contextMenu.item._id;
+                const name = 
+                  contextMenu.type === 'year'    ? contextMenu.item.title :
+                  contextMenu.type === 'subject' ? contextMenu.item.name :
+                                                    contextMenu.item.title;
+                setDeleteTarget({ mode: 'item', type: contextMenu.type, id, name });
+              }
+              setContextMenu(null);
+            }}
+          >
+            <FaTrash /> Delete
+          </button>
+
         </div>
       )}
 
+      {/* Rename Prompt */}
+      {renaming && (
+        <RenamePrompt
+          currentName={
+            renaming.type === 'year' ? renaming.item.title :
+            renaming.type === 'subject' ? renaming.item.name :
+            renaming.type === 'chapter' ? renaming.item.title :
+            renaming.type === 'file' && renaming.item.type === 'notebook' ? renaming.item.name :
+            renaming.item.title || renaming.item.name
+          }
+          onRename={async (newName) => {
+            if (renaming.type === 'year') {
+              await renameYear(renaming.item._id, newName);
+            } else if (renaming.type === 'subject') {
+              await renameSubject(renaming.item._id, newName);
+            } else if (renaming.type === 'chapter') {
+              await renameChapter(renaming.item._id, newName);
+            } else if (renaming.type === 'file') {
+              await handleRename(renaming.item, renaming.item.type);
+            }
+            setRenaming(null);
+          }}
+          onCancel={() => setRenaming(null)}
+        />
+      )}
 
-<hr />
+      {/* Move Modal */}
+      {moving && (
+        <MoveModal
+          item={moving}
+          onMove={(destination) => {
+            // Handle move logic here
+            console.log('Moving item:', moving, 'to:', destination);
+            setMoving(null);
+          }}
+          onClose={() => setMoving(null)}
+        />
+      )}
 
-
-      {/* Materials */}
-{materials.notebooks?.length > 0 && (
-  <div>
-    <h3>Notebooks</h3>
-    {materials.notebooks.map((note) => (
-      <div key={note._id} style={{ marginBottom: '1rem' }}>
-        <p><strong>{note.name}</strong>
-    <button onClick={() => handleRename(note, 'notebook')}>✏️</button>
-    <button onClick={() => handleToggleImportant(note, 'notebook')}>
-      {note.important ? '⭐' : '☆'}
-    </button></p> 
-        <p>Note ID: {note.note_id}</p>
-        <button onClick={() => viewNotebookById(note.note_id)}>
-          View Notebook
-        </button>
-        <button onClick={() => handleDeleteFile(note, 'notebook')}>🗑️</button>
-
-      </div>
-    ))}
-    <hr />
-  </div>
-)}
-
-
-{materials.handwrittenNotes?.length > 0 && (
-  <div>
-    <h3>Handwritten Notes</h3>
-    {materials.handwrittenNotes.map((note) => (
-      <div key={note._id} style={{ marginBottom: '1rem' }}>
-        <p><strong>{note.title}</strong> ({note.fileType})
-    <button onClick={() => handleRename(note, 'scanned')}>✏️</button>
-    <button onClick={() => handleToggleImportant(note, 'scanned')}>
-      {note.important ? '⭐' : '☆'}
-    </button></p>
-        <button onClick={() => handleFileClick({ 
-          type: 'handwritten', 
-          fileUrl: note.fileUrl, 
-          name: note.title 
-        })}>
-          view pdf Note
-        </button>
-        <button onClick={() => handleDeleteFile(note, 'handwritten')}>🗑️</button>
-
-      </div>
-    ))}
-  </div>
-)}
-
-
-
-{viewerType === 'notebook' && notebookContent && (
-  <div style={{ marginTop: 20 }}>
-    <h3>📝 Viewing Notebook: {selectedFile?.name}</h3>
-    <pre>{JSON.stringify(notebookContent, null, 2)}</pre>
-    <button onClick={() => {
-      setSelectedFile(null);
-      setNotebookContent(null);
-      setViewerType(null);
-    }}>
-      Close Viewer
-    </button>
-  </div>
-)}
-
-{viewerType === 'pdf' && selectedFile && (
-  <div style={{ marginTop: 20 }}>
-    <h3>📄 Viewing PDF: {selectedFile.name}</h3>
-    <iframe 
-      src={selectedFile.fileUrl} 
-      title="PDF Viewer" 
-      width="100%" 
-      height="500px" 
-    />
-    <br />
-    <button onClick={() => {
-      setSelectedFile(null);
-      setViewerType(null);
-    }}>
-      Close Viewer
-    </button>
-  </div>
-)}
-
-
-{/* notebook related  */}
-{selectedChapterId && (
-  <div style={{ marginTop: 20 }}>
-    <button onClick={() => setShowNotebookForm(true)}>
-      ➕ Create Notebook
-    </button>
-
-    {showNotebookForm && (
-      <div style={{
-        border: '1px solid #ccc',
-        padding: 16,
-        marginTop: 10,
-        borderRadius: 8,
-        backgroundColor: '#f9f9f9'
-      }}>
-        <h4>Create New Notebook</h4>
-
-        <label>
-          Notebook Name:
-          <input
-            type="text"
-            value={notebookName}
-            onChange={(e) => setNotebookName(e.target.value)}
-            placeholder="e.g., Derivatives Summary"
-          />
-        </label>
-        <br /><br />
-
-        <button 
-          onClick={createNotebook} 
-          disabled={isSaving || !notebookName}
-        >
-          {isSaving ? 'Saving...' : 'Create'}
-        </button>
-
-        <button 
-          onClick={() => setShowNotebookForm(false)} 
-          style={{ marginLeft: 10 }}
-        >
-          Cancel
-        </button>
-      </div>
-    )}
-  </div>
-)}
-
-
-
-{loading && <p>Loading materials...</p>}
-{error && <p style={{color: 'red'}}>{error}</p>}
+      {/* Delete Confirmation Modal */}
+     {deleteTarget && (
+        <div className="delete-modal-container">
+          <div className="delete-modal">
+            <h3>Confirm Deletion</h3>
+            <p>
+              Are you sure you want to delete <strong>{deleteTarget.name}</strong>?<br/>
+              This action cannot be undone.
+            </p>
+            <div className="modal-actions">
+              <button onClick={() => setDeleteTarget(null)}>Cancel</button>
+              <button
+                className="delete-btn"
+                onClick={async () => {
+                  // call the correct handler based on mode
+                  if (deleteTarget.mode === 'item') {
+                    await handleDeleteItem(deleteTarget.type, deleteTarget.id);
+                  } else {
+                    await handleDeleteFile(deleteTarget.file, deleteTarget.fileType);
+                  }
+                  setDeleteTarget(null);
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
     </div>
