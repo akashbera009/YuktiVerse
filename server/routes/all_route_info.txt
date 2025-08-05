@@ -33,10 +33,10 @@ Create Notebook        POST     /api/notebooks/                                 
                                                                                    }
                                                                                  }
 
-Get Notebook           GET      /api/notebooks/:note_id
-Update Notebook        PUT      /api/notebooks/:note_id
-Rename Notebook      PATCH    /api/notebooks/:note_id/rename                   { "name": "Updated Name" }
-Toggle Important     PATCH    /api/notebooks/:note_id/important                -- toggles `important` boolean
+Get Notebook           GET      /api/notebooks/:_id
+Update Notebook        PUT      /api/notebooks/:_id
+Rename Notebook      PATCH    /api/notebooks/:_id/rename                   { "name": "Updated Name" }
+Toggle Important     PATCH    /api/notebooks/:_id/important                -- toggles `important` boolean
 Delete Notebook	     DELETE	  /api/notebooks/:id	                            Removes notebook from DB
 
 ---------------------------------------------------------------------------------------------------------------------------

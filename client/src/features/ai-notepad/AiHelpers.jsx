@@ -1,45 +1,474 @@
-import React, { useState } from 'react';
-import './AiHelper.css';
+import React, { useState, useRef, useEffect } from 'react';
 
 const AiHelpers = ({ text, onClose }) => {
- const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [size, setSize] = useState({ width: 400, height: '100vh' });
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'system',
+      content: `I'm analyzing your text: "${text}". How can I help you with this content?`,
+      timestamp: new Date()
+    }
+  ]);
+  
+  const panelRef = useRef(null);
+  const resizeRef = useRef(null);
 
   const handleSubmit = () => {
-    // Simulated response for now
-    const aiResponse = `AI Response to: "${prompt}" based on box text: "${text}"`;
-    setResponse(aiResponse);
+    if (!prompt.trim()) return;
+    
+    // Add user message
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      content: prompt,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Simulate AI response
+    setTimeout(() => {
+      const aiResponse = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: `Based on your text "${text}", here's my analysis of "${prompt}": This is a simulated AI response that would provide intelligent insights about your content.`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, aiResponse]);
+    }, 1000);
+    
+    setPrompt('');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const handleMouseDown = (e) => {
+    if (e.target.closest('.resize-handle') || e.target.closest('.close-button') || e.target.closest('.expand-button')) return;
+    
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+    
+    if (isResizing) {
+      const deltaX = e.clientX - resizeStart.x;
+      const deltaY = e.clientY - resizeStart.y;
+      
+      setSize({
+        width: Math.max(300, resizeStart.width - deltaX),
+        height: Math.max(400, resizeStart.height + deltaY)
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setIsResizing(false);
+  };
+
+  const handleResizeStart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    setResizeStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: size.width,
+      height: typeof size.height === 'number' ? size.height : window.innerHeight
+    });
+  };
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+    if (!isExpanded) {
+      setSize({ width: Math.min(800, window.innerWidth - 40), height: window.innerHeight - 40 });
+      setPosition({ x: 20, y: 20 });
+    } else {
+      setSize({ width: 400, height: '100vh' });
+      setPosition({ x: 0, y: 0 });
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, isResizing, dragStart, resizeStart]);
+
+  const panelStyle = {
+    '--primary': '#4f46e5',
+    '--primary-light': '#7c3aed',
+    '--secondary': '#06b6d4',
+    '--dark-bg': '#0c0a1f',
+    '--dark-card': '#1a1625',
+    '--dark-text': '#e0e7ff',
+    '--dark-border': '#312e81',
+    '--light-bg': '#f1f5f9',
+    '--light-card': '#ffffff',
+    '--light-text': '#1e1b4b',
+    '--light-border': '#e0e7ff',
+    '--danger': '#ef4444',
+    '--warning': '#f59e0b',
+    '--success': '#10b981',
+    '--glass-bg': 'rgba(26, 22, 37, 0.95)',
+    '--glass-border': 'rgba(255, 255, 255, 0.1)',
+    '--shadow-heavy': '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    position: isExpanded ? 'fixed' : 'fixed',
+    top: isExpanded ? `${position.y}px` : '0',
+    right: isExpanded ? 'auto' : '0',
+    left: isExpanded ? `${position.x}px` : 'auto',
+    width: typeof size.width === 'number' ? `${size.width}px` : size.width,
+    height: typeof size.height === 'number' ? `${size.height}px` : size.height,
+    background: 'var(--glass-bg)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid var(--glass-border)',
+    borderLeft: isExpanded ? '1px solid var(--glass-border)' : '1px solid var(--dark-border)',
+    borderRadius: isExpanded ? '20px' : '0',
+    boxShadow: 'var(--shadow-heavy)',
+    zIndex: 1000,
+    display: 'flex',
+    flexDirection: 'column',
+    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+    color: 'var(--dark-text)',
+    cursor: isDragging ? 'grabbing' : (isExpanded ? 'grab' : 'default'),
+    transition: isExpanded ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    animation: !isExpanded ? 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'none'
   };
 
   return (
-    <div className="copilot-panel">
-      <div className="copilot-header">
-        <span>Personal AI Assistant</span>
-        <button className="close-button" onClick={onClose}>×</button>
+    <div 
+      ref={panelRef}
+      style={panelStyle}
+      onMouseDown={handleMouseDown}
+    >
+      <style>
+        {`
+          @keyframes slideIn {
+            from { 
+              right: -400px; 
+              opacity: 0;
+              transform: translateX(20px);
+            }
+            to { 
+              right: 0; 
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          
+          @keyframes messageAppear {
+            from { 
+              opacity: 0;
+              transform: translateY(10px) scale(0.95);
+            }
+            to { 
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+        `}
+      </style>
+
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '20px 24px',
+        borderBottom: '1px solid var(--glass-border)',
+        background: 'linear-gradient(135deg, var(--primary), var(--primary-light))',
+        borderRadius: isExpanded ? '20px 20px 0 0' : '0',
+        cursor: isExpanded ? 'grab' : 'default'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          color: 'white',
+          fontWeight: '600',
+          fontSize: '16px'
+        }}>
+          <div style={{
+            width: '32px',
+            height: '32px',
+            background: 'rgba(255, 255, 255, 0.2)',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '14px',
+            fontWeight: '700'
+          }}>
+            ✨
+          </div>
+          <span>AI Assistant</span>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            className="expand-button"
+            onClick={toggleExpand}
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              transition: 'all 0.2s ease',
+              backdropFilter: 'blur(10px)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+              e.target.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+              e.target.style.transform = 'scale(1)';
+            }}
+          >
+            {isExpanded ? '⤴' : '⤢'}
+          </button>
+          
+          <button
+            className="close-button"
+            onClick={onClose}
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'rgba(239, 68, 68, 0.9)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '16px',
+              transition: 'all 0.2s ease',
+              fontWeight: 'bold'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'var(--danger)';
+              e.target.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(239, 68, 68, 0.9)';
+              e.target.style.transform = 'scale(1)';
+            }}
+          >
+            ×
+          </button>
+        </div>
       </div>
 
-      <div className="copilot-body">
-        <div className="original-text">
-          <strong>Text from box:</strong>
-          <p>{text}</p>
-        </div>
+      {/* Messages Area */}
+      <div style={{
+        flex: 1,
+        padding: '20px',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px'
+      }}>
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            style={{
+              display: 'flex',
+              flexDirection: message.type === 'user' ? 'row-reverse' : 'row',
+              gap: '12px',
+              animation: 'messageAppear 0.3s ease-out'
+            }}
+          >
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '12px',
+              background: message.type === 'user' 
+                ? 'linear-gradient(135deg, var(--secondary), var(--primary))' 
+                : message.type === 'ai'
+                ? 'linear-gradient(135deg, var(--primary), var(--primary-light))'
+                : 'linear-gradient(135deg, var(--warning), #f97316)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: 'white',
+              flexShrink: 0
+            }}>
+              {message.type === 'user' ? '👤' : message.type === 'ai' ? '🤖' : '💡'}
+            </div>
+            
+            <div style={{
+              background: message.type === 'user' 
+                ? 'linear-gradient(135deg, var(--primary), var(--primary-light))'
+                : 'var(--dark-card)',
+              padding: '16px',
+              borderRadius: '16px',
+              maxWidth: '80%',
+              border: '1px solid var(--glass-border)',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
+            }}>
+              <div style={{
+                color: message.type === 'user' ? 'white' : 'var(--dark-text)',
+                fontSize: '14px',
+                lineHeight: '1.5',
+                marginBottom: '8px'
+              }}>
+                {message.content}
+              </div>
+              <div style={{
+                fontSize: '11px',
+                opacity: 0.6,
+                color: message.type === 'user' ? 'rgba(255,255,255,0.8)' : 'var(--dark-text)'
+              }}>
+                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-        <div className="user-input">
+      {/* Input Area */}
+      <div style={{
+        padding: '20px',
+        borderTop: '1px solid var(--glass-border)',
+        background: 'rgba(26, 22, 37, 0.5)',
+        borderRadius: isExpanded ? '0 0 20px 20px' : '0'
+      }}>
+        <div style={{
+          display: 'flex',
+          gap: '12px',
+          alignItems: 'flex-end'
+        }}>
           <textarea
-            placeholder="Ask something..."
+            placeholder="Ask me anything about your text..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyPress={handleKeyPress}
+            style={{
+              flex: 1,
+              minHeight: '44px',
+              maxHeight: '120px',
+              resize: 'vertical',
+              padding: '12px 16px',
+              background: 'var(--dark-card)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: '12px',
+              color: 'var(--dark-text)',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              outline: 'none',
+              transition: 'all 0.2s ease'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'var(--primary)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--glass-border)';
+              e.target.style.boxShadow = 'none';
+            }}
           />
-          <button onClick={handleSubmit}>Submit</button>
+          
+          <button
+            onClick={handleSubmit}
+            disabled={!prompt.trim()}
+            style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              background: prompt.trim() 
+                ? 'linear-gradient(135deg, var(--primary), var(--primary-light))'
+                : 'var(--dark-border)',
+              border: 'none',
+              color: 'white',
+              cursor: prompt.trim() ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '16px',
+              transition: 'all 0.2s ease',
+              opacity: prompt.trim() ? 1 : 0.5
+            }}
+            onMouseEnter={(e) => {
+              if (prompt.trim()) {
+                e.target.style.transform = 'scale(1.05)';
+                e.target.style.boxShadow = '0 8px 24px rgba(79, 70, 229, 0.4)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.boxShadow = 'none';
+            }}
+          >
+            ➤
+          </button>
         </div>
-
-        {response && (
-          <div className="ai-response">
-            <strong>AI Response:</strong>
-            <p>{response}</p>
-          </div>
-        )}
+        
+        <div style={{
+          fontSize: '11px',
+          color: 'rgba(224, 231, 255, 0.6)',
+          marginTop: '8px',
+          textAlign: 'center'
+        }}>
+          Press Enter to send, Shift+Enter for new line
+        </div>
       </div>
+
+      {/* Resize Handle */}
+      {isExpanded && (
+        <div
+          ref={resizeRef}
+          className="resize-handle"
+          onMouseDown={handleResizeStart}
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '20px',
+            height: '20px',
+            cursor: 'nw-resize',
+            background: 'transparent'
+          }}
+        />
+      )}
     </div>
   );
 };

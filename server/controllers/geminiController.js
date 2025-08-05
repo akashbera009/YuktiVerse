@@ -2,8 +2,13 @@ import { getGeminiResponse } from '../utils/geminiClient.js';
 
 const createGeminiHandler = (task) => {
   return async (req, res) => {  
+
+    
     try {
+      console.log('Received req.body:', req.body); // Add this lin
       const { prompt } = req.body;
+      console.log(prompt, task);
+      
       if (!prompt) {
         return res.status(400).json({ error: 'Prompt is required' });
       }

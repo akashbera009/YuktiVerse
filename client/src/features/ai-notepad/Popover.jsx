@@ -3,11 +3,43 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import AiHelpers from './AiHelpers';
 import './Popover.css';
+import axios from 'axios';
+import {DotsLoader,
+  RingLoader,
+  SquaresLoader,
+  BarsLoader,
+  OrbitLoader,
+  ProgressLoader,
+  HexagonLoader,
+  OverlayLoader,
+  InlineLoader,
+  SmartLoader,
+  useLoader,
+  withLoading,
+  LoaderShowcase} from '../../components/Loader'
 
 const Popover = ({ anchorRef, onClose, children, text }) => {
   const popoverRef = useRef();
 
-  
+  const [shortResponse , setShortResponse] = useState('');
+  const [loading, setLoading] = useState(false); 
+  const fetchShortResponse = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.post('/ai-help/short-explain', {
+          prompt: text
+        });
+        console.log('AI short response:', response.data);
+        setShortResponse(response.data);
+      } catch (error) {
+        console.error('Short response error:', error);
+      }finally {
+        setLoading(false); // Stop loading in all cases
+      }
+    };
+ useEffect(() => {
+    if (text) fetchShortResponse();
+  }, [text]); 
   const [copilotOpen, setCopilotOpen] = useState(false);
 
   // Close popover on outside click
@@ -55,13 +87,58 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
         minWidth: '200px'
       }}
     >
-      <div class="popup-bubble">
-        <h4 >AI Assistant</h4>
-        <p>This is a smart suggestion tool. Add context below:</p>
-        <p><strong>Text:</strong> {text}</p>
-        <button className='ai-assistance-more' onClick={() => setCopilotOpen(true)}>expand</button>
-        
-          
+
+      <div className="ai-popover">
+        {/* <div className="ai-popover-header">
+          <div className="ai-icon">AI</div>
+          <span>AI Assistant</span>
+        </div> */}
+        {/* <div className="ai-insights">
+            <div className="ai-insights-text">
+                <h4>Short Explanation:</h4>
+            </div>
+        </div> */}
+        <div className="ai-popover-content">
+         <div className="ai-summary">
+            {loading ? (
+              // <BarsLoader/>
+              // <SmartLoader/>
+              // < InlineLoader/>
+              // <  RingLoader/>
+              // < SquaresLoader/>
+              < DotsLoader/>
+            ) : (
+            <p>
+              {shortResponse?.response === 'Error fetching response from Gemini.'
+                ? 'Something went wrong. Please try again.'
+                : shortResponse?.response}
+            </p>
+
+
+            )}
+          </div>
+
+
+        </div>
+        <div className="ai-popover-footer">
+          <div className="ai-powered">Powered by AI</div>
+          <div className="ai-actions">
+            <button
+              className="ai-action-btn secondary"
+              onClick={() => { fetchShortResponse(); }}
+            >
+              Improve
+            </button>
+
+            <button
+              className="ai-action-btn primary"
+              onClick={() => setCopilotOpen(true)}
+            >
+              Ask Assistant
+            </button>
+          </div>
+        </div>
+
       </div>
       {copilotOpen && (
         <AiHelpers
@@ -70,8 +147,6 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
         />
       )}
       
-
-      {/* {children} */}
     </div>,
     document.body
   );

@@ -9,6 +9,8 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemi
 
 export const getGeminiResponse = async (prompt, task = '') => {
   try {
+      console.log("🧪 Gemini Prompt:", prompt);
+    console.log("🧪 Task Context:", task);
     // Combine task instruction with the prompt
     const finalPrompt = task ? `${task}\n\n${prompt}` : prompt;
 

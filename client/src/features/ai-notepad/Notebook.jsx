@@ -1,9 +1,8 @@
-// npm install react-rnd                pore ekbar dekhar ache jinista ki 
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import './Notebook.css';
+import { Rnd } from 'react-rnd';
 import Popover from './Popover';
+import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaPlus, FaStar, FaTrash, FaSearch, FaBars, FaTimes, FaEdit, FaArrowsAlt , FaRobot , FaExpand } from 'react-icons/fa';
 import axios from 'axios'
 
 const Notebook = ({notebookId, notebookName }) => {
@@ -18,15 +17,22 @@ const Notebook = ({notebookId, notebookName }) => {
   const [popoverBoxId, setPopoverBoxId] = useState(null);
   const aiButtonRefs = useRef({});
 
-  const[data , setData] = useState(null);
-// console.log(textBoxes);
+  const [showMenu, setShowMenu] = useState(false);
 
+  // const[data , setData] = useState(null);
+// console.log(textBoxes);
+  const [isImportant, setIsImportant] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [newNotebookName, setNewNotebookName] = useState(notebookName);
     useEffect(() => {
     const loadNotebook = async () => {
+      
       try {
         setIsLoading(true);
         if (notebookId) {
           const response = await axios.get(`/api/notebooks/${notebookId}`);
+          console.log(response);
+          
           const notebook = response.data;
           
           if (notebook.content?.textBoxes) {
@@ -84,8 +90,14 @@ const saveNotebook = async () => {
     setIsSaving(false);
   }
 };
+ // Handle rename functionality
+  const handleRenameConfirm = () => {
+    // Add rename API call here
+    setShowMenu(false);
+    setIsRenaming(false);
+  };
 
-  // Handle canvas clicks to create new text boxes
+  // Enhanced text box creation
   const handleCanvasClick = (e) => {
     if (isDragging.current) {
       isDragging.current = false;
@@ -98,21 +110,119 @@ const saveNotebook = async () => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    // Generate more unique ID
     const newBox = { 
       x, 
       y, 
       text: '', 
       id: `${Date.now()}-${Math.random()}`,
-      width: 200,
-      height: 28
+      width: 280, // Increased default width
+      height: 120, // Increased default height
+      zIndex: textBoxes.length > 0 ? Math.max(...textBoxes.map(b => b.zIndex)) + 1 : 1
     };
     
     setTextBoxes([...textBoxes, newBox]);
     setActiveId(newBox.id);
   };
 
+  // Handle canvas clicks to create new text boxes
+  // const handleCanvasClick = (e) => {
+  //   if (isDragging.current) {
+  //     isDragging.current = false;
+  //     return;
+  //   }
+    
+  //   if (e.target !== canvasRef.current) return;
+    
+  //   const rect = e.currentTarget.getBoundingClientRect();
+  //   const x = e.clientX - rect.left;
+  //   const y = e.clientY - rect.top;
+    
+  //   // Generate more unique ID
+  //   const newBox = { 
+  //     x, 
+  //     y, 
+  //     text: '', 
+  //     id: `${Date.now()}-${Math.random()}`,
+  //     width: 200,
+  //     height: 28
+  //   };
+    
+  //   setTextBoxes([...textBoxes, newBox]);
+  //   setActiveId(newBox.id);
+  // };
 
+  // Enhanced text box rendering with react-rnd
+  const renderTextBoxes = () => {
+    return textBoxes.map(box => (
+      <Rnd
+        key={box.id}
+        position={{ x: box.x, y: box.y }}
+        size={{ width: box.width, height: box.height }}
+        minWidth={200}
+        minHeight={100}
+        bounds="parent"
+        className={`text-box-container ${activeId === box.id ? 'active' : ''}`}
+        onDragStop={(e, d) => {
+          setTextBoxes(textBoxes.map(b => 
+            b.id === box.id ? { ...b, x: d.x, y: d.y } : b
+          ));
+        }}
+        onResizeStop={(e, direction, ref, delta, position) => {
+          setTextBoxes(textBoxes.map(b => 
+            b.id === box.id ? { 
+              ...b, 
+              width: parseInt(ref.style.width),
+              height: parseInt(ref.style.height),
+              ...position
+            } : b
+          ));
+        }}
+        onMouseDown={() => setActiveId(box.id)}
+        style={{ zIndex: box.zIndex }}
+        dragHandleClassName="drag-handle"
+      >
+        <div className="drag-handle">
+          <div className="handle-dots">•••</div>
+          <div className="text-box-buttons">
+            <button
+              className="ai-button"
+              onClick={(e) => handleAIButton(box.id, e)}
+              title="AI Assistant"
+              ref={(el) => (aiButtonRefs.current[box.id] = el)}
+            >
+              <FaRobot />
+            </button>
+            <button
+              className="delete-button"
+              onClick={(e) => handleDelete(box.id, e)}
+              title="Delete note"
+            >
+              <FaTimes />
+            </button>
+          </div>
+        </div>
+        
+        <textarea
+          className="text-box"
+          value={box.text}
+          onChange={(e) => handleTextChange(box.id, e)}
+          onBlur={() => handleBlur(box.id)}
+          placeholder="Type here..."
+          style={{ height: '100%' }}
+          autoFocus={activeId === box.id}
+        />
+        
+        {popoverBoxId === box.id && aiButtonRefs.current[box.id] && (
+          <Popover
+            anchorRef={{ current: aiButtonRefs.current[box.id] }}
+            onClose={() => setPopoverBoxId(null)}
+            text={box.text}
+            id={box.id}
+          />
+        )}
+      </Rnd>
+    ));
+  };
 
   // Handle text changes and auto-resize
   const handleTextChange = (id, e) => {
@@ -225,130 +335,126 @@ const handleAIButton = (id, e) => {
     };
   }, [activeId, textBoxes]);
 
+  const handleRename = () => {
+  setShowMenu(false);
+  // Your rename logic here
+};
+
+const handleMarkImportant = () => {
+  setShowMenu(false);
+  // Toggle important
+};
+
+const handleDeleteNote = () => {
+  setShowMenu(false);
+  // Confirm and delete
+};
+
+
+
+
+const dropdownRef = useRef(null);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowMenu(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
+
   return (
-    <div className="notebook-container">
+    <div className="notebook-container" ref={dropdownRef}>
       {isLoading ? (
         <div className="loading-indicator">Loading notebook...</div>
       ) : (
         <>
-      <div className="notebook-canvas">
-        <div className="grid-lines"></div>
-        
-        <div className="notebook-header">
-          <h2>{notebookName}</h2>
-          <div className="save-controls">
-            <button 
-              className="save-button" 
-              onClick={saveNotebook}
-              disabled={isSaving}
-            >
-              {isSaving ? 'Saving...' : 'Save Notebook'}
-            </button>
-            {saveStatus && <div className="save-status">{saveStatus}</div>}
-          </div>
-        </div>
-
-        <div 
-          className="canvas" 
-          ref={canvasRef}
-          onClick={handleCanvasClick}
-        >
-          {textBoxes.map(box => (
-            <div
-              key={box.id}
-              className={activeId === box.id ? 'text-box-container active' : 'text-box-container'}
-              style={{ 
-                left: box.x, 
-                top: box.y,
-                width: box.width
-              }}
-              onMouseDown={(e) => handleDragStart(box.id, e)}
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveId(box.id);
-              }}
-            >
-              <div className="drag-handle">...</div>
-              <textarea
-                className="text-box"
-                value={box.text}
-                onChange={(e) => handleTextChange(box.id, e)}
-                onBlur={() => handleBlur(box.id)}
-                placeholder="Type here..."
-                style={{ height: box.height }}
-                autoFocus={activeId === box.id}
-              />
-              {activeId === box.id && (
-                <div className="text-box-buttons">
-                  <button
-                    className="ai-button"
-                    onClick={(e) => handleAIButton(box.id, e)}
-                    title="AI Assistant"
-                    ref={(el) => (aiButtonRefs.current[box.id] = el)}
+          <div className="notebook-canvas" ref={dropdownRef}>
+            <div className="grid-lines"></div>
+            
+            <div className="notebook-header" ref={dropdownRef}>
+              {isRenaming ? (
+                <div className="rename-container">
+                  <input
+                    type="text"
+                    value={newNotebookName}
+                    onChange={(e) => setNewNotebookName(e.target.value)}
+                    autoFocus
+                    className="rename-input"
+                  />
+                  <button 
+                    className="confirm-rename"
+                    onClick={handleRenameConfirm}
                   >
-                    AI
-                  </button>
-
-                  {popoverBoxId === box.id && aiButtonRefs.current[box.id] && (
-                    <Popover
-                      anchorRef={{ current: aiButtonRefs.current[box.id] }}
-                      onClose={() => setPopoverBoxId(null)}
-                      text={box.text}
-                        id={box.id}
-                    >
-                    </Popover>
-                  )}
-
-                  <button
-                    className="delete-button"
-                    onClick={(e) => handleDelete(box.id, e)}
-                    title="Delete note"
-                  >
-                    ×
+                    Save
                   </button>
                 </div>
+              ) : (
+                <h2>
+                  {notebookName} 
+                  {isImportant && <FaStar className="important-icon" />}
+                </h2>
               )}
-
+              
+              <div className="save-controls" ref={dropdownRef}>
+                <button
+                  className="menu-button" 
+                 > 
+                  <FaExpand/>
+                </button>
+                <button 
+                  className="save-button" 
+                  onClick={saveNotebook}
+                  disabled={isSaving}
+                >
+                  {isSaving ? 'Saving...' : 'Save Notebook'}
+                </button>
+                <button 
+                  className={`menu-button ${isImportant ? 'important' : ''}`}
+                  onClick={() => setShowMenu(!showMenu)}
+                >
+                  &#8942;
+                </button>
+                {showMenu && (
+                  <div className="dropdown-menu">
+                    <button onClick={() => setIsRenaming(true)}>
+                      <FaEdit /> Rename
+                    </button>
+                    <button onClick={() => setIsImportant(!isImportant)}>
+                      <FaStar /> 
+                      {isImportant ? ' Unmark Important' : ' Mark Important'}
+                    </button>
+                    <button onClick={handleDeleteNote}>
+                      <FaTrash /> Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-      {/* Improved save status display */}
+
+            <div 
+              className="canvas" 
+              ref={canvasRef}
+              onClick={handleCanvasClick}
+            >
+              {renderTextBoxes()}
+            </div>
+          </div>
+          
           {saveStatus && (
             <div className={`save-status ${saveStatus.includes('Failed') ? 'error' : 'success'}`}>
               {saveStatus}
             </div>
           )}
-     </>
+        </>
       )}
     </div>
   );
 };
+
 export default Notebook;
-
-
-// Example notebook file structure
-// {
-//   type: 'notebook',
-//   name: 'Calculus Notes',
-//   content: {
-//     textBoxes: [
-//       {
-//         id: 123456789,
-//         text: 'Derivative formulas',
-//         x: 100,
-//         y: 50,
-//         width: 200,
-//         height: 80
-//       },
-//       {
-//         id: 987654321,
-//         text: 'Integration techniques',
-//         x: 150,
-//         y: 200,
-//         width: 250,
-//         height: 120
-//       }
-//     ]
-//   }
-// }

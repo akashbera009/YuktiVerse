@@ -38,7 +38,6 @@ app.listen(PORT, () => {
 // genini routes 
 app.use('/ai-help', geminiRoutes);
 
-
 // pdf summerizer 
 app.use('/api/pdf-summerize', pdfRoutes);   // /api/pdf/mcq
 

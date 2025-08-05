@@ -604,14 +604,24 @@ setDeleteTarget(true);
   };
 
   // Get full path for breadcrumb
-  const getFullPath = () => {
-    const path = [];
-    if (selectedYear) path.push(selectedYear);
-    if (selectedSubject) path.push(selectedSubject);
-    if (selectedChapter) path.push(selectedChapter);
-    if (selectedFile) path.push(selectedFile.name);
-    return path.join(' / ');
-  };
+  // const getFullPath = () => {
+  //   const path = [];
+  //   if (selectedYear) path.push(selectedYear);
+  //   if (selectedSubject) path.push(selectedSubject);
+  //   if (selectedChapter) path.push(selectedChapter);
+  //   if (selectedFile) path.push(selectedFile.name);
+  //   return path.join(' > ');
+  // };
+const getSteps = () => {
+  const steps = [];
+  if (selectedYear) steps.push({ label: selectedYear });
+  if (selectedSubject) steps.push({ label: selectedSubject });
+  if (selectedChapter) steps.push({ label: selectedChapter});
+  if (selectedFile) {
+    steps.push({ label: selectedFile.name }); // current step
+  }
+  return steps;
+};
 
   // Get all important files from materials
   // const getAllImportantFiles = () => {
@@ -629,36 +639,34 @@ const getAllImportantFiles = () => {
   return [...importantNotebooks, ...importantHandwritten];
 };
 
+const [isFetchingAllFiles, setIsFetchingAllFiles] = useState(false);
+const [allFilesFetched, setAllFilesFetched] = useState(false);
+const [fetchAllFilesError, setFetchAllFilesError] = useState(null);
 
-  const fetchAllFiles = async () => {
+const fetchAllFiles = async () => {
+  if (allFilesFetched) return;
+  setIsFetchingAllFiles(true);
+  setFetchAllFilesError(null);
   setFilesLoading(true);
   try {
     const allFilesData = [];
     
-    // Get all years
     const yearsRes = await axios.get('/years');
     const years = yearsRes.data;
-    
-    // Loop through each year
+
     for (const year of years) {
-      // Get subjects for this year
       const subjectsRes = await axios.get(`/years/${year._id}/subjects`);
       const subjects = subjectsRes.data;
       
-      // Loop through each subject
-      for (const subject of subjects) {
-        // Get chapters for this subject
+      for (const subject of subjects) { 
         const chaptersRes = await axios.get(`/years/subjects/${subject._id}/chapters`);
         const chapters = chaptersRes.data;
-        
-        // Loop through each chapter
+         
         for (const chapter of chapters) {
-          try {
-            // Get materials for this chapter
+          try { 
             const materialsRes = await axios.get(`/years/${chapter._id}/materials`);
             const materials = materialsRes.data;
-            
-            // Process notebooks
+             
             if (materials.notebooks) {
               materials.notebooks.forEach(notebook => {
                 allFilesData.push({
@@ -675,8 +683,7 @@ const getAllImportantFiles = () => {
                 });
               });
             }
-            
-            // Process handwritten notes
+             
             if (materials.handwrittenNotes) {
               materials.handwrittenNotes.forEach(note => {
                 allFilesData.push({
@@ -694,8 +701,7 @@ const getAllImportantFiles = () => {
               });
             }
           } catch (chapterErr) {
-            console.warn(`Failed to fetch materials for chapter ${chapter.title}:`, chapterErr);
-            // Continue with other chapters even if one fails
+            console.warn(`Failed to fetch materials for chapter ${chapter.title}:`, chapterErr); 
           }
         }
       }
@@ -703,13 +709,21 @@ const getAllImportantFiles = () => {
     
     console.log(`Loaded ${allFilesData.length} files for search`);
     setAllFiles(allFilesData);
-    
+    setAllFilesFetched(true);
   } catch (err) {
     console.error('Error fetching all files:', err);
+    setFetchAllFilesError('Failed to fetch all files.');
   } finally {
     setFilesLoading(false);
+    setIsFetchingAllFiles(false);
   }
 };
+useEffect(() => {
+  if (showSearchResults && searchTerm.trim() !== '' && !allFilesFetched && !isFetchingAllFiles) {
+    fetchAllFiles();
+  }
+}, [showSearchResults, searchTerm, allFilesFetched, isFetchingAllFiles]);
+
 
 const [yearsLoading, setYearsLoading] = useState(true);
 useEffect(() => {
@@ -1051,7 +1065,7 @@ const updateFileInCache = (fileId, updates) => {
           </div>
 
           {/* Search Results Popup */}
-          {showSearchResults && searchTerm.trim() !== '' && (
+          {/* {showSearchResults && searchTerm.trim() !== '' && (
             <div className="global-search-results">
               {filteredFiles().map((file, index) => (
                 <div
@@ -1080,7 +1094,44 @@ const updateFileInCache = (fileId, updates) => {
                 <div className="no-results">No matching files found.</div>
               )}
             </div>
-          )}
+          )} */}
+          {showSearchResults && searchTerm.trim() !== '' && (
+  <div className="global-search-results">
+    {isFetchingAllFiles ? (
+      <div className="loader">Fetching all files...</div>
+    ) : fetchAllFilesError ? (
+      <div className="error">{fetchAllFilesError}</div>
+    ) : (
+      <>
+        {searchAllFiles(searchTerm).map((file, index) => (
+          <div
+            key={`${file._id}-${index}`}
+            className="search-result-item"
+            onClick={() => {
+              loadChapterAndOpenFile(file);
+              setSearchTerm('');
+              setShowSearchResults(false);
+            }}
+          >
+            <div className="search-result-icon">
+              {file.type === 'notebook' && <FaStickyNote />}
+              {file.type === 'handwritten' && <FaFilePdf />}
+            </div>
+            <div className="search-result-name">
+              {file.type === 'notebook' ? file.name : file.title}
+            </div>
+            <div className="search-result-path">
+              {file.fullPath}
+            </div>
+          </div>
+        ))}
+        {searchAllFiles(searchTerm).length === 0 && (
+          <div className="no-results">No matching files found.</div>
+        )}
+      </>
+    )}
+  </div>
+)}
         </div>
       </div>
 
@@ -1132,7 +1183,7 @@ const updateFileInCache = (fileId, updates) => {
                         <div className="ao-subsection">
                           {chaptersLoading ? (
                             <div style={{ padding: '8px', marginLeft: '40px' }}>
-                              <InlineLoader type="bars" text="Loading chapters..." />
+                               <InlineLoader type="dots" text="" />
                             </div>
                           ) : (
                             chapters.map(chapter => (
@@ -1267,9 +1318,16 @@ const updateFileInCache = (fileId, updates) => {
       {/* Main Content */}
       <div className="ao-main">
         <div className="main-header">
-          <div className="breadcrumb">
-            {getFullPath() || 'Select a folder to begin'}
-          </div>
+        <div className="breadcrumb-stepper">
+          {getSteps().map((step, index, arr) => (
+            <div
+              key={index}
+              className={`breadcrumb-step ${step.completed ? "completed" : "current"} ${index === arr.length - 1 ? "last" : ""}`}
+            >
+              <span className="label">{step.label}</span>
+            </div>
+          ))}
+        </div>
           
           <div className="actions">
             <button className="action-btn" onClick={() => setShowNewModal(true)}>
@@ -1376,15 +1434,18 @@ const updateFileInCache = (fileId, updates) => {
             <div className="file-content">
               {selectedFile.type === 'handwritten' ? (
                 <div className="pdf-preview">
-                  <FaFilePdf className="preview-icon" />
-                  <p>PDF content would be displayed here</p>
-                  {selectedFile.fileUrl && (
+                    {/* <FaFilePdf className="preview-icon" />
+                    <p>PDF content would be displayed here</p> */}
+                    <button onClick={window.open(selectedFile.fileUrl, "_blank")}> view </button>
+                  {selectedFile.fileUrl && (<>
                     <iframe 
                       src={selectedFile.fileUrl} 
                       width="100%" 
                       height="600px"
                       title="PDF Viewer"
-                    />
+                      />
+                    
+                    </>
                   )}
                 </div>
               ) : selectedFile.type === 'image' ? (

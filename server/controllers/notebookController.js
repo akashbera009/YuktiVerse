@@ -36,7 +36,7 @@ export const createNotebook = async (req, res) => {
 export const getNotebookById = async (req, res) => {
   try {
     const notebook = await Notebook.findOne({
-      note_id: req.params.id,
+      _id: req.params.id,
       user: req.user._id
     });
     
@@ -58,7 +58,7 @@ export const updateNotebook = async (req, res) => {
     const { name, content } = req.body;
 
     const notebook = await Notebook.findOne({
-      note_id: id,
+      _id: id,
       user: req.user._id
     });
     
@@ -90,9 +90,11 @@ export const renameNotebook = async (req, res) => {
   try {
     const { noteId } = req.params;
     const { name } = req.body;
-
+    console.log(req.params);
+    
     const updated = await Notebook.findByIdAndUpdate(noteId, { name }, { new: true });
     res.json(updated);
+    
   } catch (err) {
     res.status(500).json({ error: 'Failed to rename notebook' });
   }

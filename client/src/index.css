@@ -1,6 +1,14 @@
 *{
   background-color: transparent;
   margin: 0;
+  /* font-family: 'JetBrains Mono', monospace; */
+  /* Headers */
+/* font-family: 'Space Grotesk', sans-serif; */
+/* Body Text */
+/* font-family: 'Inter', sans-serif; */
+font-family: 'JetBrains Mono', monospace;
+font-family: 'Lexend', sans-serif;
+font-family: 'Outfit', sans-serif;
 }
 
 /* Apply to scrollable containers or globally with `body, *` */

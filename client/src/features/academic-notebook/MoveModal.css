@@ -1,19 +1,109 @@
-:root {
-   --primary: #6366f1;
-  --primary-light: #818cf8;
-  --secondary: #10b981;
-  --dark-bg: #0f172a;
-  --dark-card: #1e293b;
-  --dark-text: #e2e8f0;
-  --dark-border: #334155;
+/*  Ocean Depths */
+/* :root {
+  --primary: #1e40af;
+  --primary-light: #3b82f6;
+  --secondary: #0891b2;
+  --dark-bg: #0f1419;
+  --dark-card: #1e2832;
+  --dark-text: #dbeafe;
+  --dark-border: #1e3a8a;
+  --light-bg: #f0f9ff;
+  --light-card: #ffffff;
+  --light-text: #1e3a8a;
+  --light-border: #bfdbfe;
+  --danger: #dc2626;
+  --warning: #d97706;
+} */
+/* Cosmic Purple */
+/* :root {
+  --primary: #7c2d92;
+  --primary-light: #a855f7;
+  --secondary: #ec4899;
+  --dark-bg: #1a0b2e;
+  --dark-card: #2d1b40;
+  --dark-text: #f3e8ff;
+  --dark-border: #6b21a8;
+  --light-bg: #faf5ff;
+  --light-card: #ffffff;
+  --light-text: #581c87;
+  --light-border: #e9d5ff;
+  --danger: #e11d48;
+  --warning: #ea580c;
+} */
+/* Midnight Blue */
+/* :root {
+  --primary: #1e3a8a;
+  --primary-light: #2563eb;
+  --secondary: #0ea5e9;
+  --dark-bg: #0a0e1a;
+  --dark-card: #1e2a3a;
+  --dark-text: #dbeafe;
+  --dark-border: #1d4ed8;
   --light-bg: #f8fafc;
   --light-card: #ffffff;
-  --light-text: #334155;
-  --light-border: #e2e8f0;
+  --light-text: #1e3a8a;
+  --light-border: #bfdbfe;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+} */
+/* Sapphire Edge */
+:root {
+  --primary: #1e40af;
+  --primary-light: #6366f1;
+  --secondary: #059669;
+  --dark-bg: #0b1426;
+  --dark-card: #1e2a47;
+  --dark-text: #e0f2fe;
+  --dark-border: #1d4ed8;
+  --light-bg: #f0f9ff;
+  --light-card: #ffffff;
+  --light-text: #1e3a8a;
+  --light-border: #bae6fd;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+  --text-color: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --danger: #ff6b6b;
+  --success: #51cf66;
+}
+/* Violet Fusion */
+/* :root {
+  --primary: #5b21b6;
+  --primary-light: #8b5cf6;
+  --secondary: #06b6d4;
+  --dark-bg: #0f0a19;
+  --dark-card: #1c1626;
+  --dark-text: #ede9fe;
+  --dark-border: #7c3aed;
+  --light-bg: #fefbff;
+  --light-card: #ffffff;
+  --light-text: #4c1d95;
+  --light-border: #ddd6fe;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+} */
+
+
+/* Indigo Dreams */
+:root {
+  --primary: #4f46e5;
+  --primary-light: #7c3aed;
+  --secondary: #06b6d4;
+  --dark-bg: #0c0a1f;
+  --dark-card: #1a1625;
+  --dark-text: #e0e7ff;
+  --dark-border: #312e81;
+  --light-bg: #f1f5f9;
+  --light-card: #ffffff;
+  --light-text: #1e1b4b;
+  --light-border: #e0e7ff;
   --danger: #ef4444;
   --warning: #f59e0b;
 }
-
 .mm-backdrop {
   position: fixed;
   inset: 0;

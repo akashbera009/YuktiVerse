@@ -37,6 +37,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+       '/ai-help': 'http://localhost:3000',
     },
   },
 });
