@@ -4,6 +4,7 @@ import { Rnd } from 'react-rnd';
 import Popover from './Popover';
 import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaPlus, FaStar, FaTrash, FaSearch, FaBars, FaTimes, FaEdit, FaArrowsAlt , FaRobot , FaExpand } from 'react-icons/fa';
 import axios from 'axios'
+import { OrbitLoader, ProgressLoader, SmartLoader,SquaresLoader } from '../../components/Loader';
 
 const Notebook = ({notebookId, notebookName }) => {
   const [textBoxes, setTextBoxes] = useState([]);
@@ -371,7 +372,10 @@ useEffect(() => {
   return (
     <div className="notebook-container" ref={dropdownRef}>
       {isLoading ? (
-        <div className="loading-indicator">Loading notebook...</div>
+       <div className="smart-loader-container">
+         <SquaresLoader/>
+       </div>
+      
       ) : (
         <>
           <div className="notebook-canvas" ref={dropdownRef}>

@@ -69,6 +69,8 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
   };
   const position = getPosition();
 
+
+  
   // Render into the body
   return ReactDOM.createPortal(
     <div
@@ -89,23 +91,10 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
     >
 
       <div className="ai-popover">
-        {/* <div className="ai-popover-header">
-          <div className="ai-icon">AI</div>
-          <span>AI Assistant</span>
-        </div> */}
-        {/* <div className="ai-insights">
-            <div className="ai-insights-text">
-                <h4>Short Explanation:</h4>
-            </div>
-        </div> */}
+
         <div className="ai-popover-content">
          <div className="ai-summary">
             {loading ? (
-              // <BarsLoader/>
-              // <SmartLoader/>
-              // < InlineLoader/>
-              // <  RingLoader/>
-              // < SquaresLoader/>
               < DotsLoader/>
             ) : (
             <p>
@@ -144,6 +133,7 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
         <AiHelpers
           text={text}
           onClose={() => setCopilotOpen(false)}
+          mode='notepad'
         />
       )}
       

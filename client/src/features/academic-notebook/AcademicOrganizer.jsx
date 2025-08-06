@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef , useMemo } from 'react';
-import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaPlus, FaStar, FaTrash, FaSearch, FaBars, FaTimes, FaEdit, FaArrowsAlt } from 'react-icons/fa';
+import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaPlus, FaStar, FaTrash, FaSearch, FaBars, FaTimes, FaEdit, FaArrowsAlt} from 'react-icons/fa';
 import './AcademicOrganizer.css';
 import NewModal from "./NewModal"
 // import NotebookEditor from "./NotebookEditor"
 import RenamePrompt from "./RenamePrompt"
-import MoveModal from "./MoveModal"
+// import MoveModal from "./MoveModal"
 // import ContextMenu from './ContextMenu';
 import Notebook from '../ai-notepad/Notebook';
+// import ModernPDFViewer from '../ai-notepad/ModernPDFViewer';
+import ModernPDFViewer from '../ai-notepad/MOdernPDFViewer';
 import axios from 'axios';
 import {DotsLoader,
   RingLoader,
@@ -21,6 +23,7 @@ import {DotsLoader,
   useLoader,
   withLoading,
   LoaderShowcase} from '../../components/Loader';
+import AiHelpers from '../ai-notepad/AiHelpers';
 
 const STORAGE_KEY = 'academicOrganizerData';
 
@@ -32,15 +35,14 @@ const AcademicOrganizer = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('notes');
   const [recentFiles, setRecentFiles] = useState([]);
-  // const [importantFiles, setImportantFiles] = useState([]);
+
   const [creatingType, setCreatingType] = useState(null);
   const [newItemName, setNewItemName] = useState('');
   const [contextMenu, setContextMenu] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  // const [confirmText, setConfirmText] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null); 
 
   const [showNewModal, setShowNewModal] = useState(false);
-  // const [editingNote, setEditingNote] = useState(null);''
+  
   const [moving, setMoving] = useState(null);
   const [renaming, setRenaming] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,27 +63,43 @@ const AcademicOrganizer = () => {
 
   const [viewerType, setViewerType] = useState(null);
   const [notebookContent, setNotebookContent] = useState(null);
+ 
+  const [editingYearId, setEditingYearId] = useState(null); 
+  const [editingSubjectId, setEditingSubjectId] = useState(null); 
+  const [editingChapterId, setEditingChapterId] = useState(null); 
+  const [showNotebookForm, setShowNotebookForm] = useState(false); 
+  // const [notebookName, setNotebookName] = useState('');
+  // const [textBoxes, setTextBoxes] = useState([]); 
+  // const [isSaving, setIsSaving] = useState(false);
 
-  // const [newYearTitle, setNewYearTitle] = useState('');
-  const [editingYearId, setEditingYearId] = useState(null);
-  // const [yearEditValue, setYearEditValue] = useState('');
+  const [chatActive , setChatActive] = useState(false)
+  const panelRef = useRef(null);
+  // ✅ Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (panelRef.current && !panelRef.current.contains(event.target)) {
+        setChatActive(false);
+      }
+    };
 
-  // const [newSubjectName, setNewSubjectName] = useState('');
-  const [editingSubjectId, setEditingSubjectId] = useState(null);
-  // const [subjectEditValue, setSubjectEditValue] = useState('');
+    if (chatActive) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
 
-  // const [newChapterTitle, setNewChapterTitle] = useState('');
-  const [editingChapterId, setEditingChapterId] = useState(null);
-  // const [chapterEditValue, setChapterEditValue] = useState('');
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [chatActive]);
+    // at the top of your component
+    const openInNotes = (file) => {
+      handleFileClick(file);
+      setActiveTab('notes');
+    };
 
-  const [showNotebookForm, setShowNotebookForm] = useState(false);
-  // const [notebookId, setNotebookId] = useState('');
-  const [notebookName, setNotebookName] = useState('');
-  const [textBoxes, setTextBoxes] = useState([]); // Mocking one by default
-  const [isSaving, setIsSaving] = useState(false);
-
-const [allFiles, setAllFiles] = useState([]);
-const [filesLoading, setFilesLoading] = useState(false);
+  const [allFiles, setAllFiles] = useState([]);
+  const [filesLoading, setFilesLoading] = useState(false);
 
   useEffect(() => {
     const fetchYears = async () => {
@@ -235,6 +253,7 @@ const [filesLoading, setFilesLoading] = useState(false);
   // Handle closing file view
   const handleCloseFile = () => {
     setSelectedFile(null);
+    setFileLoading(null)
   };
 
   const handleCreateYear = async (title) => {
@@ -280,7 +299,7 @@ const [filesLoading, setFilesLoading] = useState(false);
   // Delete function for the folders only 
   const handleDeleteItem = async (type, id) => {
     // if (!window.confirm("Are you sure you want to delete this item and all its contents?")) return;
-setDeleteTarget(true);
+    setDeleteTarget(true);
     try {
       if (type === 'year') {
         await axios.delete(`/years/${id}`);
@@ -453,45 +472,45 @@ setDeleteTarget(true);
     }
   };
 
-  const createNotebook = async () => {
-    try {
-      setIsSaving(true);
+  // const createNotebook = async () => {
+  //   try {
+  //     setIsSaving(true);
       
-      const payload = {
-        name: notebookName,
-        chapter: selectedChapterId, 
-        content: {
-          textBoxes: textBoxes
-        }
-      };
+  //     const payload = {
+  //       name: notebookName,
+  //       chapter: selectedChapterId, 
+  //       content: {
+  //         textBoxes: textBoxes
+  //       }
+  //     };
       
-      const response = await axios.post('/api/notebooks/', payload);
-      console.log('Notebook created:', response.data);
-      setMaterials(prev => ({
-        ...prev,
-        notebooks: [...(prev.notebooks || []), response.data]
-      }));
+  //     const response = await axios.post('/api/notebooks/', payload);
+  //     console.log('Notebook created:', response.data);
+  //     setMaterials(prev => ({
+  //       ...prev,
+  //       notebooks: [...(prev.notebooks || []), response.data]
+  //     }));
       
-      setNotebookName('');
-      setTextBoxes([]);
-      setShowNotebookForm(false);
+  //     setNotebookName('');
+  //     setTextBoxes([]);
+  //     setShowNotebookForm(false);
       
-    } catch (err) {
-      console.error('Failed to create notebook:', err);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  //   } catch (err) {
+  //     console.error('Failed to create notebook:', err);
+  //   } finally {
+  //     setIsSaving(false);
+  //   }
+  // };
 
-  const viewNotebookById = async (noteId) => {
-    try {
-      const res = await axios.get(`/api/notebooks/${noteId}`);
-      setSelectedNotebook(res.data);
-      console.log('viewing notebook:', res.data);
-    } catch (err) {
-      console.error('Failed to fetch notebook:', err);
-    }
-  };
+  // const viewNotebookById = async (noteId) => {
+  //   try {
+  //     const res = await axios.get(`/api/notebooks/${noteId}`);
+  //     setSelectedNotebook(res.data);
+  //     console.log('viewing notebook:', res.data);
+  //   } catch (err) {
+  //     console.error('Failed to fetch notebook:', err);
+  //   }
+  // };
 
   // Rename notebook
   const renameNotebook = async (noteId, newName) => {
@@ -513,11 +532,7 @@ setDeleteTarget(true);
     await axios.patch(`/api/handwritten-notes/${noteId}/important`);
   };
 
-  const handleRename = async (file, type) => {
-    const currentName = type === 'notebook' ? file.name : file.title;
-    const newName = prompt("Enter new name:", currentName);
-    if (!newName || newName === currentName) return;
-
+  const handleRename = async (file, type, newName) => {
     try {
       if (type === 'notebook') {
         await renameNotebook(file._id, newName);
@@ -541,6 +556,7 @@ setDeleteTarget(true);
       alert("Failed to rename");
     }
   };
+
 
   // This toggle works for only the notebook and handwrittenNotes
   const handleToggleImportant = async (file, type) => {
@@ -570,16 +586,6 @@ setDeleteTarget(true);
             : f
         )
       );
-
-    //   setMaterials(prev => ({
-    //     ...prev,
-    //     notebooks: prev.notebooks.map(nb =>
-    //       nb._id === file._id ? { ...nb, important: !nb.important } : nb
-    //     ),
-    //     handwrittenNotes: prev.handwrittenNotes.map(h =>
-    //       h._id === file._id ? { ...h, important: !h.important } : h
-    //     )
-    // }));
 
     } catch (err) {
       console.error("Failed to toggle important:", err);
@@ -629,15 +635,15 @@ const getSteps = () => {
   //   const importantHandwritten = materials.handwrittenNotes?.filter(n => n.important) || [];
   //   return [...importantNotebooks, ...importantHandwritten];
   // };
-const getAllImportantFiles = () => {
-  const importantNotebooks = (materials.notebooks || [])
-    .filter(n => n.important)
-    .map(n => ({ ...n, type: 'notebook', name: n.name }));
-  const importantHandwritten = (materials.handwrittenNotes || [])
-    .filter(h => h.important)
-    .map(h => ({ ...h, type: 'handwritten', name: h.title }));
-  return [...importantNotebooks, ...importantHandwritten];
-};
+// const getAllImportantFiles = () => {
+//   const importantNotebooks = (materials.notebooks || [])
+//     .filter(n => n.important)
+//     .map(n => ({ ...n, type: 'notebook', name: n.name }));
+//   const importantHandwritten = (materials.handwrittenNotes || [])
+//     .filter(h => h.important)
+//     .map(h => ({ ...h, type: 'handwritten', name: h.title }));
+//   return [...importantNotebooks, ...importantHandwritten];
+// };
 
 const [isFetchingAllFiles, setIsFetchingAllFiles] = useState(false);
 const [allFilesFetched, setAllFilesFetched] = useState(false);
@@ -749,7 +755,7 @@ const updateAllFilesCache = (chapterId, updatedMaterials, yearTitle, subjectName
     prevFiles.map(f =>
       f._id === f._id ? { ...f, important: !f.important } : f
     )
-    // Remove old files from this chapter
+    // Re old files from this chapter
     const filteredFiles = prevFiles.filter(file => file.chapterId !== chapterId);
     
     // Add updated files
@@ -852,11 +858,6 @@ const searchAllFiles = (searchTerm) => {
   // Filter files based on search
   const filteredFiles = () => {
     const allFiles = getAllFiles();
-    // if (!searchTerm) return allFiles;
-    // return allFiles.filter(file => {
-    //   const fileName = file.type === 'notebook' ? file.name : file.title;
-    //   return fileName.toLowerCase().includes(searchTerm.toLowerCase());
-    // });
     if (!searchTerm) {
       const notebooks = materials.notebooks?.map(n => ({ ...n, type: 'notebook' })) || [];
       const handwritten = materials.handwrittenNotes?.map(n => ({ ...n, type: 'handwritten' })) || [];
@@ -930,6 +931,7 @@ const updateFileInCache = (fileId, updates) => {
 };
 
 
+// console.log(selectedFile);
 
 
 
@@ -1011,7 +1013,7 @@ const updateFileInCache = (fileId, updates) => {
           <button className="nav-icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <FaBars />
           </button>
-          <div className="app-name">Academic Organizer</div>
+          <div className="app-name">YuktiVerse</div>
         </div>
         
  <div className="tabs-sliding" ref={tabsRef}>
@@ -1064,74 +1066,79 @@ const updateFileInCache = (fileId, updates) => {
             />
           </div>
 
-          {/* Search Results Popup */}
-          {/* {showSearchResults && searchTerm.trim() !== '' && (
-            <div className="global-search-results">
-              {filteredFiles().map((file, index) => (
-                <div
-                  key={`${file._id}-${index}`}
-                  className="search-result-item"
-                  onClick={() => {
-                    handleFileClick(file);
-                    setSearchTerm('');
-                    setShowSearchResults(false);
-                  }}
-                >
-                  <div className="search-result-icon">
-                    {file.type === 'notebook' && <FaStickyNote />}
-                    {file.type === 'handwritten' && <FaFilePdf />}
-                  </div>
-                  <div className="search-result-name">
-                    {file.type === 'notebook' ? file.name : file.title}
-                  </div>
-                  <div className="search-result-path">
-                    {`${selectedYear || ''} / ${selectedSubject || ''} / ${selectedChapter || ''}`}
-                  </div>
-                </div>
-              ))}
+        {/* chatbot */}
+     <>
+      <button
+        className="chatbot-icon-button"
+        onClick={() => setChatActive(prev => !prev)} // ✅ Fix: toggle state correctly
+        aria-label="Open YuktiVerse Chat"
+      >
+        <div className="chatbot-icon-ripple" />
+        <div className="chatbot-glow" />
+        <div className="chatbot-icon-container">
+         <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="white"
+          className="chatbot-icon"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M18 3a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-4.724l-4.762 2.857a1 1 0 0 1 -1.508 -.743l-.006 -.114v-2h-1a4 4 0 0 1 -3.995 -3.8l-.005 -.2v-8a4 4 0 0 1 4 -4zm-2.8 9.286a1 1 0 0 0 -1.414 .014a2.5 2.5 0 0 1 -3.572 0a1 1 0 0 0 -1.428 1.4a4.5 4.5 0 0 0 6.428 0a1 1 0 0 0 -.014 -1.414m-5.69 -4.286h-.01a1 1 0 1 0 0 2h.01a1 1 0 0 0 0 -2m5 0h-.01a1 1 0 0 0 0 2h.01a1 1 0 0 0 0 -2" />
+        </svg>
+        </div>
+      </button>
 
-              {filteredFiles().length === 0 && (
-                <div className="no-results">No matching files found.</div>
+      {chatActive && (
+        <div ref={panelRef}>
+          <AiHelpers
+            text="Hi"
+            onClose={() => setChatActive(false)} // ✅ Pass close handler
+            mode= "chatbot"
+          />
+        </div>
+      )}
+    </>
+          {showSearchResults && searchTerm.trim() !== '' && (
+            <div className="global-search-results">
+              {isFetchingAllFiles ? (
+                // <div className="loader">Fetching all files...</div>
+                <SquaresLoader/>
+
+              ) : fetchAllFilesError ? (
+                <div className="error">{fetchAllFilesError}</div>
+              ) : (
+                <>
+                  {searchAllFiles(searchTerm).map((file, index) => (
+                    <div
+                      key={`${file._id}-${index}`}
+                      className="search-result-item"
+                      onClick={() => {
+                        loadChapterAndOpenFile(file);
+                        setSearchTerm('');
+                        setShowSearchResults(false);
+                      }}
+                    >
+                      <div className="search-result-icon">
+                        {file.type === 'notebook' && <FaStickyNote />}
+                        {file.type === 'handwritten' && <FaFilePdf />}
+                      </div>
+                      <div className="search-result-name">
+                        {file.type === 'notebook' ? file.name : file.title}
+                      </div>
+                      <div className="search-result-path">
+                        {file.fullPath}
+                      </div>
+                    </div>
+                  ))}
+                  {searchAllFiles(searchTerm).length === 0 && (
+                    <div className="no-results">No matching files found.</div>
+                  )}
+                </>
               )}
             </div>
-          )} */}
-          {showSearchResults && searchTerm.trim() !== '' && (
-  <div className="global-search-results">
-    {isFetchingAllFiles ? (
-      <div className="loader">Fetching all files...</div>
-    ) : fetchAllFilesError ? (
-      <div className="error">{fetchAllFilesError}</div>
-    ) : (
-      <>
-        {searchAllFiles(searchTerm).map((file, index) => (
-          <div
-            key={`${file._id}-${index}`}
-            className="search-result-item"
-            onClick={() => {
-              loadChapterAndOpenFile(file);
-              setSearchTerm('');
-              setShowSearchResults(false);
-            }}
-          >
-            <div className="search-result-icon">
-              {file.type === 'notebook' && <FaStickyNote />}
-              {file.type === 'handwritten' && <FaFilePdf />}
-            </div>
-            <div className="search-result-name">
-              {file.type === 'notebook' ? file.name : file.title}
-            </div>
-            <div className="search-result-path">
-              {file.fullPath}
-            </div>
-          </div>
-        ))}
-        {searchAllFiles(searchTerm).length === 0 && (
-          <div className="no-results">No matching files found.</div>
-        )}
-      </>
-    )}
-  </div>
-)}
+          )}
         </div>
       </div>
 
@@ -1139,7 +1146,9 @@ const updateFileInCache = (fileId, updates) => {
       <div className={`ao-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-content">
         {yearsLoading ? (
-          <SmartLoader context="card" text="" />
+          // <SmartLoader context="card" text="" />
+          <OrbitLoader/>
+          // <SquaresLoader/>
            ) : (
           years.map(year => (
             <div key={year._id} className="ao-section">
@@ -1355,7 +1364,7 @@ const updateFileInCache = (fileId, updates) => {
                 <div 
                   key={index} 
                   className="recent-card"
-                  onClick={() => handleFileClick(file)}
+                  onClick={() => openInNotes(file)}
                 >
                   <div className="file-icon">
                     {file.type === 'notebook' && <FaStickyNote />}
@@ -1390,7 +1399,7 @@ const updateFileInCache = (fileId, updates) => {
             <div
               key={file._id}
               className="ao-file-card"
-              onClick={() => handleFileClick(file)}
+              onClick={() => openInNotes(file)}
             >
               <div className="file-icon-container">
                 <div className="file-icon">
@@ -1426,7 +1435,6 @@ const updateFileInCache = (fileId, updates) => {
         {activeTab === 'notes' && selectedFile ? (
           <div className="file-content-container">
             <div className="file-header">
-              {/* <h3>{selectedFile.type === 'notebook' ? selectedFile.name : selectedFile.title}</h3> */}
               <button className="close-btn" onClick={handleCloseFile}>
                 <FaTimes />
               </button>
@@ -1434,18 +1442,9 @@ const updateFileInCache = (fileId, updates) => {
             <div className="file-content">
               {selectedFile.type === 'handwritten' ? (
                 <div className="pdf-preview">
-                    {/* <FaFilePdf className="preview-icon" />
-                    <p>PDF content would be displayed here</p> */}
-                    <button onClick={window.open(selectedFile.fileUrl, "_blank")}> view </button>
-                  {selectedFile.fileUrl && (<>
-                    <iframe 
-                      src={selectedFile.fileUrl} 
-                      width="100%" 
-                      height="600px"
-                      title="PDF Viewer"
-                      />
-                    
-                    </>
+
+                  {selectedFile.fileUrl && (
+                    <ModernPDFViewer fileUrl= {selectedFile.fileUrl} fileName = {selectedFile.title} type='handwritten' />
                   )}
                 </div>
               ) : selectedFile.type === 'image' ? (
@@ -1473,7 +1472,8 @@ const updateFileInCache = (fileId, updates) => {
                 <div className="files-content-wrapper">
                 {fileLoading && (
                   <div className="fileloader-overlay">
-                    <SmartLoader context="page" text="Loading file..." />
+                    {/* <SmartLoader context="page" text="Loading file..." /> */}
+                    <SquaresLoader/>
                   </div>
                 )}
               {error && <div className="error">{error}</div>}
@@ -1520,13 +1520,18 @@ const updateFileInCache = (fileId, updates) => {
                     className="ao-file-card"
                     onClick={() => handleFileClick({ 
                       ...note, 
-                      type: 'handwritten' 
+                      type: 'handwritten' ,
+                      fileType: note.fileType
                     })}
                     onContextMenu={(e) => handleContextMenu(e, 'file', { ...note, type: 'handwritten' })}
                   >
                     <div className="file-icon-container">
                       <div className="file-icon">
-                        <FaFilePdf />
+                        {/* <FaFilePdf /> */}
+                        {note.fileType === 'pdf'
+                          ? <FaFilePdf />
+                          : <FaImage />
+                        }
                       </div>
                       <button 
                         className={`file-action-btn ${note.important ? 'active' : ''}`}
@@ -1607,7 +1612,7 @@ const updateFileInCache = (fileId, updates) => {
             <FaEdit /> Rename
           </button>
 
-          <button 
+          {/* <button 
             className="context-menu-item" 
             onClick={() => {
               setMoving(contextMenu.item);
@@ -1615,7 +1620,7 @@ const updateFileInCache = (fileId, updates) => {
             }}
           >
             <FaArrowsAlt /> Move
-          </button>
+          </button> */}
           
           <button 
             className="context-menu-item"
@@ -1632,7 +1637,12 @@ const updateFileInCache = (fileId, updates) => {
               setContextMenu(null);
             }}
           >
-            <FaStar /> Toggle Important
+            {contextMenu.item.important  == false ? 
+             (<><FaStar /> Mark Important</>) :(
+              <><svg  xmlns="http://www.w3.org/2000/svg"  width="16"  height="16"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-star-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 3l18 18" /><path d="M10.012 6.016l1.981 -4.014l3.086 6.253l6.9 1l-4.421 4.304m.012 4.01l.588 3.426l-6.158 -3.245l-6.172 3.245l1.179 -6.873l-5 -4.867l6.327 -.917" /></svg> Unmark Important</>
+             )
+            }
+           
           </button>
 
          <button
@@ -1680,7 +1690,7 @@ const updateFileInCache = (fileId, updates) => {
             } else if (renaming.type === 'chapter') {
               await renameChapter(renaming.item._id, newName);
             } else if (renaming.type === 'file') {
-              await handleRename(renaming.item, renaming.item.type);
+              await handleRename(renaming.item, renaming.item.type, newName); // pass newName here
             }
             setRenaming(null);
           }}
@@ -1689,7 +1699,7 @@ const updateFileInCache = (fileId, updates) => {
       )}
 
       {/* Move Modal */}
-      {moving && (
+      {/* {moving && (
         <MoveModal
           item={moving}
           onMove={(destination) => {
@@ -1699,7 +1709,7 @@ const updateFileInCache = (fileId, updates) => {
           }}
           onClose={() => setMoving(null)}
         />
-      )}
+      )} */}
 
       {/* Delete Confirmation Modal */}
      {deleteTarget && (

@@ -124,7 +124,7 @@
 .loader-squares .square {
   background: var(--loader-primary);
   border-radius: 4px;
-  animation: squareMorph 1.2s ease-in-out infinite;
+  animation: squareMorph .9s ease-in-out infinite;
   /* Neumorphic square effect */
   box-shadow:
     0 0 10px rgba(99, 102, 241, 0.3),

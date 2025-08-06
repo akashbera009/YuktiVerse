@@ -1,19 +1,35 @@
 // NewModal.jsx
-import React, { useState } from 'react';
-import { FaFilePdf, FaImage, FaStickyNote, FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaFilePdf, FaImage, FaStickyNote, FaTimes, FaPlus, FaUpload, 
+  
+  // FaSparkles
+
+} from 'react-icons/fa';
 import axios from 'axios';
 import './NewModal.css';
 
 export default function NewModal({
   onClose,
   onUploadFile,
-  onCreateNotebook,   // now matches parent
+  onCreateNotebook,
   selectedChapterId
 }) {
   const [showNotebookForm, setShowNotebookForm] = useState(false);
-  const [notebookName, setNotebookName]         = useState('');
-  const [textBoxes, setTextBoxes]               = useState([]);
-  const [isSaving, setIsSaving]                 = useState(false);
+  const [notebookName, setNotebookName] = useState('');
+  const [textBoxes, setTextBoxes] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Animation effect on mount
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => onClose(), 300);
+  };
 
   const createNotebook = async () => {
     if (!notebookName.trim()) {
@@ -30,13 +46,11 @@ export default function NewModal({
       chapter: selectedChapterId,
       content: { textBoxes }
     };
-    console.log('📤 payload:', payload);
 
     setIsSaving(true);
     try {
       const { data: newNotebook } = await axios.post('/api/notebooks/', payload);
       onCreateNotebook(newNotebook);
-      // Reset form state
       setNotebookName('');
       setTextBoxes([]);
       setShowNotebookForm(false);
@@ -48,61 +62,142 @@ export default function NewModal({
     }
   };
 
+  const handleFileUpload = (file, type) => {
+    onUploadFile(file, type);
+    handleClose();
+  };
+
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <button className="close-btn" onClick={onClose}><FaTimes/></button>
-        <h3>Create or Upload</h3>
+    <div 
+      className={`modal-backdrop ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''}`} 
+      onClick={handleClose}
+    >
+      <div className={`modal ${isVisible ? 'visible' : ''}`} onClick={e => e.stopPropagation()}>
+        <button className="close-btn-mod" onClick={handleClose}>
+          <FaTimes />
+        </button>
+        
+        <div className="modal-header"></div>
+        {/* <div className="modal-header">
+          <div className="modal-icon">
+            <FaPlus />
+          </div>
+          <h3>Create New Content</h3>
+          <p>Choose what you'd like to create or upload</p>
+        </div> */}
+
         <div className="modal-actions">
-          <label className="upload-btn">
-            <FaFilePdf/> Upload PDF
-            <input
-              type="file"
-              accept="application/pdf"
-              hidden
-              onChange={e => onUploadFile(e.target.files[0], 'pdf')}
-            />
-          </label>
-          <label className="upload-btn">
-            <FaImage/> Upload Image
+       {/* <button className="spacer-button" aria-hidden="true"></button> */}
+
+
+          {/* <label className="action-card upload-card image"> */}
+          <button className="action-card upload-card pdf">
+            <div className="card-icon">
+                 <FaFilePdf />
+            </div>
+           <div className="card-content">
+              <h4>Upload PDF</h4>
+              <p>Import PDF documents</p>
+            </div>
+            <div className="card-arrow">→</div>
             <input
               type="file"
               accept="image/*"
               hidden
-              onChange={e => onUploadFile(e.target.files[0], 'image')}
-            />
-          </label>
+              onChange={e => handleFileUpload(e.target.files[0], 'image')}
+              />
+          </button>
+          <button className="action-card upload-card image">
+            <div className="card-icon">
+              <FaImage />
+            </div>
+            <div className="card-content">
+              <h4>Upload Image</h4>
+              <p>Add images to your collection</p>
+            </div>
+            <div className="card-arrow">→</div>
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={e => handleFileUpload(e.target.files[0], 'image')}
+              />
+          </button>
+          {/* </label> */}
+
           <button
-            className="notebook-btn"
+            className="action-card notebook-card"
             onClick={() => setShowNotebookForm(true)}
           >
-            <FaStickyNote/> New Notebook
+            <div className="card-icon">
+              <FaStickyNote />
+            </div>
+            <div className="card-content">
+              <h4>New Notebook</h4>
+              <p>Create a blank notebook</p>
+            </div>
+            <div className="card-arrow">→</div>
           </button>
         </div>
       </div>
 
+      {/* Notebook Form Modal */}
       {showNotebookForm && (
-        <div className="modal-overlay" onClick={() => setShowNotebookForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setShowNotebookForm(false)}>
-              <FaTimes/>
+        <div 
+          className={`modal-overlay notebook-form-overlay ${showNotebookForm ? 'visible' : ''}`} 
+          onClick={() => setShowNotebookForm(false)}
+        >
+          <div className="modal-content notebook-form" onClick={e => e.stopPropagation()}>
+            <button className="close-btn-mod" onClick={() => setShowNotebookForm(false)}>
+              <FaTimes />
             </button>
-            <h3>Create New Notebook</h3>
-            <input
-              type="text"
-              placeholder="Notebook name"
-              value={notebookName}
-              onChange={e => setNotebookName(e.target.value)}
-              autoFocus
-            />
-            <div className="modal-actions">
-              <button onClick={() => setShowNotebookForm(false)}>Cancel</button>
-              <button
-                onClick={createNotebook}
-                disabled={!notebookName.trim() || isSaving}
-              >
-                {isSaving ? 'Creating…' : 'Create'}
-              </button>
+            
+            {/* <div className="form-header">
+              <div className="form-icon">
+                sparkle
+              </div>
+              <h3>Create New Notebook</h3>
+              <p>Give your notebook a memorable name</p>
+            </div> */}
+
+            <div className="form-content">
+              <div className="input-group">
+                <label>Notebook Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter notebook name..."
+                  value={notebookName}
+                  onChange={e => setNotebookName(e.target.value)}
+                  autoFocus
+                  className="modern-input"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button 
+                  className="btn-secondary" 
+                  onClick={() => setShowNotebookForm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={createNotebook}
+                  disabled={!notebookName.trim() || isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="spinner"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <FaPlus />
+                      Create Notebook 
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -62,5 +62,8 @@ export const shortExplain = createGeminiHandler(
 export const detailedExplain = createGeminiHandler(
   "Explain this topic in detail with examples."
 );
+export const simpleChat = createGeminiHandler(
+  "please tell "
+);
 
 // text, "Summarize the following content

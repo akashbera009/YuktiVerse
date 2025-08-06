@@ -50,8 +50,10 @@
 :root {
   --primary: #1e40af;
   --primary-light: #6366f1;
+  --primary-shade: rgb(51, 53, 170);
   --secondary: #059669;
   --dark-bg: #0b1426;
+  --dark-sidebar: #0b1426;
   --dark-card: #1e2a47;
   --dark-text: #e0f2fe;
   --dark-border: #1d4ed8;
@@ -92,6 +94,8 @@
 :root {
   --primary: #4f46e5;
   --primary-light: #7c3aed;
+  --primary-shade: rgb(51, 53, 170);
+  --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
   --secondary: #06b6d4;
   --dark-bg: #0c0a1f;
   --dark-card: #1a1625;

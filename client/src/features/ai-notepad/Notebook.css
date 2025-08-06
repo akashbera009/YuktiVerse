@@ -8,6 +8,11 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.smart-loader-container{
+  /* height: 60%; */
+  margin-top: -20% ;
+  transform: scale(2.2);
+}
 .notebook-container {
   display: flex;
   align-items: center;
@@ -124,7 +129,7 @@
 }
 
 .ai-button:hover {
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  /* background: linear-gradient(135deg, #6e8efb, #a777e3); */
   transform: scale(1.1);
 }
 
@@ -167,7 +172,7 @@
 }
 
 .save-button {
-  background: var(--primary-gradient);
+  background: repeating-radial-gradient(circle , var(--primary-light) , var(--primary)); 
   color: white;
   border: none;
   padding: 10px 20px;
@@ -552,3 +557,9 @@ body.dragging {
   border-radius: 12px;
   margin: 20px;
 }
+
+
+
+
+
+

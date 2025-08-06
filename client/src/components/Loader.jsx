@@ -441,7 +441,7 @@ export default {
   ProgressLoader,
   HexagonLoader,
   OverlayLoader,
-  InlineLoader,
+  InlineLoader, 
   SmartLoader,
   useLoader,
   withLoading,

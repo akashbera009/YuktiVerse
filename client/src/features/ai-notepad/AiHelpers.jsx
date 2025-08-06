@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
+import SmartTextFormatter from './AITextFormatter';
 
-const AiHelpers = ({ text, onClose }) => {
+const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -10,43 +12,125 @@ const AiHelpers = ({ text, onClose }) => {
   const [size, setSize] = useState({ width: 400, height: '100vh' });
   const [isResizing, setIsResizing] = useState(false);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'system',
-      content: `I'm analyzing your text: "${text}". How can I help you with this content?`,
-      timestamp: new Date()
-    }
-  ]);
+  
+  // Use useRef instead of useState for didInitial to persist across re-renders
+  const didInitialRef = useRef(false);
+  const initialRequestSentRef = useRef(false);
   
   const panelRef = useRef(null);
   const resizeRef = useRef(null);
+  const LOADING_ID = 'loading';
 
-  const handleSubmit = () => {
-    if (!prompt.trim()) return;
-    
-    // Add user message
-    const userMessage = {
-      id: Date.now(),
-      type: 'user',
-      content: prompt,
+  const saved = sessionStorage.getItem('chat_messages');
+  const [messages, setMessages] = useState(() => {
+    if (saved) {
+      return JSON.parse(saved).map(m => ({
+        ...m,
+        timestamp: new Date(m.timestamp)
+      }));
+    }
+    return [{
+      id: 1,
+      type: 'system',
+      content: 'Hello, how can I help you today?',
       timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = {
-        id: Date.now() + 1,
-        type: 'ai',
-        content: `Based on your text "${text}", here's my analysis of "${prompt}": This is a simulated AI response that would provide intelligent insights about your content.`,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
-    
+    }];
+  });
+
+  const messagesEndRef = useRef(null);
+
+  // Persist to sessionStorage on every messages change
+  useEffect(() => {
+    sessionStorage.setItem('chat_messages', JSON.stringify(messages));
+  }, [messages]);
+
+  // Auto-scroll on every messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  // Fixed notepad mode initial request
+  useEffect(() => {
+    // Only proceed if:
+    // 1. Mode is notepad
+    // 2. We have text
+    // 3. We haven't sent the initial request yet
+    if (mode === 'notepad' && text && !initialRequestSentRef.current) {
+      initialRequestSentRef.current = true; // Mark as sent immediately
+      didInitialRef.current = true;
+
+      // 1) user bubble
+      const userMessageId = Date.now();
+      setMessages(prev => [
+        ...prev,
+        { id: userMessageId, type: 'user', content: text, timestamp: new Date() }
+      ]);
+
+      // 2) loading bubble
+      setMessages(prev => [
+        ...prev,
+        { id: LOADING_ID, type: 'loading', content: 'Thinking…', timestamp: new Date() }
+      ]);
+
+      // 3) fetch & replace
+      axios.post('/ai-help/detailed-explain', { prompt: text, context: text })
+        .then(res => {
+          setMessages(prev => prev.map(m =>
+            m.id === LOADING_ID
+              ? { id: Date.now(), type: 'ai', content: res.data.response, timestamp: new Date() }
+              : m
+          ));
+        })
+        .catch(err => {
+          console.error(err);
+          setMessages(prev => prev.map(m =>
+            m.id === LOADING_ID
+              ? { id: Date.now(), type: 'ai', content: '⚠️ Failed to load.', timestamp: new Date() }
+              : m
+          ));
+        });
+    }
+  }, [mode, text]); // Removed didInitial from dependencies
+
+  const handleSubmit = async () => {
+    if (!prompt.trim()) return;
+    const userId = Date.now();
+
+    // 1) immediate user bubble
+    setMessages(prev => [
+      ...prev,
+      { id: userId, type: 'user', content: prompt, timestamp: new Date() }
+    ]);
+
+    // 2) loading bubble
+    setMessages(prev => [
+      ...prev,
+      { id: LOADING_ID, type: 'loading', content: 'Thinking…', timestamp: new Date() }
+    ]);
+
+    const currentPrompt = prompt;
     setPrompt('');
+
+    const endpoint = '/ai-help/simple-chat';
+    try {
+      const res = await axios.post(endpoint, { prompt: currentPrompt, context: text });
+
+      // 3) replace loading
+      setMessages(prev => prev.map(m =>
+        m.id === LOADING_ID
+          ? { id: Date.now(), type: 'ai', content: res.data.response, timestamp: new Date() }
+          : m
+      ));
+    } catch (err) {
+      console.error(err);
+      setMessages(prev => prev.map(m =>
+        m.id === LOADING_ID
+          ? { id: Date.now(), type: 'ai', content: '⚠️ Something went wrong.', timestamp: new Date() }
+          : m
+      ));
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -229,7 +313,7 @@ const AiHelpers = ({ text, onClose }) => {
           }}>
             ✨
           </div>
-          <span>AI Assistant</span>
+          <span>Yukti AI</span>
         </div>
         
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -351,7 +435,8 @@ const AiHelpers = ({ text, onClose }) => {
                 lineHeight: '1.5',
                 marginBottom: '8px'
               }}>
-                {message.content}
+                {/* {message.content} */}
+                  <SmartTextFormatter text={message.content} />
               </div>
               <div style={{
                 fontSize: '11px',
@@ -363,6 +448,7 @@ const AiHelpers = ({ text, onClose }) => {
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
