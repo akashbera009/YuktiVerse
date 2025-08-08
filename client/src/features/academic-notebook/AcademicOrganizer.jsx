@@ -2,12 +2,8 @@ import React, { useState, useEffect, useRef , useMemo } from 'react';
 import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaPlus, FaStar, FaTrash, FaSearch, FaBars, FaTimes, FaEdit, FaArrowsAlt} from 'react-icons/fa';
 import './AcademicOrganizer.css';
 import NewModal from "./NewModal"
-// import NotebookEditor from "./NotebookEditor"
 import RenamePrompt from "./RenamePrompt"
-// import MoveModal from "./MoveModal"
-// import ContextMenu from './ContextMenu';
 import Notebook from '../ai-notepad/Notebook';
-// import ModernPDFViewer from '../ai-notepad/ModernPDFViewer';
 import ModernPDFViewer from '../ai-notepad/MOdernPDFViewer';
 import axios from 'axios';
 import {DotsLoader,
@@ -24,6 +20,7 @@ import {DotsLoader,
   withLoading,
   LoaderShowcase} from '../../components/Loader';
 import AiHelpers from '../ai-notepad/AiHelpers';
+import { toast } from 'react-toastify';
 
 const STORAGE_KEY = 'academicOrganizerData';
 
@@ -51,6 +48,8 @@ const AcademicOrganizer = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [uploading, setUploading] = useState(false);
+
   // New states implemented 
   const [years, setYears] = useState([]);
   const [selectedYearId, setSelectedYearId] = useState(null);
@@ -74,6 +73,27 @@ const AcademicOrganizer = () => {
 
   const [chatActive , setChatActive] = useState(false)
   const panelRef = useRef(null);
+
+// inside AcademicOrganizer, just below your useState declarations:
+  const persistAllFiles = (newFiles) => {
+     console.log('[Cache] Persisting', newFiles.length, 'files to localStorage');
+    setAllFiles(newFiles);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newFiles));
+  };
+
+  useEffect(() => {
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+       console.log('[Cache] Found saved files, loading', JSON.parse(cached).length, 'items');
+      persistAllFiles(JSON.parse(cached));
+      setAllFilesFetched(true);
+    } else {
+         console.log('[Cache] No cache found, fetching from server');
+      fetchAllFiles();      // fetchAllFiles itself will call persistAllFiles
+    }
+  }, []);
+
+
   // ✅ Close on click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -167,11 +187,16 @@ const AcademicOrganizer = () => {
           console.error('Error fetching materials:', err);
           setError("Failed to load materials");
         })
-        .finally(() => setLoading(true));
+        .finally(() =>{ 
+          setLoading(false);
+          setFileLoading(false);
+         });
     }
   }, [selectedChapterId]);
 
   const handleYearClick = (yearId) => {
+    setSelectedFile(null); // ✅ close any open file
+    setViewerType(null);
     const yearData = years.find(y => y._id === yearId);
     if (selectedYearId === yearId) {
       setSelectedYearId(null);
@@ -189,6 +214,9 @@ const AcademicOrganizer = () => {
   };
 
   const handleSubjectClick = (subjectId) => {
+    setSelectedFile(null);
+    setViewerType(null);
+
     const subjectData = subjects.find(s => s._id === subjectId);
     if (selectedSubjectId === subjectId) {
       setSelectedSubjectId(null);
@@ -206,6 +234,11 @@ const AcademicOrganizer = () => {
   };
 
   const handleChapterClick = (chapterId) => {
+    console.log(chapterId , selectedChapterId , selectedChapter);
+    
+    setSelectedFile(null);  
+    setViewerType(null);
+
     const chapterData = chapters.find(c => c._id === chapterId);
     if (selectedChapterId === chapterId) {
       setSelectedChapterId(null);
@@ -222,6 +255,8 @@ const AcademicOrganizer = () => {
 
   const [fileLoading, setFileLoading] = useState(false);
   const handleFileClick = async (file) => {
+    console.log(file._id);
+    // /api/notebooks/_id
     setSelectedFile(file);
     setViewerType(null); // reset before loading new
     setFileLoading(true);
@@ -233,7 +268,7 @@ const AcademicOrganizer = () => {
     
     if (file.type === 'notebook') {
       try {
-        const res = await axios.get(`/api/notebooks/${file.note_id}`);
+        const res = await axios.get(`/api/notebooks/${file._id}`);
         setNotebookContent(res.data);
         // setFileLoading(false);
         setViewerType('notebook');
@@ -298,7 +333,7 @@ const AcademicOrganizer = () => {
 
   // Delete function for the folders only 
   const handleDeleteItem = async (type, id) => {
-    // if (!window.confirm("Are you sure you want to delete this item and all its contents?")) return;
+    if (!window.confirm("Are you sure you want to delete this item and all its contents?")) return;
     setDeleteTarget(true);
     try {
       if (type === 'year') {
@@ -343,9 +378,11 @@ const AcademicOrganizer = () => {
 
   // For the notebook and written notes 
   const handleDeleteFile = async (file, type) => {
-    // if (!window.confirm("Are you sure you want to delete this file?")) return;
-
+    console.log(file._id , "note id",file.note_id);
+    if (!window.confirm("Are you sure you want to delete this file?")) return;
+    
     try {
+      
       if (type === 'notebook') {
         await axios.delete(`/api/notebooks/${file._id}`);
         setMaterials(prev => ({
@@ -357,6 +394,8 @@ const AcademicOrganizer = () => {
           handleCloseFile(); // optional: clear preview if open
         }
       } else if (type === 'handwritten') {
+        console.log(type , file._id);
+        
         await axios.delete(`/api/handwritten-notes/${file._id}`);
         setMaterials(prev => ({
           ...prev,
@@ -472,46 +511,6 @@ const AcademicOrganizer = () => {
     }
   };
 
-  // const createNotebook = async () => {
-  //   try {
-  //     setIsSaving(true);
-      
-  //     const payload = {
-  //       name: notebookName,
-  //       chapter: selectedChapterId, 
-  //       content: {
-  //         textBoxes: textBoxes
-  //       }
-  //     };
-      
-  //     const response = await axios.post('/api/notebooks/', payload);
-  //     console.log('Notebook created:', response.data);
-  //     setMaterials(prev => ({
-  //       ...prev,
-  //       notebooks: [...(prev.notebooks || []), response.data]
-  //     }));
-      
-  //     setNotebookName('');
-  //     setTextBoxes([]);
-  //     setShowNotebookForm(false);
-      
-  //   } catch (err) {
-  //     console.error('Failed to create notebook:', err);
-  //   } finally {
-  //     setIsSaving(false);
-  //   }
-  // };
-
-  // const viewNotebookById = async (noteId) => {
-  //   try {
-  //     const res = await axios.get(`/api/notebooks/${noteId}`);
-  //     setSelectedNotebook(res.data);
-  //     console.log('viewing notebook:', res.data);
-  //   } catch (err) {
-  //     console.error('Failed to fetch notebook:', err);
-  //   }
-  // };
-
   // Rename notebook
   const renameNotebook = async (noteId, newName) => {
     await axios.patch(`/api/notebooks/${noteId}/rename`, { name: newName });
@@ -609,41 +608,21 @@ const AcademicOrganizer = () => {
     setContextMenu(null);
   };
 
-  // Get full path for breadcrumb
-  // const getFullPath = () => {
-  //   const path = [];
-  //   if (selectedYear) path.push(selectedYear);
-  //   if (selectedSubject) path.push(selectedSubject);
-  //   if (selectedChapter) path.push(selectedChapter);
-  //   if (selectedFile) path.push(selectedFile.name);
-  //   return path.join(' > ');
-  // };
-const getSteps = () => {
-  const steps = [];
-  if (selectedYear) steps.push({ label: selectedYear });
-  if (selectedSubject) steps.push({ label: selectedSubject });
-  if (selectedChapter) steps.push({ label: selectedChapter});
-  if (selectedFile) {
-    steps.push({ label: selectedFile.name }); // current step
-  }
-  return steps;
-};
-
-  // Get all important files from materials
-  // const getAllImportantFiles = () => {
-  //   const importantNotebooks = materials.notebooks?.filter(n => n.important) || [];
-  //   const importantHandwritten = materials.handwrittenNotes?.filter(n => n.important) || [];
-  //   return [...importantNotebooks, ...importantHandwritten];
-  // };
-// const getAllImportantFiles = () => {
-//   const importantNotebooks = (materials.notebooks || [])
-//     .filter(n => n.important)
-//     .map(n => ({ ...n, type: 'notebook', name: n.name }));
-//   const importantHandwritten = (materials.handwrittenNotes || [])
-//     .filter(h => h.important)
-//     .map(h => ({ ...h, type: 'handwritten', name: h.title }));
-//   return [...importantNotebooks, ...importantHandwritten];
-// };
+  const getSteps = () => {
+    const steps = [];
+    console.log(selectedFile);
+    
+    if (selectedYear) steps.push({ label: selectedYear });
+    if (selectedSubject) steps.push({ label: selectedSubject });
+    if (selectedChapter) steps.push({ label: selectedChapter});
+    if (selectedFile?.type == 'notebook') {
+      steps.push({ label: selectedFile?.name }); 
+    }
+    else if(selectedFile?.type == 'handwritten'){
+      steps.push({label : selectedFile?.title})
+    }
+    return steps;
+  };
 
 const [isFetchingAllFiles, setIsFetchingAllFiles] = useState(false);
 const [allFilesFetched, setAllFilesFetched] = useState(false);
@@ -716,6 +695,7 @@ const fetchAllFiles = async () => {
     console.log(`Loaded ${allFilesData.length} files for search`);
     setAllFiles(allFilesData);
     setAllFilesFetched(true);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allFilesData));
   } catch (err) {
     console.error('Error fetching all files:', err);
     setFetchAllFilesError('Failed to fetch all files.');
@@ -797,6 +777,11 @@ const updateAllFilesCache = (chapterId, updatedMaterials, yearTitle, subjectName
       });
     }
     
+    const merged = [...filteredFiles, ...newFiles];
+     console.log(`[Cache] Updating cache for chapter ${chapterId}: now ${merged.length} total files`);
+    persistAllFiles(merged);
+    return merged;
+    
     return [...filteredFiles, ...newFiles];
   });
 };
@@ -841,12 +826,12 @@ useEffect(() => {
 // Updated search function that uses allFiles
 const searchAllFiles = (searchTerm) => {
   if (!searchTerm.trim()) return [];
-  
   const term = searchTerm.toLowerCase();
   return allFiles.filter(file => 
     file.searchableText.includes(term) || 
     file.fullPath.toLowerCase().includes(term)
   );
+  
 };
   // Get all files for search
   const getAllFiles = () => {
@@ -891,60 +876,86 @@ const searchAllFiles = (searchTerm) => {
 };
 
 // Functions to update cache when files are created/deleted/renamed
-const addFileToCache = (newFile, type) => {
-  const yearTitle = years.find(y => y._id === selectedYearId)?.title || '';
-  const subjectName = subjects.find(s => s._id === selectedSubjectId)?.name || '';
-  const chapterTitle = chapters.find(c => c._id === selectedChapterId)?.title || '';
+// const addFileToCache = (newFile, type) => {
+//   const yearTitle = years.find(y => y._id === selectedYearId)?.title || '';
+//   const subjectName = subjects.find(s => s._id === selectedSubjectId)?.name || '';
+//   const chapterTitle = chapters.find(c => c._id === selectedChapterId)?.title || '';
   
-  const fileWithContext = {
-    ...newFile,
-    type,
-    yearId: selectedYearId,
-    yearTitle,
-    subjectId: selectedSubjectId,
-    subjectName,
-    chapterId: selectedChapterId,
-    chapterTitle,
-    fullPath: `${yearTitle} / ${subjectName} / ${chapterTitle}`,
-    searchableText: (type === 'notebook' ? newFile.name : newFile.title).toLowerCase()
-  };
+//   const fileWithContext = {
+//     ...newFile,
+//     type,
+//     yearId: selectedYearId,
+//     yearTitle,
+//     subjectId: selectedSubjectId,
+//     subjectName,
+//     chapterId: selectedChapterId,
+//     chapterTitle,
+//     fullPath: `${yearTitle} / ${subjectName} / ${chapterTitle}`,
+//     searchableText: (type === 'notebook' ? newFile.name : newFile.title).toLowerCase()
+//   };
   
-  setAllFiles(prev => [...prev, fileWithContext]);
-};
+//   setAllFiles(prev => [...prev, fileWithContext]);
+// };
 
-const removeFileFromCache = (fileId) => {
-  setAllFiles(prev => prev.filter(file => file._id !== fileId));
-};
+// const removeFileFromCache = (fileId) => {
+//   setAllFiles(prev => prev.filter(file => file._id !== fileId));
+// };
 
-const updateFileInCache = (fileId, updates) => {
-  setAllFiles(prev => prev.map(file => {
-    if (file._id === fileId) {
-      const updatedFile = { ...file, ...updates };
-      // Update searchable text if name/title changed
-      if (updates.name || updates.title) {
-        updatedFile.searchableText = (updates.name || updates.title).toLowerCase();
-      }
-      return updatedFile;
-    }
-    return file;
-  }));
-};
-
-
-// console.log(selectedFile);
-
+// const updateFileInCache = (fileId, updates) => {
+//   setAllFiles(prev => prev.map(file => {
+//     if (file._id === fileId) {
+//       const updatedFile = { ...file, ...updates };
+//       // Update searchable text if name/title changed
+//       if (updates.name || updates.title) {
+//         updatedFile.searchableText = (updates.name || updates.title).toLowerCase();
+//       }
+//       return updatedFile;
+//     }
+//     return file;
+//   }));
+// };
 
 
   // Upload purpose
-  const handleUploadFile = (file, type) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const fileObj = { type, name: file.name, dataUrl: reader.result };
-      // Handle upload logic here
+  const handleUploadFile = async(file, title) => {
+
+     if (!file || !selectedChapterId) {
+      alert("Missing file or chapter.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('chapter', selectedChapterId);
+    formData.append('title', title);
+    try {
+      setUploading(true); 
+      const res = await axios.post('/api/handwritten-notes/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      const uploadedFile = res.data;
+      console.log('[Upload] Success:', uploadedFile);
+
       setShowNewModal(false);
-    };
-    reader.readAsDataURL(file);
-  };
+      setSelectedChapterId(null); // Clear first
+
+      setTimeout(() => {
+        setSelectedChapterId(selectedChapterId); // Re-set to trigger useEffect
+      }, 100);
+      toast.success("Upload successful!", {
+        theme: "colored", 
+      });
+
+    } catch (err) {
+      console.error('[Upload] Failed:', err);
+      alert("Upload failed: " + (err.response?.data?.error || err.message));
+    } finally {
+    setUploading(false); // Stop loader
+    }
+};
 
   // Handle saving notebook
   const handleSaveNotebook = async (notebookData) => {
@@ -1016,7 +1027,7 @@ const updateFileInCache = (fileId, updates) => {
           <div className="app-name">YuktiVerse</div>
         </div>
         
- <div className="tabs-sliding" ref={tabsRef}>
+      <div className="tabs-sliding" ref={tabsRef}>
         {/* Animated Background Slider */}
         <div 
           className="tab-slider" 
@@ -1052,21 +1063,7 @@ const updateFileInCache = (fileId, updates) => {
           </button>
         ))}
       </div>
-        
-        <div className="global-search-container">
-          <div className="search-input-container">
-            <FaSearch className="search-icon" />
-            <input
-              className="global-search-bar"
-              placeholder="Search all files..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              onFocus={() => setShowSearchResults(true)}
-              onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
-            />
-          </div>
-
-        {/* chatbot */}
+                {/* chatbot */}
      <>
       <button
         className="chatbot-icon-button"
@@ -1100,12 +1097,25 @@ const updateFileInCache = (fileId, updates) => {
         </div>
       )}
     </>
+
+        <div className="global-search-container">
+          <div className="search-input-container">
+            <FaSearch className="search-icon" />
+            <input
+              className="global-search-bar"
+              placeholder="Search all files..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              onFocus={() => setShowSearchResults(true)}
+              onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
+            />
+          </div>
+
+
           {showSearchResults && searchTerm.trim() !== '' && (
             <div className="global-search-results">
-              {isFetchingAllFiles ? (
-                // <div className="loader">Fetching all files...</div>
+              {isFetchingAllFiles ? ( 
                 <SquaresLoader/>
-
               ) : fetchAllFilesError ? (
                 <div className="error">{fetchAllFilesError}</div>
               ) : (
@@ -1115,9 +1125,11 @@ const updateFileInCache = (fileId, updates) => {
                       key={`${file._id}-${index}`}
                       className="search-result-item"
                       onClick={() => {
+                        handleFileClick(file);
                         loadChapterAndOpenFile(file);
                         setSearchTerm('');
                         setShowSearchResults(false);
+
                       }}
                     >
                       <div className="search-result-icon">
@@ -1146,9 +1158,7 @@ const updateFileInCache = (fileId, updates) => {
       <div className={`ao-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-content">
         {yearsLoading ? (
-          // <SmartLoader context="card" text="" />
-          <OrbitLoader/>
-          // <SquaresLoader/>
+          <InlineLoader/>
            ) : (
           years.map(year => (
             <div key={year._id} className="ao-section">
@@ -1342,10 +1352,18 @@ const updateFileInCache = (fileId, updates) => {
             <button className="action-btn" onClick={() => setShowNewModal(true)}>
               <FaPlus /> New
             </button>
+
+            {uploading && (
+              <div className="upload-loader-overlay">
+                <SquaresLoader text="Uploading file..." />
+              </div>
+            )}
+
             {showNewModal && (
               <NewModal
                 onClose={() => setShowNewModal(false)}
                 onUploadFile={handleUploadFile}
+                // onFilesUploaded = {handleUploadFile} 
                 onCreateNotebook={() => {
                   setShowNotebookForm(true);
                   setShowNewModal(false);
@@ -1356,7 +1374,7 @@ const updateFileInCache = (fileId, updates) => {
           </div>
         </div>
         
-        {activeTab === 'recent' && (
+        {activeTab === 'recent' && (    
           <div className="recent-files">
             <h3>Recently Accessed Files</h3>
             <div className="recent-grid">
@@ -1366,12 +1384,18 @@ const updateFileInCache = (fileId, updates) => {
                   className="recent-card"
                   onClick={() => openInNotes(file)}
                 >
-                  <div className="file-icon">
-                    {file.type === 'notebook' && <FaStickyNote />}
-                    {file.type === 'handwritten' && <FaFilePdf />}
-                    {file.type === 'pdf' && <FaFilePdf />}
-                    {file.type === 'image' && <FaImage />}
-                  </div>
+              <div className="file-icon">
+                {file.type === 'notebook' && <FaStickyNote />}
+
+                {file.type === 'handwritten' && (
+                  file.fileType === 'pdf' ? <FaFilePdf /> : <FaImage />
+                )}
+
+                {file.type === 'pdf' && <FaFilePdf />}
+
+                {file.type === 'image' && <FaImage />}
+              </div>
+
                   <div className="file-info">
                     <div className="file-name">
                       {file.type === 'notebook' ? file.name : file.title || file.name}
@@ -1403,10 +1427,16 @@ const updateFileInCache = (fileId, updates) => {
             >
               <div className="file-icon-container">
                 <div className="file-icon">
-                  {file.type === 'notebook'     ? <FaStickyNote />
-                  : file.type === 'handwritten' ? <FaFilePdf />
-                  : null}
-                </div>
+                {file.type === 'notebook' && <FaStickyNote />}
+
+                {file.type === 'handwritten' && (
+                  file.fileType === 'pdf' ? <FaFilePdf /> : <FaImage />
+                )}
+
+                {file.type === 'pdf' && <FaFilePdf />}
+
+                {file.type === 'image' && <FaImage />}
+              </div>
                 <button
                   className="file-action-btn active"
                   onClick={e => {
@@ -1417,7 +1447,9 @@ const updateFileInCache = (fileId, updates) => {
                   <FaStar />
                 </button>
               </div>
-              <div className="ao-file-name">{file.name}</div>
+           <div className="ao-file-name">
+              {file.type === 'notebook' ? file.name : file.title || file.name}
+            </div>
             </div>
           ))
         }
@@ -1454,7 +1486,7 @@ const updateFileInCache = (fileId, updates) => {
               ) : selectedFile.type === 'notebook' ? (
                 <div className="notebook-preview">
                   <Notebook 
-                    notebookId={selectedFile.note_id} 
+                    notebookId={selectedFile._id} 
                     notebookName={selectedFile.name}
                     onSave={handleSaveNotebook}
                   />
@@ -1477,11 +1509,7 @@ const updateFileInCache = (fileId, updates) => {
                   </div>
                 )}
               {error && <div className="error">{error}</div>}
-            {/* {getAllFiles().length === 0 && !fileLoading && (
-              <div className="empty-state">
-                {searchTerm ? 'No files match your search' : 'No files in this folder'}
-              </div>
-            ) } */}
+
               <div className="ao-files-grid">
                 {/* Render Notebooks */}
                 {materials.notebooks?.map((notebook) => (
@@ -1547,7 +1575,7 @@ const updateFileInCache = (fileId, updates) => {
                   </div>
                 ))}
                 
-                {getAllFiles().length === 0 && !loading && (
+                {getAllFiles().length === 0 &&  !fileLoading && (
                   <div className="empty-state">
                     {searchTerm ? 'No files match your search' : 'No files in this folder'}
                   </div>
@@ -1611,16 +1639,6 @@ const updateFileInCache = (fileId, updates) => {
           >
             <FaEdit /> Rename
           </button>
-
-          {/* <button 
-            className="context-menu-item" 
-            onClick={() => {
-              setMoving(contextMenu.item);
-              setContextMenu(null);
-            }}
-          >
-            <FaArrowsAlt /> Move
-          </button> */}
           
           <button 
             className="context-menu-item"

@@ -5,6 +5,8 @@ import Popover from './Popover';
 import { FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaPlus, FaStar, FaTrash, FaSearch, FaBars, FaTimes, FaEdit, FaArrowsAlt , FaRobot , FaExpand } from 'react-icons/fa';
 import axios from 'axios'
 import { OrbitLoader, ProgressLoader, SmartLoader,SquaresLoader } from '../../components/Loader';
+import ShareButton from '../academic-notebook/ShareButton';
+
 
 const Notebook = ({notebookId, notebookName }) => {
   const [textBoxes, setTextBoxes] = useState([]);
@@ -20,13 +22,13 @@ const Notebook = ({notebookId, notebookName }) => {
 
   const [showMenu, setShowMenu] = useState(false);
 
-  // const[data , setData] = useState(null);
-// console.log(textBoxes);
+
   const [isImportant, setIsImportant] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newNotebookName, setNewNotebookName] = useState(notebookName);
     useEffect(() => {
     const loadNotebook = async () => {
+      console.log(notebookId);
       
       try {
         setIsLoading(true);
@@ -194,7 +196,7 @@ const saveNotebook = async () => {
               <FaRobot />
             </button>
             <button
-              className="delete-button"
+              className="delete-button-2"
               onClick={(e) => handleDelete(box.id, e)}
               title="Delete note"
             >
@@ -411,6 +413,7 @@ useEffect(() => {
                  > 
                   <FaExpand/>
                 </button>
+    
                 <button 
                   className="save-button" 
                   onClick={saveNotebook}
@@ -418,6 +421,10 @@ useEffect(() => {
                 >
                   {isSaving ? 'Saving...' : 'Save Notebook'}
                 </button>
+                    <ShareButton 
+                    notebookId={notebookId} 
+                    className="share-notebook-btn"
+                  />
                 <button 
                   className={`menu-button ${isImportant ? 'important' : ''}`}
                   onClick={() => setShowMenu(!showMenu)}

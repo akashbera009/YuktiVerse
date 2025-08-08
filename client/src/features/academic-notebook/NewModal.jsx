@@ -1,16 +1,17 @@
 // NewModal.jsx
 import React, { useState, useEffect } from 'react';
 import { FaFilePdf, FaImage, FaStickyNote, FaTimes, FaPlus, FaUpload, 
-  
   // FaSparkles
-
+  
 } from 'react-icons/fa';
+import FileUploader from "./FileUploader";
 import axios from 'axios';
 import './NewModal.css';
 
 export default function NewModal({
   onClose,
   onUploadFile,
+  onFilesUploaded ,
   onCreateNotebook,
   selectedChapterId
 }) {
@@ -20,6 +21,8 @@ export default function NewModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [showUploader, setShowUploader] = useState(false);
+
 
   // Animation effect on mount
   useEffect(() => {
@@ -62,8 +65,9 @@ export default function NewModal({
     }
   };
 
-  const handleFileUpload = (file, type) => {
-    onUploadFile(file, type);
+  const handleFileUpload = (file,title ) => {
+    // onUploadFile(file, title );
+    onFilesUploaded(file, title );
     handleClose();
   };
 
@@ -78,35 +82,25 @@ export default function NewModal({
         </button>
         
         <div className="modal-header"></div>
-        {/* <div className="modal-header">
-          <div className="modal-icon">
-            <FaPlus />
-          </div>
-          <h3>Create New Content</h3>
-          <p>Choose what you'd like to create or upload</p>
-        </div> */}
 
         <div className="modal-actions">
-       {/* <button className="spacer-button" aria-hidden="true"></button> */}
 
 
           {/* <label className="action-card upload-card image"> */}
-          <button className="action-card upload-card pdf">
-            <div className="card-icon">
-                 <FaFilePdf />
-            </div>
-           <div className="card-content">
-              <h4>Upload PDF</h4>
-              <p>Import PDF documents</p>
-            </div>
-            <div className="card-arrow">→</div>
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={e => handleFileUpload(e.target.files[0], 'image')}
-              />
-          </button>
+        <button
+          className="action-card upload-card"
+          onClick={() => setShowUploader(true)}
+        >
+          <div className="card-icon">
+            <FaUpload />
+          </div>
+          <div className="card-content">
+            <h4>Advanced Uploader</h4>
+            <p>Use the drag & drop uploader</p>
+          </div>
+          <div className="card-arrow">→</div>
+        </button>
+
           <button className="action-card upload-card image">
             <div className="card-icon">
               <FaImage />
@@ -119,8 +113,9 @@ export default function NewModal({
             <input
               type="file"
               accept="image/*"
+              // accept="application/pdf"
               hidden
-              onChange={e => handleFileUpload(e.target.files[0], 'image')}
+              onChange={e => handleFileUpload(e.target.files[0], e.target.value)}
               />
           </button>
           {/* </label> */}
@@ -151,14 +146,6 @@ export default function NewModal({
             <button className="close-btn-mod" onClick={() => setShowNotebookForm(false)}>
               <FaTimes />
             </button>
-            
-            {/* <div className="form-header">
-              <div className="form-icon">
-                sparkle
-              </div>
-              <h3>Create New Notebook</h3>
-              <p>Give your notebook a memorable name</p>
-            </div> */}
 
             <div className="form-content">
               <div className="input-group">
@@ -202,6 +189,19 @@ export default function NewModal({
           </div>
         </div>
       )}
+
+      {showUploader && (
+        <FileUploader
+          onFilesUploaded={(files) => {
+            files.forEach(fileData => {
+              onUploadFile(fileData.file, fileData.name ,  selectedChapterId); // or use custom title logic
+            });
+            setShowUploader(false);
+            handleClose(); // optionally close modal
+          }}
+        />
+      )}
+
     </div>
   );
 }

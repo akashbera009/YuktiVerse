@@ -38,7 +38,7 @@ Update Notebook        PUT      /api/notebooks/:_id
 Rename Notebook      PATCH    /api/notebooks/:_id/rename                   { "name": "Updated Name" }
 Toggle Important     PATCH    /api/notebooks/:_id/important                -- toggles `important` boolean
 Delete Notebook	     DELETE	  /api/notebooks/:id	                            Removes notebook from DB
-
+Share Notebook         POST     /api/share/notebook/:notebookId/generate         -- NEW: Generate share link
 ---------------------------------------------------------------------------------------------------------------------------
 📎 Handwritten Notes (PDF/Image)
 
@@ -66,3 +66,18 @@ Ask Code               POST     /ai-help/ask-code                               
 Short Explanation      POST     /ai-help/short-explain                           { "prompt": "Explain recursion in short" }
 
 Detailed Explanation   POST     /ai-help/detailed-explain                        { "prompt": "Explain recursion in detail" }
+
+
+---------------------------------------------------------------------------------------------------------------------------
+📤 Share Management
+
+Generate Share Link       POST     /api/share/notebook/:notebookId/generate         -- Creates shareable link for notebook
+Get Shared Notebook       GET      /api/share/notebook/:shareId                     -- Public route (no auth) returns notebook content
+Revoke Share Link         DELETE   /api/share/notebook/:shareId                     -- Disables/revokes the share link
+List User's Shared        GET      /api/share/user/notebooks                        -- Lists all notebooks user has shared
+
+---------------------------------------------------------------------------------------------------------------------------
+🌐 Public Routes (No Authentication)
+
+View Shared Notebook      GET      /api/share/notebook/:shareId                     -- Anyone can access with shareId
+Frontend Share URL        --       /share/notebook/:shareId                         -- React route for viewing shared content

@@ -1,9 +1,29 @@
-import React from "react";
+import React  ,{useState, useEffect} from "react";
 import { FaBook, FaFileAlt, FaUserCircle, FaMoon } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import "./Sidebar.css";
+import { themes } from './theme';
 
 const Sidebar = () => {
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem('theme') || 'indigoDreams');
+    const [showMenu, setShowMenu] = useState(false);
+  const applyTheme = (themeName) => {
+    const theme = themes[themeName];
+    if (!theme) return;
+
+    Object.entries(theme).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
+
+    localStorage.setItem('theme', themeName);
+    setActiveTheme(themeName);
+    setShowMenu(false); // close dropdown after selecting
+  };
+
+  useEffect(() => {
+    applyTheme(activeTheme);
+  }, []);
+
   const location = useLocation();
 
   return (
@@ -34,11 +54,19 @@ const Sidebar = () => {
 
       <div className="sidebar-bottom">
         <div className={`menu-item ${location.pathname === "/theme" ? "active" : ""}`}>
-          <Link to="/theme">
-            {/* <button> */}
+          {/* <Link to="/theme"> */}
+            <button  onClick={() => setShowMenu((prev) => !prev)}
+                style={{
+                  padding: '16px 28px',
+                  // backgroundColor: 'var(--primary)',
+                  color: 'var(--dark-text)',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+             >
               <FaMoon className="menu-icon" />
-            {/* </button> */}
-          </Link>
+            </button>
         </div>
         <div className={`menu-item ${location.pathname === "/profile" ? "active" : ""}`}>
           <Link to="/profile">
@@ -46,6 +74,22 @@ const Sidebar = () => {
           </Link>
         </div>
       </div>
+    {showMenu && (
+      <div className="theme-menu-opt">
+        {Object.keys(themes).map((name) => (
+          <div
+            key={name}
+            onClick={() => {
+              applyTheme(name);
+              setShowMenu(false); // optionally close menu after selection
+            }}
+            className="theme-options"
+          >
+            {name}
+          </div>
+        ))}
+      </div>
+    )}
     </div>
   );
 };

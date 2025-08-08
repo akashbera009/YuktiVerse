@@ -14,6 +14,7 @@ import handwrittenNotesRoutes from './routes/handwrittenNotes.js';
 import notebooksRoutes from './routes/notebooks.js';
 import yearRoutes from './routes/years.js';
 
+import shareRoutes from './routes/shareroute.js';
 // import resumeSummerizer from './routes/resumeSummerizer.js';
 
 dotenv.config();
@@ -49,6 +50,9 @@ app.use('/api/notebooks', notebooksRoutes);
 
 // year dosument getting 
 app.use('/years', yearRoutes);  // post: api/years
+
+// share routes ()
+app.use('/api/share', shareRoutes);
 
 // app.use('/resume/summerize', resumeSummerizer) ; /resume/summarize [/upload-to-get-summary, /save-response, /get-saved-resume-analysis]
 

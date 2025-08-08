@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { FaBars , FaFolder, FaFolderOpen, FaFilePdf, FaImage, FaStickyNote, FaUpload, FaCog, FaTimes, FaPlus, FaStar } from 'react-icons/fa';
 import Notebook from '../ai-notepad/Notebook';
-import CreateMenu from './CreateMenu';
+import CreateMenu from '../academic-notebook/CreateMenu';
 import './AcademicOrganizer.css';
 
 const years = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'];
@@ -974,7 +974,7 @@ const [confirmText, setConfirmText] = useState("");
           )}
         </h3>
         <div className="ao-actions">
-          <CreateMenu onCreate={handleCreate} />
+          {/* <CreateMenu onCreate={handleCreate} /> */}
           {/* <select
             className="ao-select"
             value={selectedTemplate}

@@ -47,7 +47,7 @@
   --warning: #f59e0b;
 } */
 /* Sapphire Edge */
-:root {
+/* :root {
   --primary: #1e40af;
   --primary-light: #6366f1;
   --primary-shade: rgb(51, 53, 170);
@@ -71,11 +71,13 @@
   --text-secondary: #a0a0a0;
   --danger: #ff6b6b;
   --success: #51cf66;
-}
+} */
 /* Violet Fusion */
 /* :root {
   --primary: #5b21b6;
   --primary-light: #8b5cf6;
+  --primary-shade: rgb(51, 53, 170);
+  --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
   --secondary: #06b6d4;
   --dark-bg: #0f0a19;
   --dark-card: #1c1626;
@@ -91,7 +93,7 @@
 
 
 /* Indigo Dreams */
-:root {
+/* :root {
   --primary: #4f46e5;
   --primary-light: #7c3aed;
   --primary-shade: rgb(51, 53, 170);
@@ -107,7 +109,7 @@
   --light-border: #e0e7ff;
   --danger: #ef4444;
   --warning: #f59e0b;
-}
+} */
 .mm-backdrop {
   position: fixed;
   inset: 0;

@@ -91,9 +91,11 @@ export const toggleImportantNote = async (req, res) => {
 // controllers/handwrittenController.js
 export const deleteHandwrittenNote = async (req, res) => {
   try {
-    const { noteId } = req.params;
+    const { id } = req.params;
+    console.log(id);
 
-    const note = await HandwrittenNote.findById(noteId);
+    const note = await HandwrittenNote.findById(id);
+    
     if (!note) return res.status(404).json({ error: "Note not found" });
 
     // 1. Delete file from Cloudinary

@@ -4,8 +4,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css'
 import App from './App.jsx'
 
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
+          <ToastContainer />
   </StrictMode>,
 )

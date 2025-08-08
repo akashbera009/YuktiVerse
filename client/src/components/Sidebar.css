@@ -68,10 +68,10 @@
 }
 
 .menu-item.active {
-  background-color: rgba(104, 211, 145, 0.2);
-  background-color: rgba(131, 104, 211, 0.185);
-  color: #68d391;
-  color: var(--primary);
+  /* background-color: rgba(104, 211, 145, 0.2); */
+  background-color: rgba(131, 104, 211, 0.185); 
+  /* color: #68d391; */
+  color: var(--primary-icon);
 }
 
 /* Icons */
@@ -99,4 +99,44 @@
   align-items: center;
   gap: 1rem;
   padding-bottom: 1.5rem;
+}
+
+.theme-menu-opt {
+  position: absolute;
+  bottom:10rem ;
+  left: 70px;
+  background-color: var(--dark-card); /* fallback for light theme */
+  border: 1px solid var(--dark-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  z-index: 999;
+  min-width: 180px;
+  font-family: var(--font-primary);
+  transition: all 0.2s ease;
+}
+
+/* Adjust for dark mode dynamically */
+body.dark .theme-menu-opt {
+  background-color: var(--dark-card);
+  border-color: var(--dark-border);
+}
+
+.theme-options {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: var(--light-text);
+}
+
+body.dark .theme-options {
+  color: var(--dark-text);
+}
+.theme-options{
+    color: var(--dark-text);
+}
+.theme-options:hover {
+  background-color: var(--primary-light);
+  color: var(--dark-text);
 }
