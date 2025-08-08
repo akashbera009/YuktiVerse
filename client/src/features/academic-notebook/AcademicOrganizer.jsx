@@ -4,7 +4,7 @@ import './AcademicOrganizer.css';
 import NewModal from "./NewModal"
 import RenamePrompt from "./RenamePrompt"
 import Notebook from '../ai-notepad/Notebook';
-import ModernPDFViewer from '../ai-notepad/MOdernPDFViewer';
+import ModernPDFViewer from '../ai-notepad/ModernPDFViewer';
 import axios from 'axios';
 import {DotsLoader,
   RingLoader,
