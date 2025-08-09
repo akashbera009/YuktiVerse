@@ -26,7 +26,7 @@
 // 6897315dae335bd110fe4618
 const authMiddleware = (req, res, next) => {
   // Mock authenticated user
-  req.user = { _id: '689738740562829489a60a41', name: 'Test User', email: 'test@example.com' };
+  req.user = { _id: '689738740562829489a60a41', name: 'Akash', email: 'ab@gmail.com' };
   next();
 };
 

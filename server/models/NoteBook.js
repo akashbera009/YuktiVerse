@@ -12,6 +12,10 @@ const TextBoxSchema = new mongoose.Schema({
   y: Number,
   width: Number,
   height: Number,
+  airesponse: {
+    type: String,
+    default: ''
+  },
 }, { _id: false });
 
 const NotebookSchema = new mongoose.Schema({
@@ -34,9 +38,9 @@ const NotebookSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  important :{
-    type : Boolean , 
-    default : false,
+  important: {
+    type: Boolean,
+    default: false,
   },
   content: {
     textBoxes: [TextBoxSchema],

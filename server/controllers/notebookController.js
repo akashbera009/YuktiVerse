@@ -23,6 +23,7 @@ export const createNotebook = async (req, res) => {
       name,
       content,
       chapter,
+      // airesponse,
     });
 
     res.status(201).json(notebook);
@@ -83,6 +84,29 @@ export const updateNotebook = async (req, res) => {
   } catch (err) {
     console.error('Update notebook failed:', err);
     res.status(500).json({ error: 'Failed to update notebook' });
+  }
+};
+
+// PATCH /api/notebooks/:id/textbox/:boxId/airesponse
+export const updateTextBoxAIResponse = async (req, res) => {
+  try {
+    const { id, boxId } = req.params;
+    const { airesponse } = req.body;
+
+    const notebook = await Notebook.findOneAndUpdate(
+      { _id: id, user: req.user._id, "content.textBoxes.id": boxId },
+      { $set: { "content.textBoxes.$.airesponse": airesponse } },
+      { new: true }
+    );
+
+    if (!notebook) {
+      return res.status(404).json({ error: "Notebook or text box not found" });
+    }
+
+    res.json(notebook);
+  } catch (err) {
+    console.error("Update AI response failed:", err);
+    res.status(500).json({ error: "Failed to update AI response" });
   }
 };
 

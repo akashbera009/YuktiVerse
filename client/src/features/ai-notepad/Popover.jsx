@@ -6,30 +6,34 @@ import "./Popover.css";
 import axios from "axios";
 import {
   DotsLoader,
-  RingLoader,
-  SquaresLoader,
-  BarsLoader,
-  OrbitLoader,
-  ProgressLoader,
-  HexagonLoader,
-  OverlayLoader,
-  InlineLoader,
-  SmartLoader,
-  useLoader,
-  withLoading,
-  LoaderShowcase,
+  // RingLoader,
+  // SquaresLoader,
+  // BarsLoader,
+  // OrbitLoader,
+  // ProgressLoader,
+  // HexagonLoader,
+  // OverlayLoader,
+  // InlineLoader,
+  // SmartLoader,
+  // useLoader,
+  // withLoading,
+  // LoaderShowcase,
 } from "../../components/Loader";
 
-const Popover = ({ anchorRef, onClose, children, text }) => {
+const Popover = ({ anchorRef, onClose, text, textBoxId, notebookId }) => {
   const popoverRef = useRef();
 
   const [shortResponse, setShortResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const fetchShortResponse = async () => {
+
+  const fetchShortResponse = async (forceRefresh = false) => {
     setLoading(true);
     try {
-      const response = await axios.post("/ai-help/short-explain", {
+      const response = await axios.post("/api/ai-help/short-explain", {
         prompt: text,
+        textBoxId,
+        notebookId,
+        forceRefresh,
       });
       console.log("AI short response:", response.data);
       setShortResponse(response.data);
@@ -40,8 +44,9 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
     }
   };
   useEffect(() => {
-    if (text) fetchShortResponse();
-  }, [text]);
+    if (text && textBoxId && notebookId) fetchShortResponse();
+  }, [text, textBoxId, notebookId]);
+
   const [copilotOpen, setCopilotOpen] = useState(false);
 
   // Close popover on outside click
@@ -70,6 +75,10 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
     };
   };
   const position = getPosition();
+
+  const handleImprove = () => {
+    fetchShortResponse(true); // Pass true to force refresh
+  };
 
   // Render into the body
   return ReactDOM.createPortal(
@@ -103,17 +112,18 @@ const Popover = ({ anchorRef, onClose, children, text }) => {
               </p>
             )}
           </div>
+
+          {shortResponse?.fromCache && !loading && (
+            <div className="cache-indicator">
+              <small>💾 Cached response</small>
+            </div>
+          )}
         </div>
         <div className="ai-popover-footer">
           <div className="ai-powered">Powered by AI</div>
           <div className="ai-actions">
-            <button
-              className="ai-action-btn secondary"
-              onClick={() => {
-                fetchShortResponse();
-              }}
-            >
-              Improve
+            <button className="ai-action-btn secondary" onClick={handleImprove}>
+              {loading ? "Loading..." : "Improve"}
             </button>
 
             <button

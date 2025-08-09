@@ -22,6 +22,12 @@ const sharedNotebookSchema = new mongoose.Schema({
     // enum: ['pdf', 'docx', 'txt', 'md', 'html', 'json'],
     required: true
   },
+  
+  title:{
+    type: String,
+    required  : true ,
+  },
+  
   isActive: {
     type: Boolean,
     default: true,

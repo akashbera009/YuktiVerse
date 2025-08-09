@@ -22,6 +22,7 @@ const Notebook = ({
   onToggleImportant,
   OnDelete,
   onExit,
+  onShareLinkGenerated,
 }) => {
   const [textBoxes, setTextBoxes] = useState([]);
   const [activeId, setActiveId] = useState(null);
@@ -206,7 +207,8 @@ const Notebook = ({
             anchorRef={{ current: aiButtonRefs.current[box.id] }}
             onClose={() => setPopoverBoxId(null)}
             text={box.text}
-            id={box.id}
+            textBoxId={box.id}
+            notebookId = {notebookId}
           />
         )}
       </Rnd>
@@ -406,8 +408,9 @@ const Notebook = ({
                 </button>
                 <ShareButton
                   notebookId={notebookId}
+                  onShareLinkGenerated={onShareLinkGenerated}
                   className="share-notebook-btn"
-                />
+                />  
                 <button
                   className={`menu-button ${isImportant ? "important" : ""}`}
                   onClick={() => setShowMenu(!showMenu)}

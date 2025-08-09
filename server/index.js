@@ -41,7 +41,7 @@ app.use("/api/auth", authRoutes);
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 // genini routes 
-app.use('/ai-help', geminiRoutes);
+app.use('/api/ai-help', geminiRoutes);
 
 // pdf summerizer 
 app.use('/api/pdf-summerize', pdfRoutes);   // /api/pdf/mcq

@@ -12,6 +12,12 @@ import {
   FaBars,
   FaTimes,
   FaEdit,
+  FaShare,
+  FaGlobe,
+  FaCopy,
+  FaUnlink,
+  FaEye,
+  FaClock,
   FaArrowsAlt,
 } from "react-icons/fa";
 import "./AcademicOrganizer.css";
@@ -60,6 +66,10 @@ const AcademicOrganizer = () => {
   const [renaming, setRenaming] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const [sharedNotebooks, setSharedNotebooks] = useState([]);
+  const [sharedLoading, setSharedLoading] = useState(false);
+  const [sharedError, setSharedError] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -134,7 +144,7 @@ const AcademicOrganizer = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [chatActive]);
-  // at the top of your component
+
   const openInNotes = (file) => {
     handleFileClick(file);
     setActiveTab("notes");
@@ -154,6 +164,17 @@ const AcademicOrganizer = () => {
     };
     fetchYears();
   }, []);
+
+  // sharing useeffect
+  useEffect(() => {
+    if (
+      activeTab === "shared" &&
+      sharedNotebooks.length === 0 &&
+      !sharedLoading
+    ) {
+      fetchSharedNotebooks();
+    }
+  }, [activeTab]);
 
   // Fetch subjects when year is selected
   const [subjectsLoading, setSubjectsLoading] = useState(false);
@@ -198,6 +219,64 @@ const AcademicOrganizer = () => {
       setChapters([]);
     }
   }, [selectedSubjectId]);
+
+  // shareing relaetd
+  const fetchSharedNotebooks = async () => {
+    try {
+      setSharedLoading(true);
+      setSharedError(null);
+      let userId = "689738740562829489a60a41";
+      const response = await axios.get(`/api/share/user/notebooks/${userId}`);
+      // const response = await axios.get("/api/share/user/notebooks" ,{
+      //   email: "ab@gmail.com",
+      //   id : "689738740562829489a60a41",
+      //   password: "password123"
+      // });
+      console.log(response);
+
+      setSharedNotebooks(response.data);
+    } catch (err) {
+      console.error("Error fetching shared notebooks:", err);
+      setSharedError("Failed to load shared notebooks");
+    } finally {
+      setSharedLoading(false);
+    }
+  };
+  const handleShareLinkGenerated = () => {
+    fetchSharedNotebooks(); // reload shared notebooks on new share link
+  };
+
+  const handleRevokeShare = async (shareId) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to revoke this share link? People with this link will no longer be able to access the notebook."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      let userId = "689738740562829489a60a41";
+      await axios.delete(`/api/share/notebook/${userId}/${shareId}`);
+      setSharedNotebooks((prev) =>
+        prev.filter((item) => item.shareId !== shareId)
+      );
+      toast.success("Share link revoked successfully");
+    } catch (err) {
+      console.error("Error revoking share:", err);
+      toast.error("Failed to revoke share link");
+    }
+  };
+
+  const handleCopyShareLink = async (shareUrl) => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Share link copied to clipboard");
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      toast.error("Failed to copy link");
+    }
+  };
 
   // Fetch materials when chapter is selected
   useEffect(() => {
@@ -1075,6 +1154,7 @@ const AcademicOrganizer = () => {
     { id: "notes", label: "Notes" },
     { id: "recent", label: "Recent" },
     { id: "important", label: "Important" },
+    { id: "shared", label: "Shared" },
   ];
 
   // Update slider position when active tab changes
@@ -1602,6 +1682,130 @@ const AcademicOrganizer = () => {
           </div>
         )}
 
+        {activeTab === "shared" && (
+          <div className="shared-files">
+            <div className="shared-header">
+              <h3>Shared Notebooks</h3>
+              <button
+                className="refresh-btn"
+                onClick={fetchSharedNotebooks}
+                disabled={sharedLoading}
+              >
+                {sharedLoading ? "Loading..." : "Refresh"}
+              </button>
+            </div>
+
+            {sharedLoading ? (
+              <div className="loading-container">
+                <SquaresLoader />
+              </div>
+            ) : sharedError ? (
+              <div className="error-container">
+                <p>{sharedError}</p>
+                <button onClick={fetchSharedNotebooks}>Try Again</button>
+              </div>
+            ) : (
+              <div className="shared-notebooks-grid">
+                {sharedNotebooks.map((sharedItem) => (
+                  <div
+                    key={sharedItem.shareId}
+                    className="shared-notebook-card"
+                  >
+                    <div className="shared-card-header">
+                      <div className="file-icon-container">
+                        <div className="file-icon-1">
+                          {sharedItem.type === "notebook" ? (
+                            <FaStickyNote />
+                          ) : sharedItem.type === "pdf" ? (
+                            <FaFilePdf />
+                          ) : (
+                            <FaImage />
+                          )}
+                        </div>
+                        {/* Show globe icon only if isActive */}
+                        {sharedItem.isActive && (
+                          <div className="share-indicator">
+                            <FaGlobe />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="shared-actions">
+                        <div
+                          className={`share-status ${
+                            sharedItem.isActive ? "active" : "inactive"
+                          }`}
+                        >
+                          {sharedItem.isActive ? "Active" : "Inactive"}
+                        </div>
+                        <button
+                          className="action-btn-1 revoke-btn-1"
+                          onClick={() => handleRevokeShare(sharedItem.shareId)}
+                          title="Revoke share"
+                        >
+                          <FaUnlink />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="shared-card-content">
+                      <div className="shared-file-name">
+                        {sharedItem.title || "Untitled"}
+                      </div>
+
+                      <div className="shared-stats">
+                        <div className="stat-item">
+                          <FaEye />
+                          <span>{sharedItem.viewCount || 0} views</span>
+                        </div>
+                        <div className="stat-item">
+                          <FaClock />
+                          <span>
+                            Shared{" "}
+                            {new Date(
+                              sharedItem.createdAt
+                            ).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="share-link-preview">
+                        <div className="link-text">
+                          /share/notebook/{sharedItem.shareId}
+                        </div>
+                        <button
+                          className="action-btn-1 copy-link-btn-1"
+                          onClick={() =>
+                            handleCopyShareLink(
+                              `${window.location.origin}/share/notebook/${sharedItem.shareId}`
+                            )
+                          }
+                          title="Copy share link"
+                        >
+                          <FaCopy />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {sharedNotebooks.length === 0 && (
+                  <div className="empty-state">
+                    <div className="empty-icon">
+                      <FaShare />
+                    </div>
+                    <h3>No Shared Notebooks</h3>
+                    <p>
+                      You haven't shared any notebooks yet. Share a notebook to
+                      see it here.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === "notes" && selectedFile ? (
           <div className="file-content-container">
             <div className="file-header">
@@ -1643,6 +1847,7 @@ const AcademicOrganizer = () => {
                       })
                     }
                     onExit={exitToListView}
+                    onShareLinkGenerated={handleShareLinkGenerated}
                   />
                 </div>
               ) : null}

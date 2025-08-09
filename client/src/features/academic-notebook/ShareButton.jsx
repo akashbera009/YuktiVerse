@@ -3,7 +3,7 @@ import { FaShare, FaCopy, FaCheck, FaSpinner } from "react-icons/fa";
 import axios from "axios";
 import "./ShareButton.css";
 
-const ShareButton = ({ notebookId, className = "", type = "notebook" }) => {
+const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLinkGenerated  }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +20,7 @@ const ShareButton = ({ notebookId, className = "", type = "notebook" }) => {
       );
       setShareUrl(response.data.shareUrl);
       console.log(response.data.shareId);
+         onShareLinkGenerated();
 
       setShareUrl(`${__BASE_URL__}share/notebook/${response.data.shareId}`);
     } catch (error) {
