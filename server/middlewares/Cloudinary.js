@@ -20,12 +20,6 @@ export const uploadOnCloudinary = async (localFilePath) => {
   if (!localFilePath) return null;
 
   try {
-    // const ext = path.extname(localFilePath).toLowerCase();
-    // const rawTypes = ['.pdf', '.docx', '.xlsx', '.csv', '.txt'];
-
-    // const resourceType = rawTypes.includes(ext) ? 'raw' : 'auto';
-
-
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: 'auto', // handles images, videos, pdf, etc.
     });

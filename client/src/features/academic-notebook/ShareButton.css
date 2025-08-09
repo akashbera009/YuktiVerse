@@ -60,15 +60,15 @@
   height: 100px;
   min-width: 400px;
   max-width: 500px;
-  top: 6rem;
-  right: 14rem;
+  top: 7rem;
+  right: 2rem;
   bottom: 0;
   background-color: var(--glass-bg);
   backdrop-filter: var(--blur);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 20000;
+  z-index:1000 ;
   box-shadow: var(--glass-shadow);
   border: 1px solid var(--glass-border);
   border-radius: 12px;

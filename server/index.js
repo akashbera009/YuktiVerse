@@ -6,6 +6,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 
 // import { getGeminiResponse } from './utils/geminiClient.js';
+import authRoutes from "./routes/authRoutes.js";
 
 import geminiRoutes from './routes/gemini.js';
 import pdfRoutes from './routes/pdfRoutes.js';
@@ -35,6 +36,9 @@ app.listen(PORT, () => {
   console.log('✅ Server running on port', PORT);
 });
 
+// auth 
+app.use("/api/auth", authRoutes);
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 // genini routes 
 app.use('/ai-help', geminiRoutes);

@@ -6,6 +6,8 @@ import Home from './pages/Home'; // <-- add this
 import Notebook from './features/ai-notepad/Notebook';
 import AcademicOrganizer from './features/academic-notebook/AcademicOrganizer';
 import SharedNotebook from './features/academic-notebook/SharedNotebook';
+import Dashboard from './features/dashboard/Dashboard';
+import { LogIn } from 'lucide-react';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -13,8 +15,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} /> {/* This is the default / route */}
+        <Route path="/" element={< Home/>} />
+        <Route path="/login" element={< LogIn/>} />
+        <Route path="/work" element={<Layout />}>
           <Route path="academic-org" element={<AcademicOrganizer />} />
           <Route path="notebook" element={<Notebook/>} />
           {/* Add more routes as needed */}

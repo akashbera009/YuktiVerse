@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
-import { FaShare, FaCopy, FaCheck, FaSpinner } from 'react-icons/fa';
-import axios from 'axios';
-import './ShareButton.css';
+import React, { useState } from "react";
+import { FaShare, FaCopy, FaCheck, FaSpinner } from "react-icons/fa";
+import axios from "axios";
+import "./ShareButton.css";
 
-const ShareButton = ({ notebookId, className = '' }) => {
+const ShareButton = ({ notebookId, className = "", type = "notebook" }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
+  const [shareUrl, setShareUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  
+
   const generateShareLink = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`/api/share/notebook/${notebookId}/generate`);
-      // setShareUrl(response.data.shareUrl);
-      // console.log(response.data.shareId);
-      
+      const response = await axios.post(
+        `/api/share/notebook/${notebookId}/generate`,
+        {
+          type: type,
+        }
+      );
+      setShareUrl(response.data.shareUrl);
+      console.log(response.data.shareId);
+
       setShareUrl(`${__BASE_URL__}share/notebook/${response.data.shareId}`);
     } catch (error) {
-      console.error('Error generating share link:', error);
+      console.error("Error generating share link:", error);
       // Handle error - show toast or message
     } finally {
       setIsLoading(false);
@@ -38,7 +43,7 @@ const ShareButton = ({ notebookId, className = '' }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      console.error("Failed to copy:", error);
     }
   };
 

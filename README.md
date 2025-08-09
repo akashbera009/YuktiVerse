@@ -47,6 +47,26 @@ Improve your job readiness with:
 
 ---
 
+## 🖼️ Screenshots
+
+### 📊 Dashboard
+![Dashboard](assets/dashboard.png)
+
+### 📂 Folder Structure
+![Folder Structure](assets/folder-structure.png)
+
+### 📝 AI-Powered Notes
+![AI Notes](assets/ai-notes.png)
+
+### 📄 PDF Summarizer
+![PDF Summarizer](assets/pdf-summarizer.png)
+
+> All screenshots are from the live application. Images are stored in the `assets/` folder of this repository.
+
+---
+
+---
+
 ### 3. 📄 PDF Summarizer + Q\&A
 
 * 📚 Upload PDFs

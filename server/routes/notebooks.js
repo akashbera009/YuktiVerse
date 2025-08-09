@@ -1,17 +1,17 @@
 import express from 'express';
-import { protect } from '../middlewares/auth.js';
+import authMiddleware  from '../middlewares/authMiddleware.js';
 import { createNotebook, getNotebookById, updateNotebook , renameNotebook  , toggleImportantNotebook , deleteNotebook} from '../controllers/notebookController.js';
 
 const router = express.Router();
 
 // POST /api/notebooks
-router.post('/', protect, createNotebook);   // http://localhost:3000/api/notebooks/
+router.post('/', authMiddleware, createNotebook);   // http://localhost:3000/api/notebooks/
 // router.post('/', createNotebook);
 
 
-router.get('/:id', protect, getNotebookById);  // http://localhost:3000/api/notebooks/math-note-4
+router.get('/:id', authMiddleware, getNotebookById);  // http://localhost:3000/api/notebooks/math-note-4
 
-router.put('/:id', protect, updateNotebook);   // http://localhost:3000/api/notebooks/math-note-4
+router.put('/:id', authMiddleware, updateNotebook);   // http://localhost:3000/api/notebooks/math-note-4
 
 router.patch('/:noteId/rename', renameNotebook);
 router.patch('/:noteId/important', toggleImportantNotebook);

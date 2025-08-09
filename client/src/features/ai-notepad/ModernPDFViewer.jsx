@@ -1,8 +1,10 @@
 import React, { useState , useRef} from 'react';
 import { FileText, ExternalLink, Download, ZoomIn, ZoomOut, Maximize2, Eye } from 'lucide-react';
 import './ModernPDFViewer.css'
+import ShareButton from '../academic-notebook/ShareButton';
 
 const ModernPDFViewer = ({ 
+  fileId , 
   fileUrl,
   fileName,
   type = 'handwritten'
@@ -56,7 +58,7 @@ const ModernPDFViewer = ({
                 </div>
                 
                 <div className="toolbar-section">
-                  <div className="zoom-controls">
+                  {/* <div className="zoom-controls">
                     <button 
                       onClick={() => setZoom(Math.max(25, zoom - 25))}
                       className="toolbar-btn"
@@ -72,8 +74,8 @@ const ModernPDFViewer = ({
                     >
                       <ZoomIn className="btn-icon" />
                     </button>
-                  </div>
-                  
+                  </div> */}
+                  <ShareButton notebookId={fileId} type ={'handwritten'}/>
                   <div className="action-buttons">
                     <button onClick={handleFullscreen} className="toolbar-btn" title="Fullscreen">
                       <Maximize2 className="btn-icon" />
@@ -81,9 +83,6 @@ const ModernPDFViewer = ({
                     <button onClick={handleViewExternal} className="toolbar-btn" title="Open in new tab">
                       <ExternalLink className="btn-icon" />
                     </button>
-                    {/* <button onClick={handleDownload} className="toolbar-btn" title="Download">
-                      <Download className="btn-icon" />
-                    </button> */}
                   </div>
                 </div>
               </div>

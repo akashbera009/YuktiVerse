@@ -17,6 +17,11 @@ const sharedNotebookSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  type: {
+    type: String,
+    // enum: ['pdf', 'docx', 'txt', 'md', 'html', 'json'],
+    required: true
+  },
   isActive: {
     type: Boolean,
     default: true,

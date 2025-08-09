@@ -1,9 +1,0 @@
-Role	            Color           	Notes
-Background      	#1a202c	Dark slate (Chakra UI default dark)
-Accent (Primary)	#68d391	Green - calm, fresh, used for buttons/links
-Secondary Accent	#81e6d9	Cyan - for highlights, tool hover
-Text Primary	    #edf2f7	Near-white for readability
-Text Secondary	    #a0aec0	Light gray for subtext
-Border / Divider	#2d3748	Subtle contrast
-Danger / Error	    #f56565	Red tone for errors
-Success         	#48bb78	Lush green

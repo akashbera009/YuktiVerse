@@ -24,11 +24,11 @@ import {
 
   getMaterialsByChapter
 } from '../controllers/yearController.js';
-import { protect } from '../middlewares/auth.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(protect);
+router.use(authMiddleware);
 
 // Year
 router.post('/', createYear);

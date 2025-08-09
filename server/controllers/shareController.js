@@ -1,20 +1,28 @@
 import crypto  from 'crypto';
-import Notebook  from '../models/Notebook.js'; // Your notebook model
+import Notebook  from '../models/NoteBook.js'; // Your notebook model
+import HandwrittenNote from '../models/HandwrittenNote.js';
 import SharedNotebook from '../models/SharedNotebook.js'; // New model for shared notebooks
 
 
 export const generateShareLink =async (req, res) => {
     try {
       const { notebookId } = req.params;
-      const userId = req.user._id; // From auth middleware
-console.log(notebookId , userId);
-
+      const {type} = req.body ; 
+      
+      const userId = req.user._id; 
+      let notebook ;
       // Check if notebook exists and belongs to user
-      const notebook = await Notebook.findOne({ 
-        _id: notebookId, 
-        user: userId 
-      });
-console.log(notebook);
+      if(type == 'handwritten'){
+          notebook = await HandwrittenNote.findOne({ 
+          _id: notebookId, 
+          user: userId 
+        });
+      }else{
+        notebook = await Notebook.findOne({ 
+          _id: notebookId, 
+          user: userId 
+        });
+      }
 
       if (!notebook) {
         return res.status(404).json({ 
@@ -44,6 +52,7 @@ console.log(notebook);
         shareId,
         notebookId,
         userId,
+        type,
         isActive: true,
         createdAt: new Date()
       });
@@ -67,24 +76,29 @@ console.log(notebook);
   export const getSharedNotebook = async (req, res) => {
     try {
       const { shareId } = req.params;
-// console.log(shareId);
 
       // Find shared notebook
       const sharedNotebook = await SharedNotebook.findOne({ 
         shareId,
         isActive: true 
       });
-
+      
       if (!sharedNotebook) {
         return res.status(404).json({ 
           message: 'Shared notebook not found or has been disabled' 
         });
       }
-
       // Get the actual notebook
-      const notebook = await Notebook.findById(sharedNotebook.notebookId)
+      let notebook ; 
+      if( sharedNotebook.type == 'handwritten'){
+         notebook = await HandwrittenNote.findById(sharedNotebook.notebookId)
+        .select('title fileType fileUrl createdAt updatedAt'); 
+      }else{
+         notebook = await Notebook.findById(sharedNotebook.notebookId)
         .select('name content createdAt updatedAt'); // Only select needed fields
-
+      }
+      console.log(notebook);
+      
       if (!notebook) {
         return res.status(404).json({ 
           message: 'Original notebook not found' 
@@ -100,13 +114,26 @@ console.log(notebook);
         }
       );
 
-      res.status(200).json({
-        name: notebook.name,
-        content: notebook.content,
-        sharedAt: sharedNotebook.createdAt,
-        updatedAt: notebook.updatedAt,
-        viewCount: sharedNotebook.viewCount + 1
-      });
+      if(sharedNotebook.type == 'handwritten'){
+        res.status(200).json({
+          title: notebook.title,
+          type : notebook.fileType ,
+          userId: sharedNotebook.userId,
+          fileUrl: notebook.fileUrl,
+          sharedAt: sharedNotebook.createdAt,
+          updatedAt: notebook.updatedAt,
+          viewCount: sharedNotebook.viewCount + 1
+        });
+      }else{
+        res.status(200).json({
+          name: notebook.name,
+          userId: sharedNotebook.userId,
+          content: notebook.content,
+          sharedAt: sharedNotebook.createdAt,
+          updatedAt: notebook.updatedAt,
+          viewCount: sharedNotebook.viewCount + 1
+        });
+      }
 
     } catch (error) {
       console.error('Error fetching shared notebook:', error);
