@@ -3,7 +3,7 @@ import Year from '../models/Year.js';
 import Subject from '../models/Subject.js';
 import Chapter from '../models/Chapter.js';
 // import Resource from '../models/Resource.js';
-import Notebook from '../models/Notebook.js';
+import Notebook from '../models/NoteBook.js';
 import HandwrittenNote from '../models/HandwrittenNote.js';
 
 //               User → Year → Subject → Chapter ← [ Notebook, HandwrittenNote ]
