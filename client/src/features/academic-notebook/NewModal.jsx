@@ -124,7 +124,7 @@ export default function NewModal({
                 </div>
                 <div className="card-arrow">→</div>
               </button>
-
+{/* 
               <button className="action-card upload-card image">
                 <div className="card-icon">
                   <FaImage />
@@ -143,7 +143,7 @@ export default function NewModal({
                     handleFileUpload(e.target.files[0], e.target.value)
                   }
                 />
-              </button>
+              </button> */}
               {/* </label> */}
 
               <button

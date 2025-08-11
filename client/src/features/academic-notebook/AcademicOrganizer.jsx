@@ -1712,14 +1712,14 @@ const AcademicOrganizer = () => {
                     className="shared-notebook-card"
                   >
                     <div className="shared-card-header">
-                      <div className="file-icon-container">
+                      <div className="file-icon-container-1">
                         <div className="file-icon-1">
                           {sharedItem.type === "notebook" ? (
                             <FaStickyNote />
                           ) : sharedItem.type === "pdf" ? (
-                            <FaFilePdf />
+                            <FaFilePdf/>
                           ) : (
-                            <FaImage />
+                            <FaImage/>
                           )}
                         </div>
                         {/* Show globe icon only if isActive */}

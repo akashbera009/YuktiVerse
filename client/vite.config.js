@@ -18,29 +18,58 @@
 // });
 
 
+// import { defineConfig } from 'vite';
+// import react from '@vitejs/plugin-react';
+
+// export default defineConfig({
+//   plugins: [react()],
+//   define: {
+//     __BASE_URL__: JSON.stringify('http://localhost:5173/'),
+//   },
+//   server: {
+//     host: '0.0.0.0',
+//     port: 5173,
+//     proxy: {
+//       '/api': {
+//         target: 'http://localhost:3000',
+//         changeOrigin: true,
+//         secure: false,
+//       },
+//       '/years': {
+//         target: 'http://localhost:3000', // Or 5000 if your backend runs there
+//         changeOrigin: true,
+//         secure: false,
+//       },
+//        '/ai-help': 'http://localhost:3000',
+//     },
+//   },
+// });
+
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
-  define: {
-    __BASE_URL__: JSON.stringify('http://localhost:5173/'),
-  },
   server: {
     host: '0.0.0.0',
     port: 5173,
-    proxy: {
+    proxy: mode === 'development' ? {
       '/api': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false,
       },
       '/years': {
-        target: 'http://localhost:3000', // Or 5000 if your backend runs there
+        target: process.env.VITE_BACKEND_URL,
         changeOrigin: true,
         secure: false,
       },
-       '/ai-help': 'http://localhost:3000',
-    },
+      '/ai-help': {
+        target: process.env.VITE_BACKEND_URL,
+        changeOrigin: true,
+        secure: false,
+      },
+    } : undefined
   },
-});
+}));

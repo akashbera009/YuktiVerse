@@ -1,3 +1,10 @@
+🔑 Authentication
+Action	Method	URL Pattern	Request Body / Notes
+Register User	POST	/api/auth/register	{ "name": "John Doe", "email": "user@example.com", "password": "secret" }
+Login User	POST	/api/auth/login	{ "email": "user@example.com", "password": "secret" }
+Get Current User	GET	/api/auth/me	Protected — requires Bearer token in Authorization header
+
+
 Action                 Method   URL Pattern                                      Request Body
 ---------------------------------------------------------------------------------------------------------------------------
 Create Year            POST     /years                                           { "title": "Third Year", "important": false }

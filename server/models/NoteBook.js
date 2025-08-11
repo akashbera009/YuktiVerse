@@ -29,7 +29,7 @@ const NotebookSchema = new mongoose.Schema({
     ref: 'Chapter',
     required: true  // if every note must be tied to a chapter
   },
-  note_id: {  // New field for frontend reference
+  note_id: { 
     type: String,
     required: true,
     unique: true
