@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import AiHelpers from "./AiHelpers";
 import "./Popover.css";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import axios from "axios";
 import {
   DotsLoader,

@@ -4,6 +4,7 @@ import { Rnd } from "react-rnd";
 import "./SharedNotebook.css";
 import axios from "axios";
 import { SquaresLoader } from "../../components/Loader";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import {
   FaEye,
   FaShare,

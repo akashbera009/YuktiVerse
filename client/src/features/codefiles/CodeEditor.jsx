@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 // Language configuration for syntax highlighting and file extensions
 const LANGUAGE_CONFIG = {

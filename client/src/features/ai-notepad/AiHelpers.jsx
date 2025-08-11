@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import SmartTextFormatter from './AITextFormatter';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
   const [prompt, setPrompt] = useState('');

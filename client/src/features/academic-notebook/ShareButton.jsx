@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaShare, FaCopy, FaCheck, FaSpinner } from "react-icons/fa";
 import axios from "axios";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import "./ShareButton.css";
 
 const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLinkGenerated  }) => {

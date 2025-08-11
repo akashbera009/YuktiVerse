@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "./Notebook.css";
 import { Rnd } from "react-rnd";
 import Popover from "./Popover";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import {
   FaStar,
   FaTrash,
