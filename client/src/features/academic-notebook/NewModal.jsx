@@ -60,7 +60,7 @@ export default function NewModal({
     setIsSaving(true);
     try {
       const { data: newNotebook } = await axios.post(
-        "/api/notebooks/",
+        `${backendURL}/api/notebooks/`,
         payload
       );
       onCreateNotebook(newNotebook);

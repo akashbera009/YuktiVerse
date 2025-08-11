@@ -142,7 +142,7 @@ const CodeEditor = ({
   const fetchCodeFile = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`/api/code-files/${codeFileId}`);
+      const response = await axios.get(`${backendURL}/api/code-files/${codeFileId}`);
       const data = response.data.data;
       
       setCodeFile(data);
@@ -174,7 +174,7 @@ const CodeEditor = ({
         tags: tags.filter(tag => tag.trim() !== '')
       };
       
-      await axios.put(`/api/code-files/${codeFile._id}`, updateData);
+      await axios.put(`${backendURL}/api/code-files/${codeFile._id}`, updateData);
       
       setHasUnsavedChanges(false);
       toast.success('Code saved successfully');
@@ -195,7 +195,7 @@ const CodeEditor = ({
     
     try {
       const updateData = { content, description };
-      await axios.put(`/api/code-files/${codeFile._id}`, updateData);
+      await axios.put(`${backendURL}/api/code-files/${codeFile._id}`, updateData);
       setHasUnsavedChanges(false);
       
       // Subtle indication of auto-save
@@ -213,7 +213,7 @@ const CodeEditor = ({
     if (!title.trim() || !codeFile) return;
     
     try {
-      await axios.patch(`/api/code-files/${codeFile._id}/rename`, { title: title.trim() });
+      await axios.patch(`${backendURL}/api/code-files/${codeFile._id}/rename`, { title: title.trim() });
       setCodeFile(prev => ({ ...prev, title: title.trim() }));
       onRename?.(codeFile, 'code', title.trim());
       setIsRenaming(false);
@@ -229,7 +229,7 @@ const CodeEditor = ({
     
     try {
       setIsSharing(true);
-      const response = await axios.post(`/api/code-files/${codeFile._id}/share`);
+      const response = await axios.post(`${backendURL}/api/code-files/${codeFile._id}/share`);
       const fullUrl = `${window.location.origin}${response.data.shareUrl}`;
       
       setShareUrl(fullUrl);

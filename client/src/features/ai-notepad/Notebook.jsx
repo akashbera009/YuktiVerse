@@ -51,7 +51,7 @@ const Notebook = ({
       try {
         setIsLoading(true);
         if (notebookId) {
-          const response = await axios.get(`/api/notebooks/${notebookId}`);
+          const response = await axios.get(`${backendURL}/api/notebooks/${notebookId}`);
           console.log(response);
 
           const notebook = response.data;
@@ -81,7 +81,7 @@ const Notebook = ({
         },
       };
 
-      const response = await axios.put(`/api/notebooks/${notebookId}`, payload);
+      const response = await axios.put(`${backendURL}/api/notebooks/${notebookId}`, payload);
 
       console.log("Notebook updated:", response.data);
       // Optionally show a toast or UI feedback

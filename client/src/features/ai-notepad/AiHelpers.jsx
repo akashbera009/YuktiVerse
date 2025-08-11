@@ -75,7 +75,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
       ]);
 
       // 3) fetch & replace
-      axios.post('/api/ai-help/detailed-explain', { prompt: text, context: text })
+      axios.post(`${backendURL}/api/ai-help/detailed-explain`, { prompt: text, context: text })
         .then(res => {
           setMessages(prev => prev.map(m =>
             m.id === LOADING_ID
@@ -113,7 +113,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
     const currentPrompt = prompt;
     setPrompt('');
 
-    const endpoint = '/api/ai-help/simple-chat';
+    const endpoint = `${backendURL}/api/ai-help/simple-chat`;
     try {
       const res = await axios.post(endpoint, { prompt: currentPrompt, context: text });
 

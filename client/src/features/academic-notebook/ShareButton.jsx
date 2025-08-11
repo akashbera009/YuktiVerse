@@ -13,7 +13,7 @@ const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLi
     try {
       setIsLoading(true);
       const response = await axios.post(
-        `/api/share/notebook/${notebookId}/generate`,
+        `${backendURL}/api/share/notebook/${notebookId}/generate`,
         {
           type: type,
         }

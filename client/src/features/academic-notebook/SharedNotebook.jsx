@@ -30,7 +30,7 @@ const SharedNotebook = () => {
     const loadSharedNotebook = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`/api/share/notebook/${shareId}`);
+        const response = await axios.get(`${backendURL}/api/share/notebook/${shareId}`);
         setNotebook(response.data);
         console.log("Notebook type:", response.data?.type);
         console.log("Notebook content:", response.data?.content);

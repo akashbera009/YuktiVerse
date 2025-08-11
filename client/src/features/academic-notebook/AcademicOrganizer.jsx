@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import {
   FaFolder,
   FaFolderOpen,
@@ -156,7 +157,7 @@ const AcademicOrganizer = () => {
   useEffect(() => {
     const fetchYears = async () => {
       try {
-        const res = await axios.get("/years");
+        const res = await axios.get(`${backendURL}/years`);
         setYears(res.data);
       } catch (err) {
         console.error("Error fetching years:", err);
@@ -183,7 +184,7 @@ const AcademicOrganizer = () => {
       const fetchSubjects = async () => {
         try {
           setSubjectsLoading(true);
-          const res = await axios.get(`/years/${selectedYearId}/subjects`);
+          const res = await axios.get(`${backendURL}/years/${selectedYearId}/subjects`);
           setSubjects(res.data);
         } catch (err) {
           console.error("Error fetching subjects:", err);
@@ -205,7 +206,7 @@ const AcademicOrganizer = () => {
         try {
           setChaptersLoading(true);
           const res = await axios.get(
-            `/years/subjects/${selectedSubjectId}/chapters`
+            `${backendURL}/years/subjects/${selectedSubjectId}/chapters`
           );
           setChapters(res.data);
         } catch (err) {
@@ -226,7 +227,7 @@ const AcademicOrganizer = () => {
       setSharedLoading(true);
       setSharedError(null);
       let userId = "689738740562829489a60a41";
-      const response = await axios.get(`/api/share/user/notebooks/${userId}`);
+      const response = await axios.get(`${backendURL}/api/share/user/notebooks/${userId}`);
       // const response = await axios.get("/api/share/user/notebooks" ,{
       //   email: "ab@gmail.com",
       //   id : "689738740562829489a60a41",
@@ -257,7 +258,7 @@ const AcademicOrganizer = () => {
 
     try {
       let userId = "689738740562829489a60a41";
-      await axios.delete(`/api/share/notebook/${userId}/${shareId}`);
+      await axios.delete(`${backendURL}/api/share/notebook/${userId}/${shareId}`);
       setSharedNotebooks((prev) =>
         prev.filter((item) => item.shareId !== shareId)
       );
@@ -285,7 +286,7 @@ const AcademicOrganizer = () => {
       // setChaptersLoading(true);
       setError(null);
       axios
-        .get(`/years/${selectedChapterId}/materials`)
+        .get(`${backendURL}/years/${selectedChapterId}/materials`)
         .then((res) => setMaterials(res.data))
         .catch((err) => {
           console.error("Error fetching materials:", err);
@@ -372,7 +373,7 @@ const AcademicOrganizer = () => {
 
     if (file.type === "notebook") {
       try {
-        const res = await axios.get(`/api/notebooks/${file._id}`);
+        const res = await axios.get(`${backendURL}/api/notebooks/${file._id}`);
         setNotebookContent(res.data);
         // setFileLoading(false);
         setViewerType("notebook");
@@ -396,7 +397,7 @@ const AcademicOrganizer = () => {
 
   const handleCreateYear = async (title) => {
     try {
-      const res = await axios.post("/years", { title, important: false });
+      const res = await axios.post(`${backendURL}/years`, { title, important: false });
       setYears((prev) => [...prev, res.data]);
     } catch (err) {
       console.error("Error creating year:", err);
@@ -409,7 +410,7 @@ const AcademicOrganizer = () => {
       const year = years.find((y) => y._id === yearId);
       if (!year) return;
 
-      const updated = await axios.patch(`/years/${yearId}`, {
+      const updated = await axios.patch(`${backendURL}/years/${yearId}`, {
         important: !year.important,
       });
 
@@ -428,7 +429,7 @@ const AcademicOrganizer = () => {
     try {
       console.log(yearId, newTitle);
 
-      await axios.patch(`/years/rename/${yearId}`, { title: newTitle });
+      await axios.patch(`${backendURL}/years/rename/${yearId}`, { title: newTitle });
       setYears((prev) =>
         prev.map((y) => (y._id === yearId ? { ...y, title: newTitle } : y))
       );
@@ -449,7 +450,7 @@ const AcademicOrganizer = () => {
     setDeleteTarget(true);
     try {
       if (type === "year") {
-        await axios.delete(`/years/${id}`);
+        await axios.delete(`${backendURL}/years/${id}`);
         setYears((prev) => prev.filter((y) => y._id !== id));
 
         if (selectedYearId === id) {
@@ -461,7 +462,7 @@ const AcademicOrganizer = () => {
           setMaterials({ notebooks: [], handwrittenNotes: [] });
         }
       } else if (type === "subject") {
-        await axios.delete(`/years/subjects/${id}`);
+        await axios.delete(`${backendURL}/years/subjects/${id}`);
         setSubjects((prev) => prev.filter((s) => s._id !== id));
 
         if (selectedSubjectId === id) {
@@ -471,7 +472,7 @@ const AcademicOrganizer = () => {
           setMaterials({ notebooks: [], handwrittenNotes: [] });
         }
       } else if (type === "chapter") {
-        await axios.delete(`/years/subjects/chapters/${id}`);
+        await axios.delete(`${backendURL}/years/subjects/chapters/${id}`);
         setChapters((prev) => prev.filter((c) => c._id !== id));
 
         if (selectedChapterId === id) {
@@ -497,7 +498,7 @@ const AcademicOrganizer = () => {
 
     try {
       if (type === "notebook") {
-        await axios.delete(`/api/notebooks/${file._id}`);
+        await axios.delete(`${backendURL}/api/notebooks/${file._id}`);
         setMaterials((prev) => ({
           ...prev,
           notebooks: prev.notebooks.filter((n) => n._id !== file._id),
@@ -513,7 +514,7 @@ const AcademicOrganizer = () => {
       } else if (type === "handwritten") {
         console.log(type, file._id);
 
-        await axios.delete(`/api/handwritten-notes/${file._id}`);
+        await axios.delete(`${backendURL}/api/handwritten-notes/${file._id}`);
         setMaterials((prev) => ({
           ...prev,
           handwrittenNotes: prev.handwrittenNotes.filter(
@@ -543,7 +544,7 @@ const AcademicOrganizer = () => {
     }
 
     try {
-      const res = await axios.post(`/years/${selectedYearId}/subjects`, {
+      const res = await axios.post(`${backendURL}/years/${selectedYearId}/subjects`, {
         name,
         important: false,
       });
@@ -560,7 +561,7 @@ const AcademicOrganizer = () => {
       const subject = subjects.find((s) => s._id === subjectId);
       if (!subject) return;
 
-      const updated = await axios.patch(`years/subjects/${subjectId}`, {
+      const updated = await axios.patch(`${backendURL}/years/subjects/${subjectId}`, {
         important: !subject.important,
       });
 
@@ -580,7 +581,7 @@ const AcademicOrganizer = () => {
       const subject = subjects.find((s) => s._id === subjectId);
       if (!subject) return;
 
-      await axios.patch(`/years/subjects/rename/${subjectId}`, {
+      await axios.patch(`${backendURL}/years/subjects/rename/${subjectId}`, {
         name: newName,
       });
       setSubjects((prev) =>
@@ -600,7 +601,7 @@ const AcademicOrganizer = () => {
 
     try {
       const res = await axios.post(
-        `/years/subjects/${selectedSubjectId}/chapters`,
+        `${backendURL}/years/subjects/${selectedSubjectId}/chapters`,
         { chapterTitle } // ✅ correct key
       );
 
@@ -619,7 +620,7 @@ const AcademicOrganizer = () => {
       console.log(chapter);
 
       const updated = await axios.patch(
-        `years/subjects/chapters/${chapterId}`,
+        `${backendURL}years/subjects/chapters/${chapterId}`,
         {
           important: !chapter.important,
         }
@@ -639,7 +640,7 @@ const AcademicOrganizer = () => {
 
   const renameChapter = async (chapterId, newTitle) => {
     try {
-      await axios.patch(`years/subjects/chapters/rename/${chapterId}`, {
+      await axios.patch(`${backendURL}/years/subjects/chapters/rename/${chapterId}`, {
         title: newTitle,
       });
       setChapters((prev) =>
@@ -653,26 +654,26 @@ const AcademicOrganizer = () => {
 
   // Rename notebook
   const renameNotebook = async (noteId, newName) => {
-    await axios.patch(`/api/notebooks/${noteId}/rename`, { name: newName });
+    await axios.patch(`${backendURL}/api/notebooks/${noteId}/rename`, { name: newName });
   };
 
   // Toggle important notebook
   const toggleImportantNotebook = async (noteId) => {
     console.log("coming");
 
-    await axios.patch(`/api/notebooks/${noteId}/important`);
+    await axios.patch(`${backendURL}/api/notebooks/${noteId}/important`);
   };
 
   // Rename scanned note
   const renameScannedNote = async (noteId, newTitle) => {
-    await axios.patch(`/api/handwritten-notes/${noteId}/rename`, {
+    await axios.patch(`${backendURL}/api/handwritten-notes/${noteId}/rename`, {
       title: newTitle,
     });
   };
 
   // Toggle important scanned note
   const toggleImportantScannedNote = async (noteId) => {
-    await axios.patch(`/api/handwritten-notes/${noteId}/important`);
+    await axios.patch(`${backendURL}/api/handwritten-notes/${noteId}/important`);
   };
 
   const handleRename = async (file, type, newName) => {
@@ -777,23 +778,23 @@ const AcademicOrganizer = () => {
     try {
       const allFilesData = [];
 
-      const yearsRes = await axios.get("/years");
+      const yearsRes = await axios.get(`${backendURL}/years`);
       const years = yearsRes.data;
 
       for (const year of years) {
-        const subjectsRes = await axios.get(`/years/${year._id}/subjects`);
+        const subjectsRes = await axios.get(`${backendURL}/years/${year._id}/subjects`);
         const subjects = subjectsRes.data;
 
         for (const subject of subjects) {
           const chaptersRes = await axios.get(
-            `/years/subjects/${subject._id}/chapters`
+            `${backendURL}/years/subjects/${subject._id}/chapters`
           );
           const chapters = chaptersRes.data;
 
           for (const chapter of chapters) {
             try {
               const materialsRes = await axios.get(
-                `/years/${chapter._id}/materials`
+                `${backendURL}/years/${chapter._id}/materials`
               );
               const materials = materialsRes.data;
 
@@ -868,7 +869,7 @@ const AcademicOrganizer = () => {
     const fetchYears = async () => {
       try {
         setYearsLoading(true);
-        const res = await axios.get("/years");
+        const res = await axios.get(`${backendURL}/years`);
         setYears(res.data);
 
         // After years are loaded, fetch all files for search
@@ -957,7 +958,7 @@ const AcademicOrganizer = () => {
       // setFileLoading(false)
       setError(null);
       axios
-        .get(`/years/${selectedChapterId}/materials`)
+        .get(`${backendURL}/years/${selectedChapterId}/materials`)
         .then((res) => {
           setMaterials(res.data);
 
@@ -1110,7 +1111,7 @@ const AcademicOrganizer = () => {
     formData.append("title", title);
     try {
       setUploading(true);
-      const res = await axios.post("/api/handwritten-notes/upload", formData, {
+      const res = await axios.post(`${backendURL}/api/handwritten-notes/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

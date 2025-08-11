@@ -31,17 +31,16 @@
 //     port: 5173,
 //     proxy: {
 //       '/api': {
-//         target: 'https://yuktiverse.onrender.com/',
+//         target: 'https://localhost:3000',
 //         changeOrigin: true,
 //         secure: false,
 //       },
 //       '/years': {
-//         // target: 'http://localhost:3000', 
-//         target: 'https://yuktiverse.onrender.com/', 
+//         target: 'https://localhost:3000', 
 //         changeOrigin: true,
 //         secure: false,
 //       },
-//        '/ai-help': 'https://yuktiverse.onrender.com/',
+//        '/ai-help': 'https://localhost:3000',
 //     },
 //   },
 // });

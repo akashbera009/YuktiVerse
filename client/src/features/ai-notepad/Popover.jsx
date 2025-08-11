@@ -24,7 +24,7 @@ const Popover = ({ anchorRef, onClose, children, text, textBoxId, notebookId }) 
         forceRefresh
       });
 
-      const response = await axios.post("/api/ai-help/short-explain", {
+      const response = await axios.post(`${backendURL}/api/ai-help/short-explain`, {
         prompt: text,
         textBoxId,
         notebookId,
