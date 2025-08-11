@@ -63,7 +63,7 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         '/api': {
-          target: 'https://yuktiverse.onrender.com/',
+          target:  env.VITE_BACKEND_URL,
           changeOrigin: true,
           secure: false,
         },
@@ -73,7 +73,7 @@ export default defineConfig(({ mode }) => {
           secure: false,
         },
         '/ai-help': {
-          target: 'https://yuktiverse.onrender.com/',
+          target: env.VITE_BACKEND_URL,
           changeOrigin: true,
           secure: false,
         },
