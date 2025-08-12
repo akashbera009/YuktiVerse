@@ -8,7 +8,7 @@ import AcademicOrganizer from './features/academic-notebook/AcademicOrganizer';
 import SharedNotebook from './features/academic-notebook/SharedNotebook';
 import Dashboard from './features/dashboard/Dashboard';
 import { LogIn } from 'lucide-react';
-import CodeEditor from './features/codefiles/CodeEditor';
+// import CodeEditor from './features/codefiles/CodeEditor';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -21,7 +21,7 @@ function App() {
         <Route path="/work" element={<Layout />}>
           <Route path="academic-org" element={<AcademicOrganizer />} />
           <Route path="notebook" element={<Notebook/>} />
-          <Route path="code-editor" element={<CodeEditor/>} />
+          {/* <Route path="code-editor" element={<CodeEditor/>} /> */}
           {/* Add more routes as needed */}
         </Route>
         <Route path="/share/notebook/:shareId" element={<SharedNotebook />} />
