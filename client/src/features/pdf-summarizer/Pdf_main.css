@@ -1,0 +1,33 @@
+/* Pdf_main.css */
+
+.analyzer-container {
+  display: flex;
+  background-color: var(--dark-bg); /* #1a202c -> --dark-bg */
+  height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: var(--dark-bg); /* #1a202c -> --dark-bg */
+  color: var(--text-primary); /* #edf2f7 -> --text-primary */
+}
+.double-bar-container{
+  display: flex;
+}
+.collapse-bar{
+  margin-left:5vw;
+}
+
+
+
+
+/* Add these new styles to your existing Pdf_main.css */

@@ -14,9 +14,9 @@ router.post('/upload', authMiddleware, upload.single('file'), uploadNote);
 // GET /api/notes
 router.get('/', authMiddleware, getHandWrittenNotes);
 
-router.patch('/:noteId/rename', renameNote);
-router.patch('/:noteId/important', toggleImportantNote);
+router.patch('/:noteId/rename',authMiddleware, renameNote);
+router.patch('/:noteId/important', authMiddleware , toggleImportantNote);
 
-router.delete('/:id', deleteHandwrittenNote);
+router.delete('/:id',authMiddleware, deleteHandwrittenNote);
 
 export default router;

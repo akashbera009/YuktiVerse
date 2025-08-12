@@ -31,7 +31,7 @@ export default function NewModal({
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [showUploader, setShowUploader] = useState(false);
-
+const token = localStorage.getItem('token');
   // Animation effect on mount
   useEffect(() => {
     setIsVisible(true);
@@ -62,7 +62,13 @@ export default function NewModal({
     try {
       const { data: newNotebook } = await axios.post(
         `${backendURL}/api/notebooks/`,
-        payload
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       onCreateNotebook(newNotebook);
       setNotebookName("");
@@ -125,7 +131,7 @@ export default function NewModal({
                 </div>
                 <div className="card-arrow">→</div>
               </button>
-{/* 
+              {/* 
               <button className="action-card upload-card image">
                 <div className="card-icon">
                   <FaImage />

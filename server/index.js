@@ -18,6 +18,11 @@ import yearRoutes from './routes/years.js';
 import shareRoutes from './routes/shareroute.js';
 // import resumeSummerizer from './routes/resumeSummerizer.js';
 
+
+import codeFileRoutes from './routes/codefile/codeFiles.js';
+// import codeFileShare from './routes/codefile/codeFileShare.js';
+
+
 dotenv.config();
 
 const app = express(); 
@@ -48,6 +53,9 @@ app.use('/api/pdf-summerize', pdfRoutes);   // /api/pdf/mcq
 
 // handwritten notes
 app.use('/api/handwritten-notes', handwrittenNotesRoutes);  
+
+// code files 
+app.use('/api/codefiles', codeFileRoutes);
 
 // ai notes 
 app.use('/api/notebooks', notebooksRoutes);

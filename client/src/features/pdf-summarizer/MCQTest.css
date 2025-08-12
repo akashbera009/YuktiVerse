@@ -1,0 +1,496 @@
+/* :root {
+  
+  --accent-primary: #68d391;
+  --secondary-accent: #81e6d9;
+  --success: #48bb78;
+  --danger: #f56565;
+
+  
+  --text-primary: #edf2f7;
+  --text-secondary: #a0aec0;
+  --text-dark: #1a202c;
+  --text-muted-dark: rgba(26, 32, 44, 0.7);
+
+  
+  --border-divider: #2d3748;
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-popup: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(104, 211, 145, 0.3);
+  --border-score: rgba(104, 211, 145, 0.2);
+
+  
+  --bg-dark-box: rgba(26, 32, 44, 0.7);
+  --bg-option: rgba(26, 32, 44, 0.8);
+  --bg-option-hover: rgba(45, 55, 72, 0.9);
+  --bg-question-number: rgba(104, 211, 145, 0.15);
+  --bg-correct: rgba(72, 187, 120, 0.15);
+  --bg-wrong: rgba(245, 101, 101, 0.15);
+  --bg-disabled-gradient: linear-gradient(135deg, #4a9b6e, #3a8b5e);
+  --bg-submit-gradient: linear-gradient(135deg, var(--accent-primary), var(--success));
+  --bg-review-gradient: linear-gradient(135deg, var(--secondary-accent), #38b2ac);
+  --bg-score-circle: linear-gradient(135deg, var(--accent-primary), var(--secondary-accent));
+  --bg-popup: linear-gradient(135deg, rgba(26, 32, 44, 0.95), rgba(16, 22, 34, 0.95));
+  --bg-popup-overlay: rgba(11, 15, 25, 0.92);
+  --bg-review-score-btn: rgba(104, 211, 145, 0.15);
+  --bg-review-score-btn-hover: rgba(104, 211, 145, 0.25);
+  --bg-close-score-hover: rgba(45, 55, 72, 0.5);
+  --bg-retry-btn: rgba(45, 55, 72, 0.8);
+  --bg-retry-btn-hover: rgba(45, 55, 72, 1);
+
+  
+  --shadow-submit: 0 4px 15px rgba(104, 211, 145, 0.3);
+  --shadow-submit-hover: 0 6px 20px rgba(104, 211, 145, 0.4);
+  --shadow-score-circle: 0 15px 40px rgba(104, 211, 145, 0.4);
+  --shadow-popup: 0 30px 60px rgba(0, 0, 0, 0.6);
+  --shadow-popup-border: 0 0 0 1px var(--border-score);
+  --shadow-retry-hover: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-review-hover: 0 4px 15px rgba(129, 230, 217, 0.4);
+
+  
+  --radial-light-green: radial-gradient(circle at 20% 30%, rgba(104, 211, 145, 0.08) 0%, transparent 30%);
+  --radial-light-cyan: radial-gradient(circle at 80% 70%, rgba(129, 230, 217, 0.08) 0%, transparent 30%);
+
+  --white: #ffffff;
+} */
+
+.mcq-test {
+  padding: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.mcq-test__title {
+  font-size: 2rem;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.test-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-divider);
+}
+
+.accent-text {
+  color: var(--accent-primary);
+}
+
+.mcq-test__instructions {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 1.05rem;
+  border-left: 3px solid var(--accent-primary);
+  padding-left: 18px;
+}
+
+.mcq-test__questions {
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 24px;
+}
+
+.mcq-test__questions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mcq-test__questions::-webkit-scrollbar-track {
+  background: var(--border-divider);
+  border-radius: 4px;
+}
+
+.mcq-test__questions::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+.mcq-test__question-box {
+  background: var(--bg-dark-box);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-light);
+}
+
+.question-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.question-number {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-question-number);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+.mcq-test__question {
+  font-size: 1.2rem;
+  margin: 0;
+  line-height: 1.6;
+  font-weight: 500;
+  padding-top: 6px;
+}
+
+.mcq-test__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mcq-test__option {
+  background: var(--bg-option);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+.mcq-test__option:hover {
+  background: var(--bg-option-hover);
+}
+
+.option-letter {
+  font-weight: 700;
+  color: var(--secondary-accent);
+  margin-right: 14px;
+  min-width: 24px;
+  font-size: 1.1rem;
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1.05rem;
+}
+
+.selected {
+  border-left: 4px solid var(--accent-primary);
+  background: var(--bg-question-number);
+}
+
+.correct {
+  border-left: 4px solid var(--success);
+  background: var(--bg-correct);
+}
+
+.wrong {
+  border-left: 4px solid var(--danger);
+  background: var(--bg-wrong);
+}
+
+.feedback-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.correct-icon {
+  background: var(--success);
+  color: var(--white);
+}
+
+.wrong-icon {
+  background: var(--danger);
+  color: var(--white);
+}
+
+.mcq-test__submit-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--bg-submit-gradient);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: var(--shadow-submit);
+  
+}
+
+.mcq-test__submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-submit-hover);
+}
+
+.mcq-test__submit-btn:disabled {
+  background: var(--bg-disabled-gradient);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  border: 1px solid var(--border-light);
+}
+
+.score-display {
+  text-align: center;
+  margin: 0 0 20px 0;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.score-display.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.score-circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--bg-score-circle);
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: var(--shadow-score-circle);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(104, 211, 145, 0.4),
+                0 0 0 0 rgba(104, 211, 145, 0.3);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(104, 211, 145, 0),
+                0 0 0 40px rgba(104, 211, 145, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(104, 211, 145, 0),
+                0 0 0 0 rgba(104, 211, 145, 0);
+  }
+}
+
+.score-text {
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.score-text span {
+  font-size: 2rem;
+  color: var(--text-muted-dark);
+}
+
+.score-message {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 10px;
+}
+
+.test-actions {
+  display: flex;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.retry-btn,
+.review-btn {
+  flex: 1;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.retry-btn {
+  background-color: var(--bg-retry-btn);
+  color: var(--text-primary);
+  border: 1px solid var(--border-popup);
+}
+
+.retry-btn:hover {
+  background-color: var(--bg-retry-btn-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-retry-hover);
+}
+
+.review-btn {
+  background: var(--bg-review-gradient);
+  color: var(--text-dark);
+}
+
+.review-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-review-hover);
+}
+
+/* Score Popup Overlay */
+.score-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-popup-overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.score-popup {
+  background: var(--bg-popup);
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  overflow: hidden;
+  position: relative;
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-popup), var(--shadow-popup-border);
+  border: 1px solid var(--border-accent);
+}
+
+.score-popup::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--radial-light-green), var(--radial-light-cyan);
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8) translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.score-popup-content {
+  padding: 40px 30px 30px;
+  text-align: center;
+}
+
+.score-popup-actions {
+  display: flex;
+  border-top: 1px solid var(--border-popup);
+}
+
+.close-score-btn,
+.review-score-btn {
+  flex: 1;
+  padding: 18px;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-score-btn {
+  color: var(--text-secondary);
+  border-right: 1px solid var(--border-popup);
+}
+
+.close-score-btn:hover {
+  background: var(--bg-close-score-hover);
+  color: var(--text-primary);
+}
+
+.review-score-btn {
+  background: var(--bg-review-score-btn);
+  color: var(--accent-primary);
+}
+
+.review-score-btn:hover {
+  background: var(--bg-review-score-btn-hover);
+}
+
+.score-details {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid var(--border-popup);
+}
+
+.score-stat {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.1rem;
+}
+
+.score-stat span:first-child {
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.correct-stat {
+  color: var(--success);
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.incorrect-stat {
+  color: var(--danger);
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.percentage-stat {
+  color: var(--secondary-accent);
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+/* Blur background when popup is active */
+.mcq-test__questions.blurred,
+.test-actions.blurred {
+  filter: blur(8px);
+  opacity: 0.5;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}

@@ -41,6 +41,7 @@ const Notebook = ({
   const [isImportant, setIsImportant] = useState(file.important);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newNotebookName, setNewNotebookName] = useState(notebookName);
+const token = localStorage.getItem('token');
   useEffect(() => {
     setNewNotebookName(notebookName);
   }, [notebookName]);
@@ -52,8 +53,16 @@ const Notebook = ({
       try {
         setIsLoading(true);
         if (notebookId) {
-          const response = await axios.get(`${backendURL}/api/notebooks/${notebookId}`);
-          console.log(response);
+          const response = await axios.get(
+            `${backendURL}/api/notebooks/${notebookId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          // console.log(response);
 
           const notebook = response.data;
 
@@ -82,7 +91,16 @@ const Notebook = ({
         },
       };
 
-      const response = await axios.put(`${backendURL}/api/notebooks/${notebookId}`, payload);
+      const response = await axios.put(
+        `${backendURL}/api/notebooks/${notebookId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log("Notebook updated:", response.data);
       // Optionally show a toast or UI feedback
@@ -209,7 +227,7 @@ const Notebook = ({
             onClose={() => setPopoverBoxId(null)}
             text={box.text}
             textBoxId={box.id}
-            notebookId = {notebookId}
+            notebookId={notebookId}
           />
         )}
       </Rnd>
@@ -411,7 +429,7 @@ const Notebook = ({
                   notebookId={notebookId}
                   onShareLinkGenerated={onShareLinkGenerated}
                   className="share-notebook-btn"
-                />  
+                />
                 <button
                   className={`menu-button ${isImportant ? "important" : ""}`}
                   onClick={() => setShowMenu(!showMenu)}

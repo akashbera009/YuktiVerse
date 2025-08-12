@@ -144,6 +144,8 @@
 }
 
 .notebook-header {
+  position: absolute;
+  top: 7rem;
   display: flex;
   justify-content: space-between;
   padding: 20px 30px;

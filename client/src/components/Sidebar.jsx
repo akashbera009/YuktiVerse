@@ -33,7 +33,7 @@ const Sidebar = () => {
       <ul className="sidebar-menu">
         <li className="menu-item-logo">
           <img
-            src="./src/assets/750003cb-fc39-41be-a28a-be393bf1013a.jpg"
+            src="https://i.ibb.co/FbnDbq6H/Logo-for-Yukti-Strategies-Technology-Consultancy.png"
             alt=""
           />
         </li>

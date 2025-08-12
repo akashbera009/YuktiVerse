@@ -1,6 +1,10 @@
 🔑 Authentication
 Action	Method	URL Pattern	Request Body / Notes
-Register User	POST	/api/auth/register	{ "name": "John Doe", "email": "user@example.com", "password": "secret" }
+Register User	POST	/api/auth/register	{
+  "name": "Akash Bera",
+  "email": "ab2@gmail.com",
+  "password": "123"
+}
 Login User	POST	/api/auth/login	{ "email": "user@example.com", "password": "secret" }
 Get Current User	GET	/api/auth/me	Protected — requires Bearer token in Authorization header
 
@@ -88,3 +92,29 @@ List User's Shared        GET      /api/share/user/notebooks                    
 
 View Shared Notebook      GET      /api/share/notebook/:shareId                     -- Anyone can access with shareId
 Frontend Share URL        --       /share/notebook/:shareId                         -- React route for viewing shared content
+
+
+
+
+
+
+
+
+
+Route	HTTP Method	Controller Function	Auth Required?
+/api/codefiles/	POST	createCodeFile	
+ {
+  "title": "My First Code",
+  "content": "console.log('Hello, world!');",
+  "chapter": "68812acd65e4bbfd1146f966",
+  "language": "javascript",
+  "description": "A simple hello world program",
+  "tags": ["example", "test"]
+}
+
+/api/codefiles/:id	GET	getCodeFileById	Yes
+/api/codefiles/:id	PUT	updateCodeFile	Yes
+/api/codefiles/:id	DELETE	deleteCodeFile	Yes
+/api/codefiles/:id/rename	PATCH	renameCodeFile	Yes
+/api/codefiles/:id/important	PATCH	toggleImportant	Yes
+/api/codefiles/:id/share	POST	shareCodeFile	Yes

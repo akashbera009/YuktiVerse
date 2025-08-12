@@ -207,6 +207,7 @@ githubTheme:  {
     '--light-text': '#1e3a8a',
     '--light-border': '#bfdbfe',
     '--danger': '#dc2626',
+    '--accent-gradient': 'linear-gradient(135deg, #f59e0b, #ef4444)',
     '--warning': '#f59e0b',
     '--success': '#10b981',
     '--glass-bg': 'rgba(30, 58, 138, 0.08)',

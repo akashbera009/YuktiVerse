@@ -5,59 +5,67 @@ import AiHelpers from "./AiHelpers";
 import "./Popover.css";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 import axios from "axios";
-import {
-  DotsLoader,
-} from "../../components/Loader";
+import { DotsLoader } from "../../components/Loader";
 
-const Popover = ({ anchorRef, onClose, children, text, textBoxId, notebookId }) => {
+const Popover = ({
+  anchorRef,
+  onClose,
+  children,
+  text,
+  textBoxId,
+  notebookId,
+}) => {
   const popoverRef = useRef();
 
   const [shortResponse, setShortResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const fetchShortResponse = async (forceRefresh = false) => {
     setLoading(true);
     try {
-      console.log('Making request with:', {
+      console.log("Making request with:", {
         prompt: text,
         textBoxId,
         notebookId,
-        forceRefresh
+        forceRefresh,
       });
 
-      const response = await axios.post(`${backendURL}/api/ai-help/short-explain`, {
-        prompt: text,
-        textBoxId,
-        notebookId,
-        forceRefresh // Flag to bypass cache and get fresh response
-      });
-      
+      const response = await axios.post(
+        `${backendURL}/api/ai-help/short-explain`,
+        {
+          prompt: text,
+          textBoxId,
+          notebookId,
+          forceRefresh, // Flag to bypass cache and get fresh response
+        }
+      );
+
       console.log("AI short response:", response.data);
-      
+
       // The response now includes fromCache info
       setShortResponse({
         response: response.data.response,
         fromCache: response.data.fromCache || false,
         task: response.data.task,
-        cached: response.data.cached
+        cached: response.data.cached,
       });
     } catch (error) {
       console.error("Short response error:", error);
-      
+
       let errorMessage = "Something went wrong. Please try again.";
-      
+
       // Handle specific error cases
       if (error.response?.status === 404) {
         errorMessage = "Notebook or textbox not found.";
       } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
       }
-      
+
       setShortResponse({
         response: errorMessage,
         fromCache: false,
         task: "short-explain",
-        error: true
+        error: true,
       });
     } finally {
       setLoading(false);
@@ -69,7 +77,9 @@ const Popover = ({ anchorRef, onClose, children, text, textBoxId, notebookId }) 
       fetchShortResponse();
     } else if (text) {
       // Fallback for cases where textBoxId/notebookId are not provided
-      console.log('Fallback: no textBoxId/notebookId provided, using basic mode');
+      console.log(
+        "Fallback: no textBoxId/notebookId provided, using basic mode"
+      );
       fetchShortResponse();
     }
   }, [text, textBoxId, notebookId]);
@@ -131,8 +141,11 @@ const Popover = ({ anchorRef, onClose, children, text, textBoxId, notebookId }) 
             {loading ? (
               <DotsLoader />
             ) : (
-              <p style={{ color: shortResponse?.error ? '#ff6b6b' : 'inherit' }}>
-                {shortResponse?.response === "Error fetching response from Gemini."
+              <p
+                style={{ color: shortResponse?.error ? "#ff6b6b" : "inherit" }}
+              >
+                {shortResponse?.response ===
+                "Error fetching response from Gemini."
                   ? "Something went wrong. Please try again."
                   : shortResponse?.response}
               </p>
@@ -140,30 +153,53 @@ const Popover = ({ anchorRef, onClose, children, text, textBoxId, notebookId }) 
           </div>
           {/* Cache indicator */}
           {shortResponse?.fromCache && !loading && (
-            <div className="cache-indicator" style={{
-              fontSize: '11px',
-              opacity: 0.7,
-              marginTop: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              color: '#4ade80'
-            }}>
-              <span>💾</span>
-              <span>Cached response</span>
+            <div
+              className="cache-indicator"
+              style={{
+                fontSize: "11px",
+                opacity: 0.7,
+                marginTop: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                color: "#4ade80",
+              }}
+            >
+              <span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="icon icon-tabler icons-tabler-outline icon-tabler-circle-check"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M9 12l2 2l4 -4" />
+                </svg>
+              </span>
+              <span>Response saved</span>
             </div>
           )}
           {/* Show if response was cached to database */}
           {shortResponse?.cached && !shortResponse?.fromCache && !loading && (
-            <div className="cache-indicator" style={{
-              fontSize: '11px',
-              opacity: 0.7,
-              marginTop: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              color: '#60a5fa'
-            }}>
+            <div
+              className="cache-indicator"
+              style={{
+                fontSize: "11px",
+                opacity: 0.7,
+                marginTop: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                color: "#60a5fa",
+              }}
+            >
               <span>💿</span>
               <span>Response saved</span>
             </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
+const frontenedURL = import.meta.env.VITE_FRONTENED_URL;
 import {
   FaFolder,
   FaFolderOpen,
@@ -46,6 +47,13 @@ import AiHelpers from "../ai-notepad/AiHelpers";
 import { toast } from "react-toastify";
 
 const STORAGE_KEY = "academicOrganizerData";
+let userId = `689a5aa50e84378e6eb70ff2`;
+localStorage.setItem(
+  "token",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWE1YWE1MGU4NDM3OGU2ZWI3MGZmMiIsImlhdCI6MTc1NDk3ODI4MiwiZXhwIjoxNzU1MDY0NjgyfQ.W26PqBwsSHK2TEkxBk2ah0xkd_kT9W2P1GmLMdSNq0c"
+);
+// const token = localStorage.getItem('token');
+const token = localStorage.getItem("token");
 
 const AcademicOrganizer = () => {
   const [selectedYear, setSelectedYear] = useState(null);
@@ -157,7 +165,14 @@ const AcademicOrganizer = () => {
   useEffect(() => {
     const fetchYears = async () => {
       try {
-        const res = await axios.get(`${backendURL}/years`);
+        console.log(token);
+
+        const res = await axios.get(`${backendURL}/years`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setYears(res.data);
       } catch (err) {
         console.error("Error fetching years:", err);
@@ -184,7 +199,15 @@ const AcademicOrganizer = () => {
       const fetchSubjects = async () => {
         try {
           setSubjectsLoading(true);
-          const res = await axios.get(`${backendURL}/years/${selectedYearId}/subjects`);
+          const res = await axios.get(
+            `${backendURL}/years/${selectedYearId}/subjects`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
           setSubjects(res.data);
         } catch (err) {
           console.error("Error fetching subjects:", err);
@@ -206,7 +229,13 @@ const AcademicOrganizer = () => {
         try {
           setChaptersLoading(true);
           const res = await axios.get(
-            `${backendURL}/years/subjects/${selectedSubjectId}/chapters`
+            `${backendURL}/years/subjects/${selectedSubjectId}/chapters`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
           );
           setChapters(res.data);
         } catch (err) {
@@ -226,8 +255,16 @@ const AcademicOrganizer = () => {
     try {
       setSharedLoading(true);
       setSharedError(null);
-      let userId = "689738740562829489a60a41";
-      const response = await axios.get(`${backendURL}/api/share/user/notebooks/${userId}`);
+
+      const response = await axios.get(
+        `${backendURL}/api/share/user/notebooks/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       // const response = await axios.get("/api/share/user/notebooks" ,{
       //   email: "ab@gmail.com",
       //   id : "689738740562829489a60a41",
@@ -257,8 +294,15 @@ const AcademicOrganizer = () => {
     }
 
     try {
-      let userId = "689738740562829489a60a41";
-      await axios.delete(`${backendURL}/api/share/notebook/${userId}/${shareId}`);
+      await axios.delete(
+        `${backendURL}/api/share/notebook/${userId}/${shareId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setSharedNotebooks((prev) =>
         prev.filter((item) => item.shareId !== shareId)
       );
@@ -286,7 +330,12 @@ const AcademicOrganizer = () => {
       // setChaptersLoading(true);
       setError(null);
       axios
-        .get(`${backendURL}/years/${selectedChapterId}/materials`)
+        .get(`${backendURL}/years/${selectedChapterId}/materials`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
         .then((res) => setMaterials(res.data))
         .catch((err) => {
           console.error("Error fetching materials:", err);
@@ -360,7 +409,7 @@ const AcademicOrganizer = () => {
 
   const [fileLoading, setFileLoading] = useState(false);
   const handleFileClick = async (file) => {
-    console.log(file._id);
+    // console.log(file._id);
     // /api/notebooks/_id
     setSelectedFile(file);
     setViewerType(null); // reset before loading new
@@ -373,7 +422,12 @@ const AcademicOrganizer = () => {
 
     if (file.type === "notebook") {
       try {
-        const res = await axios.get(`${backendURL}/api/notebooks/${file._id}`);
+        const res = await axios.get(`${backendURL}/api/notebooks/${file._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setNotebookContent(res.data);
         // setFileLoading(false);
         setViewerType("notebook");
@@ -397,7 +451,10 @@ const AcademicOrganizer = () => {
 
   const handleCreateYear = async (title) => {
     try {
-      const res = await axios.post(`${backendURL}/years`, { title, important: false });
+      const res = await axios.post(`${backendURL}/years`, {
+        title,
+        important: false,
+      });
       setYears((prev) => [...prev, res.data]);
     } catch (err) {
       console.error("Error creating year:", err);
@@ -410,9 +467,18 @@ const AcademicOrganizer = () => {
       const year = years.find((y) => y._id === yearId);
       if (!year) return;
 
-      const updated = await axios.patch(`${backendURL}/years/${yearId}`, {
-        important: !year.important,
-      });
+      const updated = await axios.patch(
+        `${backendURL}/years/${yearId}`,
+        {
+          important: !year.important,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       setYears((prev) =>
         prev.map((y) =>
@@ -429,7 +495,9 @@ const AcademicOrganizer = () => {
     try {
       console.log(yearId, newTitle);
 
-      await axios.patch(`${backendURL}/years/rename/${yearId}`, { title: newTitle });
+      await axios.patch(`${backendURL}/years/rename/${yearId}`, {
+        title: newTitle,
+      });
       setYears((prev) =>
         prev.map((y) => (y._id === yearId ? { ...y, title: newTitle } : y))
       );
@@ -498,7 +566,12 @@ const AcademicOrganizer = () => {
 
     try {
       if (type === "notebook") {
-        await axios.delete(`${backendURL}/api/notebooks/${file._id}`);
+        await axios.delete(`${backendURL}/api/notebooks/${file._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setMaterials((prev) => ({
           ...prev,
           notebooks: prev.notebooks.filter((n) => n._id !== file._id),
@@ -514,7 +587,12 @@ const AcademicOrganizer = () => {
       } else if (type === "handwritten") {
         console.log(type, file._id);
 
-        await axios.delete(`${backendURL}/api/handwritten-notes/${file._id}`);
+        await axios.delete(`${backendURL}/api/handwritten-notes/${file._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setMaterials((prev) => ({
           ...prev,
           handwrittenNotes: prev.handwrittenNotes.filter(
@@ -544,10 +622,13 @@ const AcademicOrganizer = () => {
     }
 
     try {
-      const res = await axios.post(`${backendURL}/years/${selectedYearId}/subjects`, {
-        name,
-        important: false,
-      });
+      const res = await axios.post(
+        `${backendURL}/years/${selectedYearId}/subjects`,
+        {
+          name,
+          important: false,
+        }
+      );
 
       setSubjects((prev) => [...prev, res.data]);
     } catch (err) {
@@ -561,9 +642,12 @@ const AcademicOrganizer = () => {
       const subject = subjects.find((s) => s._id === subjectId);
       if (!subject) return;
 
-      const updated = await axios.patch(`${backendURL}/years/subjects/${subjectId}`, {
-        important: !subject.important,
-      });
+      const updated = await axios.patch(
+        `${backendURL}/years/subjects/${subjectId}`,
+        {
+          important: !subject.important,
+        }
+      );
 
       setSubjects((prev) =>
         prev.map((s) =>
@@ -640,9 +724,12 @@ const AcademicOrganizer = () => {
 
   const renameChapter = async (chapterId, newTitle) => {
     try {
-      await axios.patch(`${backendURL}/years/subjects/chapters/rename/${chapterId}`, {
-        title: newTitle,
-      });
+      await axios.patch(
+        `${backendURL}/years/subjects/chapters/rename/${chapterId}`,
+        {
+          title: newTitle,
+        }
+      );
       setChapters((prev) =>
         prev.map((c) => (c._id === chapterId ? { ...c, title: newTitle } : c))
       );
@@ -654,26 +741,62 @@ const AcademicOrganizer = () => {
 
   // Rename notebook
   const renameNotebook = async (noteId, newName) => {
-    await axios.patch(`${backendURL}/api/notebooks/${noteId}/rename`, { name: newName });
+    await axios.patch(
+      `${backendURL}/api/notebooks/${noteId}/rename`,
+      {
+        name: newName,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
   };
 
   // Toggle important notebook
   const toggleImportantNotebook = async (noteId) => {
-    console.log("coming");
+    // console.log("coming");
 
-    await axios.patch(`${backendURL}/api/notebooks/${noteId}/important`);
+    await axios.patch(`${backendURL}/api/notebooks/${noteId}/important`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
   };
 
   // Rename scanned note
   const renameScannedNote = async (noteId, newTitle) => {
-    await axios.patch(`${backendURL}/api/handwritten-notes/${noteId}/rename`, {
-      title: newTitle,
-    });
+    await axios.patch(
+      `${backendURL}/api/handwritten-notes/${noteId}/rename`,
+      {
+        title: newTitle,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
   };
 
   // Toggle important scanned note
   const toggleImportantScannedNote = async (noteId) => {
-    await axios.patch(`${backendURL}/api/handwritten-notes/${noteId}/important`);
+    console.log(noteId);
+
+    await axios.patch(
+      `${backendURL}/api/handwritten-notes/${noteId}/important`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
   };
 
   const handleRename = async (file, type, newName) => {
@@ -753,7 +876,7 @@ const AcademicOrganizer = () => {
 
   const getSteps = () => {
     const steps = [];
-    console.log(selectedFile);
+    // console.log(selectedFile);
 
     if (selectedYear) steps.push({ label: selectedYear });
     if (selectedSubject) steps.push({ label: selectedSubject });
@@ -782,7 +905,9 @@ const AcademicOrganizer = () => {
       const years = yearsRes.data;
 
       for (const year of years) {
-        const subjectsRes = await axios.get(`${backendURL}/years/${year._id}/subjects`);
+        const subjectsRes = await axios.get(
+          `${backendURL}/years/${year._id}/subjects`
+        );
         const subjects = subjectsRes.data;
 
         for (const subject of subjects) {
@@ -958,7 +1083,12 @@ const AcademicOrganizer = () => {
       // setFileLoading(false)
       setError(null);
       axios
-        .get(`${backendURL}/years/${selectedChapterId}/materials`)
+        .get(`${backendURL}/years/${selectedChapterId}/materials`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
         .then((res) => {
           setMaterials(res.data);
 
@@ -1111,11 +1241,16 @@ const AcademicOrganizer = () => {
     formData.append("title", title);
     try {
       setUploading(true);
-      const res = await axios.post(`${backendURL}/api/handwritten-notes/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axios.post(
+        `${backendURL}/api/handwritten-notes/upload`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       const uploadedFile = res.data;
       console.log("[Upload] Success:", uploadedFile);
@@ -1566,7 +1701,12 @@ const AcademicOrganizer = () => {
           <div className="actions">
             <button
               className="action-btn-1"
-              onClick={() => setShowNewModal(true)}
+              onClick={() => {
+                setShowNewModal(true);
+                console.log(
+                  "clicking and need fixes : after one click to the new notebook , it creates , and disabled "
+                );
+              }}
             >
               <FaPlus /> New
             </button>
@@ -1718,9 +1858,9 @@ const AcademicOrganizer = () => {
                           {sharedItem.type === "notebook" ? (
                             <FaStickyNote />
                           ) : sharedItem.type === "pdf" ? (
-                            <FaFilePdf/>
+                            <FaFilePdf />
                           ) : (
-                            <FaImage/>
+                            <FaImage />
                           )}
                         </div>
                         {/* Show globe icon only if isActive */}
@@ -1769,16 +1909,16 @@ const AcademicOrganizer = () => {
                           </span>
                         </div>
                       </div>
-
                       <div className="share-link-preview">
                         <div className="link-text">
-                          /share/notebook/{sharedItem.shareId}
+                          {/* {window.location.origin} */}
+                          {frontenedURL}/share/notebook/{sharedItem.shareId}
                         </div>
                         <button
                           className="action-btn-1 copy-link-btn-1"
                           onClick={() =>
                             handleCopyShareLink(
-                              `${window.location.origin}/share/notebook/${sharedItem.shareId}`
+                              `${frontenedURL}/share/notebook/${sharedItem.shareId}`
                             )
                           }
                           title="Copy share link"
@@ -1807,9 +1947,11 @@ const AcademicOrganizer = () => {
           </div>
         )}
 
+        {/* <div className="file-manager-container"> */}
         {activeTab === "notes" && selectedFile ? (
           <div className="file-content-container">
             <div className="file-header">
+              <h3>{selectedFile.name || selectedFile.title}</h3>
               <button className="close-btn" onClick={handleCloseFile}>
                 <FaTimes />
               </button>
@@ -1817,13 +1959,18 @@ const AcademicOrganizer = () => {
             <div className="file-content">
               {selectedFile.type === "handwritten" ? (
                 <div className="pdf-preview">
-                  {selectedFile.fileUrl && (
+                  {selectedFile.fileUrl ? (
                     <ModernPDFViewer
                       fileId={selectedFile._id}
                       fileUrl={selectedFile.fileUrl}
                       fileName={selectedFile.title}
                       type="handwritten"
                     />
+                  ) : (
+                    <div className="preview-placeholder">
+                      <div className="preview-icon">📄</div>
+                      <p>Loading PDF preview...</p>
+                    </div>
                   )}
                 </div>
               ) : selectedFile.type === "image" ? (
@@ -1838,7 +1985,6 @@ const AcademicOrganizer = () => {
                     file={selectedFile}
                     onRename={handleRename}
                     onToggleImportant={handleToggleImportant}
-                    // OnDelete={handleDeleteFile}
                     OnDelete={(file) =>
                       setDeleteTarget({
                         mode: "file",
@@ -1859,22 +2005,29 @@ const AcademicOrganizer = () => {
             <div className="content-area">
               <div className="files-section">
                 <div className="section-header">
-                  {/* <h3>{selectedChapter || 'Files'}</h3> */}
-                  <span className="total-files">
-                    {getAllFiles().length} items
-                  </span>
+                  <h2 className="section-title">My Files</h2>
+                  <div className="section-actions">
+                    <span className="total-files">
+                      {getAllFiles().length} items
+                    </span>
+                  </div>
                 </div>
+
                 <div className="files-content-wrapper">
                   {fileLoading && (
                     <div className="fileloader-overlay">
-                      {/* <SmartLoader context="page" text="Loading file..." /> */}
                       <SquaresLoader />
                     </div>
                   )}
-                  {error && <div className="error">{error}</div>}
+
+                  {error && (
+                    <div className="error">
+                      <strong>⚠️ Error:</strong> {error}
+                    </div>
+                  )}
 
                   <div className="ao-files-grid">
-                    {/* Render Notebooks */}
+                    {/* Notebook Files */}
                     {materials.notebooks?.map((notebook) => (
                       <div
                         key={notebook._id}
@@ -1905,15 +2058,51 @@ const AcademicOrganizer = () => {
                               e.stopPropagation();
                               handleToggleImportant(notebook, "notebook");
                             }}
+                            title={
+                              notebook.important
+                                ? "Remove from favorites"
+                                : "Add to favorites"
+                            }
                           >
                             <FaStar />
                           </button>
                         </div>
-                        <div className="ao-file-name">{notebook.name}</div>
+
+                        <div className="file-details">
+                          <div className="ao-file-meta">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              class="icon icon-tabler icons-tabler-filled icon-tabler-calendar-month"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M8 12a1 1 0 0 1 1 1v4a1 1 0 0 1 -2 0v-4a1 1 0 0 1 1 -1" />
+                              <path d="M12 12a1 1 0 0 1 1 1v4a1 1 0 0 1 -2 0v-4a1 1 0 0 1 1 -1" />
+                              <path d="M16 12a1 1 0 0 1 1 1v4a1 1 0 0 1 -2 0v-4a1 1 0 0 1 1 -1" />
+                              <path d="M16 2a1 1 0 0 1 .993 .883l.007 .117v1h1a3 3 0 0 1 2.995 2.824l.005 .176v12a3 3 0 0 1 -2.824 2.995l-.176 .005h-12a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-12a3 3 0 0 1 2.824 -2.995l.176 -.005h1v-1a1 1 0 0 1 1.993 -.117l.007 .117v1h6v-1a1 1 0 0 1 1 -1m3 7h-14v9.625c0 .705 .386 1.286 .883 1.366l.117 .009h12c.513 0 .936 -.53 .993 -1.215l.007 -.16z" />
+                            </svg>
+                            <span className="ao-file-date">
+                              {/* {notebook.createdAt.toLocaleDateString()} */}
+                              {new Date(
+                                notebook.createdAt
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="ao-file-name" title={notebook.name}>
+                            {notebook.name}
+                          </div>
+                        </div>
                       </div>
                     ))}
 
-                    {/* Render Handwritten Notes */}
+                    {/* Handwritten Notes */}
                     {materials.handwrittenNotes?.map((note) => (
                       <div
                         key={note._id}
@@ -1934,7 +2123,6 @@ const AcademicOrganizer = () => {
                       >
                         <div className="file-icon-container">
                           <div className="file-icon">
-                            {/* <FaFilePdf /> */}
                             {note.fileType === "pdf" ? (
                               <FaFilePdf />
                             ) : (
@@ -1949,19 +2137,60 @@ const AcademicOrganizer = () => {
                               e.stopPropagation();
                               handleToggleImportant(note, "handwritten");
                             }}
+                            title={
+                              note.important
+                                ? "Remove from favorites"
+                                : "Add to favorites"
+                            }
                           >
                             <FaStar />
                           </button>
                         </div>
-                        <div className="ao-file-name">{note.title}</div>
+
+                        <div className="file-details">
+                          <div className="ao-file-meta">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              class="icon icon-tabler icons-tabler-filled icon-tabler-calendar-month"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M8 12a1 1 0 0 1 1 1v4a1 1 0 0 1 -2 0v-4a1 1 0 0 1 1 -1" />
+                              <path d="M12 12a1 1 0 0 1 1 1v4a1 1 0 0 1 -2 0v-4a1 1 0 0 1 1 -1" />
+                              <path d="M16 12a1 1 0 0 1 1 1v4a1 1 0 0 1 -2 0v-4a1 1 0 0 1 1 -1" />
+                              <path d="M16 2a1 1 0 0 1 .993 .883l.007 .117v1h1a3 3 0 0 1 2.995 2.824l.005 .176v12a3 3 0 0 1 -2.824 2.995l-.176 .005h-12a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-12a3 3 0 0 1 2.824 -2.995l.176 -.005h1v-1a1 1 0 0 1 1.993 -.117l.007 .117v1h6v-1a1 1 0 0 1 1 -1m3 7h-14v9.625c0 .705 .386 1.286 .883 1.366l.117 .009h12c.513 0 .936 -.53 .993 -1.215l.007 -.16z" />
+                            </svg>
+                            <span className="ao-file-date">
+                              {new Date(note.createdAt).toLocaleDateString()}
+                            </span>
+                            {/* {note.fileType && (
+                            <>
+                              <span className="file-type-badge">
+                                {note.fileType.toUpperCase()}
+                              </span>
+                            </>
+                          )} */}
+                          </div>
+                          <div className="ao-file-name" title={note.title}>
+                            {note.title}
+                          </div>
+                        </div>
                       </div>
                     ))}
 
+                    {/* Empty State */}
                     {getAllFiles().length === 0 && !fileLoading && (
                       <div className="empty-state">
                         {searchTerm
-                          ? "No files match your search"
-                          : "No files in this folder"}
+                          ? `No files match "${searchTerm}"`
+                          : "No files uploaded yet. Start by adding your first file!"}
                       </div>
                     )}
                   </div>
@@ -1970,6 +2199,7 @@ const AcademicOrganizer = () => {
             </div>
           )
         )}
+        {/* </div> */}
       </div>
 
       {/* Context Menu */}

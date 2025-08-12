@@ -7,6 +7,7 @@ export const createNotebook = async (req, res) => {
   try {
     const { name, content, chapter } = req.body;
 
+    console.log(name, content, chapter , req.user.id);
     if (!name || !chapter || !content?.textBoxes) {
       return res.status(400).json({ error: 'Missing name, chapter, or content.textBoxes' });
     }
@@ -16,9 +17,9 @@ export const createNotebook = async (req, res) => {
         return res.status(400).json({ error: 'All text boxes must have IDs' });
       }
     }
-
+    
     const notebook = await Notebook.create({
-      user: req.user._id,
+      user: req.user.id,
       note_id: `note_${nanoid(10)}`, // always auto-generated
       name,
       content,
@@ -35,10 +36,14 @@ export const createNotebook = async (req, res) => {
 
 // Updated getNotebookById to use note_id
 export const getNotebookById = async (req, res) => {
+  // console.log(req.user.id);
+  // console.log( req.params.id);
+  
   try {
+    
     const notebook = await Notebook.findOne({
       _id: req.params.id,
-      user: req.user._id
+      user: req.user.id
     });
     
     if (!notebook) {
@@ -60,7 +65,7 @@ export const updateNotebook = async (req, res) => {
 
     const notebook = await Notebook.findOne({
       _id: id,
-      user: req.user._id
+      user: req.user.id
     });
     
     if (!notebook) {
@@ -114,7 +119,7 @@ export const renameNotebook = async (req, res) => {
   try {
     const { noteId } = req.params;
     const { name } = req.body;
-    console.log(req.params);
+    // console.log(req.params);
     
     const updated = await Notebook.findByIdAndUpdate(noteId, { name }, { new: true });
     res.json(updated);

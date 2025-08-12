@@ -9,6 +9,7 @@ export const generateShareLink = async (req, res) => {
   try {
     const { notebookId } = req.params;
     const { type } = req.body;
+console.log(notebookId , type);
 
     const userId = req.user._id;
     let notebook;
@@ -166,14 +167,14 @@ export const getUserSharedNotebooks = async (req, res) => {
 export const getSharedNotebook = async (req, res) => {
   try {
     const { shareId } = req.params;
-console.log(shareId);
+// console.log("shareID",shareId);
 
     // Find shared notebook
     const sharedNotebook = await SharedNotebook.findOne({
       shareId,
       isActive: true
     });
-console.log(sharedNotebook.type);
+// console.log(sharedNotebook);
 
     if (!sharedNotebook) {
       return res.status(404).json({
@@ -181,15 +182,20 @@ console.log(sharedNotebook.type);
       });
     }
     // Get the actual notebook
+    // console.log("note di ", sharedNotebook.notebookId);
+    
     let notebook;
     if (sharedNotebook.type === 'notebook') {
       notebook = await Notebook.findById(sharedNotebook.notebookId)
         .select('name content createdAt updatedAt'); // Only select needed fields
+
+        // console.log("inside " , notebook);
+        
     } else {
         notebook = await HandwrittenNote.findById(sharedNotebook.notebookId)
         .select('title fileType fileUrl createdAt updatedAt');
     } 
-    console.log(notebook);
+    // console.log(notebook);
 
     if (!notebook) {
       return res.status(404).json({
