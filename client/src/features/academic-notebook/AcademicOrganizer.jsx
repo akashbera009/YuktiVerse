@@ -48,7 +48,8 @@ import AiHelpers from "../ai-notepad/AiHelpers";
 import { toast } from "react-toastify";
 
 const STORAGE_KEY = "academicOrganizerData";
-let userId = `689a5aa50e84378e6eb70ff2`;
+// let userId = `689a5aa50e84378e6eb70ff2`;
+let userId = localStorage.getItem("userId");
 // localStorage.setItem(
 //   "token",
 //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWE1YWE1MGU4NDM3OGU2ZWI3MGZmMiIsImlhdCI6MTc1NDk3ODI4MiwiZXhwIjoxNzU1MDY0NjgyfQ.W26PqBwsSHK2TEkxBk2ah0xkd_kT9W2P1GmLMdSNq0c"
@@ -180,7 +181,7 @@ const AcademicOrganizer = () => {
       }
     };
     fetchYears();
-  }, []);
+  }, [userId]);
 
   // sharing useeffect
   useEffect(() => {
@@ -1907,7 +1908,6 @@ const AcademicOrganizer = () => {
                             ))
                           )}
 
-                          {/* Create Chapter Button */}
                           <div className="ao-create-section">
                             {creatingType === `chapter:${selectedSubjectId}` ? (
                               <div className="ao-create-input">
@@ -1954,7 +1954,7 @@ const AcademicOrganizer = () => {
                   ))
                 )}
 
-                {/* Create Subject Button */}
+
                 <div className="ao-create-section">
                   {creatingType === `subject:${selectedYearId}` ? (
                     <div className="ao-create-input">
@@ -1971,28 +1971,27 @@ const AcademicOrganizer = () => {
                         }}
                         placeholder="Enter subject name"
                         autoFocus
-                      />
+                        />
                     </div>
                   ) : (
                     <button
-                      className="ao-create-button ao-subbutton"
-                      onClick={() => {
-                        setCreatingType(`subject:${selectedYearId}`);
+                    className="ao-create-button ao-subbutton"
+                    onClick={() => {
+                      setCreatingType(`subject:${selectedYearId}`);
                         setNewItemName("");
                       }}
-                    >
+                      >
                       <FaPlus /> New Subject
                     </button>
                   )}
                 </div>
               </div>
             )}
-          </div>
-        ))
-      )}
-
-      {/* Create Year Button */}
-      <div className="ao-create-section">
+            </div>
+          ))
+        )}
+        
+        <div className="ao-create-section">
         {creatingType === "year" ? (
           <div className="ao-create-input">
             <input
@@ -2010,25 +2009,28 @@ const AcademicOrganizer = () => {
               }}
               placeholder="Enter year name"
               autoFocus
-            />
+              />
           </div>
         ) : (
           <button
-            className="ao-create-button"
-            onClick={() => {
-              setCreatingType("year");
-              setNewItemName("");
-            }}
+          className="ao-create-button"
+          onClick={() => {
+            setCreatingType("year");
+            setNewItemName("");
+          }}
           >
             <FaPlus /> Create New Year
           </button>
         )}
       </div>
     </div>
-  </div>
-</div>
-      {/* Main Content */}
-      <div className="ao-main">
+    </div>
+    </div>
+    
+   
+
+    {/* Main Content */}
+    <div className="ao-main">
         <div className="ao-main-header">
           <div className="breadcrumb-stepper">
             {getSteps().map((step, index, arr) => (
@@ -2037,7 +2039,7 @@ const AcademicOrganizer = () => {
                 className={`breadcrumb-step ${
                   step.completed ? "completed" : "current"
                 } ${index === arr.length - 1 ? "last" : ""}`}
-              >
+                >
                 <span className="ao-label">{step.label}</span>
               </div>
             ))}
@@ -2049,12 +2051,12 @@ const AcademicOrganizer = () => {
               onClick={() => {
                 setShowNewModal(!showNewModal);
               }}
-            >
+              >
               <FaPlus /> New
             </button>
             {showNewModal && (
               <AcademicUploader_Modal
-                onClose={() => setShowNewModal(false)}
+              onClose={() => setShowNewModal(false)}
                 onFilesUploaded={handleUploadFile}
                 onCreateNotebook={(newNotebook) => {
                   setMaterials((prev) => ({
@@ -2063,8 +2065,8 @@ const AcademicOrganizer = () => {
                   }));
                 }}
                 selectedChapterId={selectedChapterId}
-              />
-            )}
+                />
+              )}
             {uploading && (
               <div className="ao-upload-loader-overlay">
                 <SquaresLoader text="Uploading file..." />
@@ -2072,6 +2074,7 @@ const AcademicOrganizer = () => {
             )}
           </div>
         </div>
+  
 
         {activeTab === "recent" && (
           <div className="recent-files">
@@ -2079,9 +2082,9 @@ const AcademicOrganizer = () => {
             <div className="recent-grid">
               {recentFiles.map((file, index) => (
                 <div
-                  key={index}
-                  className="recent-card"
-                  onClick={() => openInNotes(file)}
+                key={index}
+                className="recent-card"
+                onClick={() => openInNotes(file)}
                 >
                   <div className="ao-file-icon">
                     {file.type === "notebook" && <FaStickyNote />}

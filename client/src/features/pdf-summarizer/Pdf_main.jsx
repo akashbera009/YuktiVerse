@@ -30,9 +30,9 @@ function Pdf_main() {
         </div>
       </div>
 
-      <div className={`main-content ${isCollapsed ? "expanded" : ""}`}>
+      <div className={`pdf-main-content ${isCollapsed ? "expanded" : ""}`}>
         <PdfSummarizerTopbar />
-        <div className="content-area">
+        <div className="pdf-content-area">
           {activeSection === "upload" && <PDFUploader />}
           {activeSection === "history" && <PdfHistory />}
         </div>

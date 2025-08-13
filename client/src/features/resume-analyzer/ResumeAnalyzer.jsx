@@ -36,7 +36,7 @@ const ResumeAnalyzer = () => {
 
       <div className={`main-content ${isCollapsed ? "expanded" : ""}`}>
         <ResumeTopbar />
-        <div className="content-area">
+        <div className="resume-content-area">
           {activeSection === "upload" && (
             <ResumeUploader
               onSuccess={(data) => setExtractedData(data)}

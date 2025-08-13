@@ -99,7 +99,7 @@ const PdfSummarizerSidebar = ({
 
       {/* Always-visible toggle button */}
       <button
-        className="collapse-toggle-btn"
+        className="collapse-toggle-btn-pdf"
         onClick={toggleSidebar}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         data-tooltip={isCollapsed ? "Expand" : "Collapse"}

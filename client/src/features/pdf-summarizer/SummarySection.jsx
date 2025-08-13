@@ -194,7 +194,7 @@ const SummarySection = ({ summary, pdfFile, onSaveSuccess, pdfId }) => {
         </div>
 
         {/* Main Content */}
-        <div className="main-content">
+        <div className="summer-main-content">
           <div className="content-header">
             <div className="header-left">
               <h2>Document Summary</h2>

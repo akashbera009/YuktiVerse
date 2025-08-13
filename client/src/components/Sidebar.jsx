@@ -1,16 +1,63 @@
 import React, { useState, useEffect,useRef  } from "react";
-import { FaBook, FaUserCircle, FaMoon } from "react-icons/fa";
+import { FaBook, FaUserCircle, FaMoon, FaEdit, FaTrash, FaStar, FaSignOutAlt } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 import { themes } from "./theme"; // Assuming your themes object is in this file
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+const backendURL = import.meta.env.VITE_BACKEND_URL; // or wherever it’s defined
 
 const Sidebar = () => {
+  const [user, setUser] = useState(null);
   const [activeTheme, setActiveTheme] = useState(
     localStorage.getItem("theme") || "Default" // Defaulting to your new 'Default' theme
   );
   const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const location = useLocation();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const location = useLocation();
+    const navigate = useNavigate();
  const themeMenuRef = useRef(null);
+
+  const profileMenuRef = useRef(null);
+
+  // This useEffect is fine, assuming axios is imported and backendURL is set
+  useEffect(() => {
+    const fetchUserData = async () => {
+       try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await axios.get(`${backendURL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setUser(res.data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  // CHANGE: This logic now works correctly because the ref contains the menu too.
+  // Clicks inside the menu will no longer close it.
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("academicOrganizerData");
+    localStorage.removeItem("userId");
+    navigate("/login");
+  };
+
 
 
   const applyTheme = (themeName) => {
@@ -136,9 +183,30 @@ const Sidebar = () => {
             location.pathname === "/profile" ? "active" : ""
           }`}
         >
-          <Link to="/profile" title="Profile">
+          {/* <Link to="/profile" title="Profile">
             <FaUserCircle className="menu-icon" />
-          </Link>
+          </Link> */}
+          <div className="profile-menu-container" ref={profileMenuRef}>
+            <button
+              className="profile-button"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <FaUserCircle className="menu-icon" />
+            </button>
+            {isMenuOpen && (
+              <div className="profile-menu">
+                <div className="profile-menu-header">
+                  <p className="profile-name">{user?.name || "User"}</p>
+                  <p className="profile-email">{user?.email}</p>
+                </div>
+                <div className="menu-divider"></div>
+                <button onClick={handleLogout} className="logout-button">
+                  <FaSignOutAlt /> Logout
+                </button>
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
 

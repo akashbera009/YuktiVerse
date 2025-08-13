@@ -207,7 +207,7 @@
   color: var(--text-primary);
 }
 
-.main-content {
+.summer-main-content {
   background: rgba(var(--card-bg-rgb), 0.7);
   border-radius: 16px;
   padding: 24px;

@@ -324,10 +324,10 @@
   overflow: hidden;
 }
 
-.collapse-toggle-btn {
+.collapse-toggle-btn-pdf {
   position: absolute;
-  top: 20px;
-  right: -16px;
+  top: 2.5rem;
+  right: -2rem;
  
   width: 36px;
   height: 36px;
@@ -344,7 +344,7 @@
 }
 
 /* Subtle glow on hover */
-.collapse-toggle-btn:hover {
+.collapse-toggle-btn-pdf:hover {
   background-color: var(--primary-light);
   transform: scale(1.1);
   box-shadow: 0 0 10px var(--primary), 0 0 20px rgba(0, 0, 0, 0.1);
@@ -360,7 +360,7 @@
 }
 
 /* Optional: Pulse animation when collapsed */
-.pdf-summarizer-sidebar-wrapper.collapsed .collapse-toggle-btn {
+.pdf-summarizer-sidebar-wrapper.collapsed .collapse-toggle-btn-pdf {
   animation: pulseGlow 2s infinite ease-in-out;
 }
 

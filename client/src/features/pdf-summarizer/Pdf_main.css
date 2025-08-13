@@ -7,17 +7,17 @@
   width: 100%;
 }
 
-.main-content {
+.pdf-main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.content-area {
+.pdf-content-area {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  background-color: var(--dark-bg); /* #1a202c -> --dark-bg */
+  background-color: var(--color-surface); 
   color: var(--text-primary); /* #edf2f7 -> --text-primary */
 }
 .double-bar-container{

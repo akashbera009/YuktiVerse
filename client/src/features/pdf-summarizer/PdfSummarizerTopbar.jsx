@@ -42,6 +42,8 @@ const PdfSummarizerTopbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("academicOrganizerData");
+    localStorage.removeItem("userId");
     navigate("/login"); // redirect to login page
   };
 

@@ -42,6 +42,8 @@ const ResumeTopbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("academicOrganizerData");
+    localStorage.removeItem("userId");
     navigate("/login");
   };
 

@@ -138,3 +138,97 @@
   background-color: var(--option-hover, #4a5568);
   color: var(--text-primary, #fff);
 }
+
+/* Positioning context for menus */
+.sidebar-menu-item {
+  position: relative;
+}
+
+/* --- Profile Menu --- */
+.profile-menu-container {
+  position: relative;
+}
+
+.profile-button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.profile-menu {
+  position: absolute;
+  bottom: calc(100% + 0px); /* Position above the icon */
+  left: 700%;
+  transform: translateX(-50%);
+  
+  width: 220px;
+  background: var(--card-bg);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 12px;
+  box-shadow: var(--shadow-popup);
+  z-index: 101;
+  
+  padding: 8px;
+  backdrop-filter: var(--blur);
+
+  /* Animation */
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
+  animation: menuFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes menuFadeIn {
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.profile-menu-header {
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.profile-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1rem;
+}
+
+.profile-email {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: var(--color-border-primary);
+  margin: 8px 0;
+}
+
+.profile-menu button.logout-button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--danger);
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.profile-menu button.logout-button:hover {
+  background: var(--clear-btn-hover);
+}
