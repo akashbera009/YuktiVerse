@@ -1,17 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { FaBook, FaFileAlt, FaUserCircle, FaMoon } from "react-icons/fa";
+import React, { useState, useEffect,useRef  } from "react";
+import { FaBook, FaUserCircle, FaMoon } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import "./Sidebar.css";
-import { themes } from "./theme";
+import { themes } from "./theme"; // Assuming your themes object is in this file
 
 const Sidebar = () => {
   const [activeTheme, setActiveTheme] = useState(
-    localStorage.getItem("theme") || "indigoDreams"
+    localStorage.getItem("theme") || "Default" // Defaulting to your new 'Default' theme
   );
-  const [showMenu, setShowMenu] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const location = useLocation();
+ const themeMenuRef = useRef(null);
+
+
   const applyTheme = (themeName) => {
     const theme = themes[themeName];
-    if (!theme) return;
+    if (!theme) {
+      console.warn(`Theme "${themeName}" not found. Applying default.`);
+      applyTheme("Default");
+      return;
+    }
 
     Object.entries(theme).forEach(([key, value]) => {
       document.documentElement.style.setProperty(key, value);
@@ -19,30 +27,46 @@ const Sidebar = () => {
 
     localStorage.setItem("theme", themeName);
     setActiveTheme(themeName);
-    setShowMenu(false); // close dropdown after selecting
+    setShowThemeMenu(false); // Close dropdown after selecting
   };
 
   useEffect(() => {
     applyTheme(activeTheme);
-  }, []);
+  }, [activeTheme]); // Dependency array ensures this runs only when activeTheme changes
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
+        setShowThemeMenu(false);
+      }
+    };
 
-  const location = useLocation();
+    // Add event listener only when the menu is shown
+    if (showThemeMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // Cleanup: remove event listener when the component unmounts or menu closes
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showThemeMenu]);
 
   return (
-    <div className="sidebar">
+    <div className="sidebar-container">
       <ul className="sidebar-menu">
-        <li className="menu-item-logo">
+        <li className="sidebar-logo">
           <img
             src="https://i.ibb.co/FbnDbq6H/Logo-for-Yukti-Strategies-Technology-Consultancy.png"
-            alt=""
+            alt="Logo"
           />
         </li>
+
         <li
-          className={`menu-item ${
-            location.pathname === "/academic-org" ? "active" : ""
+          className={`sidebar-menu-item ${
+            location.pathname === "/feature/academic-org" ? "active" : ""
           }`}
         >
-          <Link to="/work/academic-org">
+          <Link to="/feature/academic-org" title="NoteBook">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -50,10 +74,10 @@ const Sidebar = () => {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="icon icon-tabler icons-tabler-outline icon-tabler-writing"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="menu-icon"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path d="M20 17v-12c0 -1.121 -.879 -2 -2 -2s-2 .879 -2 2v12l2 2l2 -2z" />
@@ -63,81 +87,70 @@ const Sidebar = () => {
             <span>NoteBook</span>
           </Link>
         </li>
+
         <li
-          className={`menu-item ${
-            location.pathname === "/notebook" ? "active" : ""
+          className={`sidebar-menu-item ${
+            location.pathname === "/feature/resume-analyzer" ? "active" : ""
           }`}
         >
-          <Link to="/work/notebook">
+          <Link to="/feature/resume-analyzer" title="Resume Analyzer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
               viewBox="0 0 24 24"
               fill="currentColor"
-              class="icon icon-tabler icons-tabler-filled icon-tabler-briefcase"
+              className="menu-icon"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path d="M22 13.478v4.522a3 3 0 0 1 -3 3h-14a3 3 0 0 1 -3 -3v-4.522l.553 .277a20.999 20.999 0 0 0 18.897 -.002l.55 -.275zm-8 -11.478a3 3 0 0 1 3 3v1h2a3 3 0 0 1 3 3v2.242l-1.447 .724a19.002 19.002 0 0 1 -16.726 .186l-.647 -.32l-1.18 -.59v-2.242a3 3 0 0 1 3 -3h2v-1a3 3 0 0 1 3 -3h4zm-2 8a1 1 0 0 0 -1 1a1 1 0 1 0 2 .01c0 -.562 -.448 -1.01 -1 -1.01zm2 -6h-4a1 1 0 0 0 -1 1v1h6v-1a1 1 0 0 0 -1 -1z" />
             </svg>
-            <span>Job</span>
+            <span>Resume</span>
           </Link>
         </li>
+
         <li
-          className={`menu-item ${
-            location.pathname === "/interview" ? "active" : ""
+          className={`sidebar-menu-item ${
+            location.pathname === "/feature/pdf-summarizer" ? "active" : ""
           }`}
         >
-          <Link to="/interview">
+          <Link to="/feature/pdf-summarizer" title="PDF Summarizer">
             <FaBook className="menu-icon" />
-            <span>Map</span>
+            <span>PDF</span>
           </Link>
         </li>
       </ul>
 
       <div className="sidebar-bottom">
-        <div
-          className={`menu-item ${
-            location.pathname === "/theme" ? "active" : ""
-          }`}
-        >
-          {/* <Link to="/theme"> */}
+        <div className="sidebar-menu-item">
           <button
-            onClick={() => setShowMenu((prev) => !prev)}
-            style={{
-              padding: "16px 28px",
-              // backgroundColor: 'var(--primary)',
-              color: "var(--dark-text)",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="theme-toggle-button"
+            onClick={() => setShowThemeMenu((prev) => !prev)}
+            title="Change Theme"
           >
             <FaMoon className="menu-icon" />
           </button>
         </div>
         <div
-          className={`menu-item ${
+          className={`sidebar-menu-item ${
             location.pathname === "/profile" ? "active" : ""
           }`}
         >
-          <Link to="/profile">
+          <Link to="/profile" title="Profile">
             <FaUserCircle className="menu-icon" />
           </Link>
         </div>
       </div>
-      {showMenu && (
-        <div className="theme-menu-opt">
-          {Object.keys(themes).map((name) => (
+
+      {showThemeMenu && (
+        <div  ref={themeMenuRef} className="theme-menu">
+          {Object.keys(themes).map((themeName) => (
             <div
-              key={name}
-              onClick={() => {
-                applyTheme(name);
-                setShowMenu(false); // optionally close menu after selection
-              }}
-              className="theme-options"
+              key={themeName}
+              onClick={() => applyTheme(themeName)}
+              className="theme-option"
             >
-              {name}
+              {themeName}
             </div>
           ))}
         </div>

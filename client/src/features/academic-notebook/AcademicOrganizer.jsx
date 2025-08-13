@@ -22,8 +22,9 @@ import {
   FaClock,
   FaArrowsAlt,
 } from "react-icons/fa";
+import { FiUploadCloud, FiChevronLeft } from "react-icons/fi";
 import "./AcademicOrganizer.css";
-import NewModal from "./NewModal";
+import AcademicUploader_Modal from "./AcademicUploader_Modal";
 import RenamePrompt from "./RenamePrompt";
 import Notebook from "../ai-notepad/Notebook";
 import ModernPDFViewer from "../ai-notepad/ModernPDFViewer";
@@ -48,10 +49,10 @@ import { toast } from "react-toastify";
 
 const STORAGE_KEY = "academicOrganizerData";
 let userId = `689a5aa50e84378e6eb70ff2`;
-localStorage.setItem(
-  "token",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWE1YWE1MGU4NDM3OGU2ZWI3MGZmMiIsImlhdCI6MTc1NDk3ODI4MiwiZXhwIjoxNzU1MDY0NjgyfQ.W26PqBwsSHK2TEkxBk2ah0xkd_kT9W2P1GmLMdSNq0c"
-);
+// localStorage.setItem(
+//   "token",
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWE1YWE1MGU4NDM3OGU2ZWI3MGZmMiIsImlhdCI6MTc1NDk3ODI4MiwiZXhwIjoxNzU1MDY0NjgyfQ.W26PqBwsSHK2TEkxBk2ah0xkd_kT9W2P1GmLMdSNq0c"
+// );
 // const token = localStorage.getItem('token');
 const token = localStorage.getItem("token");
 
@@ -451,10 +452,19 @@ const AcademicOrganizer = () => {
 
   const handleCreateYear = async (title) => {
     try {
-      const res = await axios.post(`${backendURL}/years`, {
-        title,
-        important: false,
-      });
+      const res = await axios.post(
+        `${backendURL}/years`,
+        {
+          title,
+          important: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setYears((prev) => [...prev, res.data]);
     } catch (err) {
       console.error("Error creating year:", err);
@@ -495,9 +505,18 @@ const AcademicOrganizer = () => {
     try {
       console.log(yearId, newTitle);
 
-      await axios.patch(`${backendURL}/years/rename/${yearId}`, {
-        title: newTitle,
-      });
+      await axios.patch(
+        `${backendURL}/years/rename/${yearId}`,
+        {
+          title: newTitle,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setYears((prev) =>
         prev.map((y) => (y._id === yearId ? { ...y, title: newTitle } : y))
       );
@@ -518,7 +537,12 @@ const AcademicOrganizer = () => {
     setDeleteTarget(true);
     try {
       if (type === "year") {
-        await axios.delete(`${backendURL}/years/${id}`);
+        await axios.delete(`${backendURL}/years/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setYears((prev) => prev.filter((y) => y._id !== id));
 
         if (selectedYearId === id) {
@@ -530,7 +554,12 @@ const AcademicOrganizer = () => {
           setMaterials({ notebooks: [], handwrittenNotes: [] });
         }
       } else if (type === "subject") {
-        await axios.delete(`${backendURL}/years/subjects/${id}`);
+        await axios.delete(`${backendURL}/years/subjects/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setSubjects((prev) => prev.filter((s) => s._id !== id));
 
         if (selectedSubjectId === id) {
@@ -540,7 +569,12 @@ const AcademicOrganizer = () => {
           setMaterials({ notebooks: [], handwrittenNotes: [] });
         }
       } else if (type === "chapter") {
-        await axios.delete(`${backendURL}/years/subjects/chapters/${id}`);
+        await axios.delete(`${backendURL}/years/subjects/chapters/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setChapters((prev) => prev.filter((c) => c._id !== id));
 
         if (selectedChapterId === id) {
@@ -627,6 +661,12 @@ const AcademicOrganizer = () => {
         {
           name,
           important: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -646,6 +686,12 @@ const AcademicOrganizer = () => {
         `${backendURL}/years/subjects/${subjectId}`,
         {
           important: !subject.important,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -665,9 +711,18 @@ const AcademicOrganizer = () => {
       const subject = subjects.find((s) => s._id === subjectId);
       if (!subject) return;
 
-      await axios.patch(`${backendURL}/years/subjects/rename/${subjectId}`, {
-        name: newName,
-      });
+      await axios.patch(
+        `${backendURL}/years/subjects/rename/${subjectId}`,
+        {
+          name: newName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setSubjects((prev) =>
         prev.map((s) => (s._id === subjectId ? { ...s, name: newName } : s))
       );
@@ -686,7 +741,13 @@ const AcademicOrganizer = () => {
     try {
       const res = await axios.post(
         `${backendURL}/years/subjects/${selectedSubjectId}/chapters`,
-        { chapterTitle } // ✅ correct key
+        { chapterTitle },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       // Update local state — assuming chapters come directly
@@ -704,9 +765,15 @@ const AcademicOrganizer = () => {
       console.log(chapter);
 
       const updated = await axios.patch(
-        `${backendURL}years/subjects/chapters/${chapterId}`,
+        `${backendURL}/years/subjects/chapters/${chapterId}`,
         {
           important: !chapter.important,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -728,6 +795,12 @@ const AcademicOrganizer = () => {
         `${backendURL}/years/subjects/chapters/rename/${chapterId}`,
         {
           title: newTitle,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
       setChapters((prev) =>
@@ -901,25 +974,48 @@ const AcademicOrganizer = () => {
     try {
       const allFilesData = [];
 
-      const yearsRes = await axios.get(`${backendURL}/years`);
+      const yearsRes = await axios.get(`${backendURL}/years`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       const years = yearsRes.data;
 
       for (const year of years) {
         const subjectsRes = await axios.get(
-          `${backendURL}/years/${year._id}/subjects`
+          `${backendURL}/years/${year._id}/subjects`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         const subjects = subjectsRes.data;
 
         for (const subject of subjects) {
           const chaptersRes = await axios.get(
-            `${backendURL}/years/subjects/${subject._id}/chapters`
+            `${backendURL}/years/subjects/${subject._id}/chapters`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
           );
           const chapters = chaptersRes.data;
 
           for (const chapter of chapters) {
             try {
               const materialsRes = await axios.get(
-                `${backendURL}/years/${chapter._id}/materials`
+                `${backendURL}/years/${chapter._id}/materials`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
               );
               const materials = materialsRes.data;
 
@@ -994,7 +1090,12 @@ const AcademicOrganizer = () => {
     const fetchYears = async () => {
       try {
         setYearsLoading(true);
-        const res = await axios.get(`${backendURL}/years`);
+        const res = await axios.get(`${backendURL}/years`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setYears(res.data);
 
         // After years are loaded, fetch all files for search
@@ -1261,9 +1362,9 @@ const AcademicOrganizer = () => {
       setTimeout(() => {
         setSelectedChapterId(selectedChapterId); // Re-set to trigger useEffect
       }, 100);
-      toast.success("Upload successful!", {
-        theme: "colored",
-      });
+      // toast.success("Upload successful!", {
+      //   theme: "colored",
+      // });
     } catch (err) {
       console.error("[Upload] Failed:", err);
       alert("Upload failed: " + (err.response?.data?.error || err.message));
@@ -1338,15 +1439,27 @@ const AcademicOrganizer = () => {
       onClick={handleCloseContextMenu}
     >
       {/* Top Navigation */}
-      <div className="top-nav">
-        <div className="nav-left">
-          <button
-            className="nav-icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <FaBars />
-          </button>
-          <div className="app-name">YuktiVerse</div>
+      <div className="ao-top-nav">
+        <div className="ao-nav-left">
+
+          <div className="app-name">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="icon icon-tabler icons-tabler-outline icon-tabler-category-plus"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M4 4h6v6h-6zm10 0h6v6h-6zm-10 10h6v6h-6zm10 3h6m-3 -3v6" />
+            </svg>
+            Academic ORG
+          </div>
         </div>
 
         <div className="tabs-sliding" ref={tabsRef}>
@@ -1420,7 +1533,7 @@ const AcademicOrganizer = () => {
 
         <div className="global-search-container">
           <div className="search-input-container">
-            <FaSearch className="search-icon" />
+            <FaSearch className="ao-search-icon" />
             <input
               className="global-search-bar"
               placeholder="Search all files..."
@@ -1436,7 +1549,7 @@ const AcademicOrganizer = () => {
               {isFetchingAllFiles ? (
                 <SquaresLoader />
               ) : fetchAllFilesError ? (
-                <div className="error">{fetchAllFilesError}</div>
+                <div className="ao-error">{fetchAllFilesError}</div>
               ) : (
                 <>
                   {searchAllFiles(searchTerm).map((file, index) => (
@@ -1471,220 +1584,452 @@ const AcademicOrganizer = () => {
       </div>
 
       {/* Sidebar */}
-      <div className={`ao-sidebar ${sidebarOpen ? "open" : ""}`}>
-        <div className="sidebar-content">
-          {yearsLoading ? (
-            <InlineLoader />
-          ) : (
-            years.map((year) => (
-              <div key={year._id} className="ao-section">
-                <button
-                  className={`ao-button ${
-                    selectedYearId === year._id ? "active" : ""
-                  }`}
-                  onClick={() => handleYearClick(year._id)}
-                  onContextMenu={(e) => handleContextMenu(e, "year", year)}
-                >
-                  {selectedYearId === year._id ? (
-                    <FaFolderOpen className="ao-icon" />
-                  ) : (
-                    <FaFolder className="ao-icon" />
-                  )}
-                  {year.title}
-                  {year.important && <FaStar className="important-star" />}
-                </button>
-
-                {selectedYearId === year._id && (
-                  <div className="ao-subsection">
-                    {subjectsLoading ? (
-                      <div style={{ padding: "10px", marginLeft: "20px" }}>
-                        <InlineLoader type="dots" text="" />
-                      </div>
-                    ) : (
-                      subjects.map((subject) => (
-                        <div key={subject._id} className="ao-subitem">
-                          <button
-                            className={`ao-button ao-subbutton ${
-                              selectedSubjectId === subject._id ? "active" : ""
-                            }`}
-                            onClick={() => handleSubjectClick(subject._id)}
-                            onContextMenu={(e) =>
-                              handleContextMenu(e, "subject", subject)
-                            }
-                          >
-                            {selectedSubjectId === subject._id ? (
-                              <FaFolderOpen className="ao-icon" />
-                            ) : (
-                              <FaFolder className="ao-icon" />
-                            )}
-                            {subject.name}
-                            {subject.important && (
-                              <FaStar className="important-star" />
-                            )}
-                          </button>
-
-                          {selectedSubjectId === subject._id && (
-                            <div className="ao-subsection">
-                              {chaptersLoading ? (
-                                <div
-                                  style={{ padding: "8px", marginLeft: "40px" }}
-                                >
-                                  <InlineLoader type="dots" text="" />
-                                </div>
-                              ) : (
-                                chapters.map((chapter) => (
-                                  <div key={chapter._id} className="ao-subitem">
-                                    <button
-                                      className={`ao-button ao-subbutton ${
-                                        selectedChapterId === chapter._id
-                                          ? "active"
-                                          : ""
-                                      }`}
-                                      onClick={() => {
-                                        handleChapterClick(chapter._id);
-                                      }}
-                                      onContextMenu={(e) =>
-                                        handleContextMenu(e, "chapter", chapter)
-                                      }
-                                    >
-                                      {selectedChapterId === chapter._id ? (
-                                        <FaFolderOpen className="ao-icon" />
-                                      ) : (
-                                        <FaFolder className="ao-icon" />
-                                      )}
-                                      {chapter.title}
-                                      {chapter.important && (
-                                        <FaStar className="important-star" />
-                                      )}
-                                    </button>
-                                  </div>
-                                ))
-                              )}
-
-                              {/* Create Chapter Button */}
-                              <div className="ao-create-section">
-                                {creatingType ===
-                                `chapter:${selectedSubjectId}` ? (
-                                  <div className="ao-create-input">
-                                    <input
-                                      value={newItemName}
-                                      onChange={(e) =>
-                                        setNewItemName(e.target.value)
-                                      }
-                                      onKeyDown={async (e) => {
-                                        if (
-                                          e.key === "Enter" &&
-                                          newItemName.trim()
-                                        ) {
-                                          await handleCreateChapter(
-                                            newItemName.trim()
-                                          );
-                                          setNewItemName("");
-                                          setCreatingType(null);
-                                        }
-                                        if (e.key === "Escape")
-                                          setCreatingType(null);
-                                      }}
-                                      placeholder="Enter chapter title"
-                                      autoFocus
-                                    />
-                                  </div>
-                                ) : (
-                                  <button
-                                    className="ao-create-button"
-                                    onClick={() => {
-                                      setCreatingType(
-                                        `chapter:${selectedSubjectId}`
-                                      );
-                                      setNewItemName("");
-                                    }}
-                                  >
-                                    <FaPlus /> New Chapter
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))
-                    )}
-
-                    {/* Create Subject Button */}
-                    <div className="ao-create-section">
-                      {creatingType === `subject:${selectedYearId}` ? (
-                        <div className="ao-create-input">
-                          <input
-                            value={newItemName}
-                            onChange={(e) => setNewItemName(e.target.value)}
-                            onKeyDown={async (e) => {
-                              if (e.key === "Enter" && newItemName.trim()) {
-                                await handleCreateSubject(newItemName.trim());
-                                setNewItemName("");
-                                setCreatingType(null);
-                              }
-                              if (e.key === "Escape") setCreatingType(null);
-                            }}
-                            placeholder="Enter subject name"
-                            autoFocus
-                          />
-                        </div>
-                      ) : (
-                        <button
-                          className="ao-create-button ao-subbutton"
-                          onClick={() => {
-                            setCreatingType(`subject:${selectedYearId}`);
-                            setNewItemName("");
-                          }}
-                        >
-                          <FaPlus /> New Subject
-                        </button>
-                      )}
-                    </div>
-                  </div>
+<div className={`ao-sidebar-wrapper ${sidebarOpen ? 'open' : 'collapsed'}`}>
+  <button
+    className="collapse-toggle-btn"
+    onClick={() => setSidebarOpen(!sidebarOpen)}
+    aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+    data-tooltip={sidebarOpen ? "Collapse" : "Expand"}
+  >
+    <FiChevronLeft
+      className={`collapse-icon ${sidebarOpen ? "" : "rotated"}`}
+    />
+  </button>
+  
+  <div className="ao-sidebar">
+    <div className="sidebar-content">
+      {yearsLoading ? (
+        <InlineLoader />
+      ) : (
+        years.map((year) => (
+          <div key={year._id} className="ao-section">
+            <button
+              className={`ao-button ${
+                selectedYearId === year._id ? "active" : ""
+              }`}
+              onClick={() => handleYearClick(year._id)}
+              onContextMenu={(e) => handleContextMenu(e, "year", year)}
+            >
+              <div className="star-icon-ao">
+                {selectedYearId === year._id ? (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M6 9l6 6l6 -6" />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
+                    </svg>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M9 6l6 6l-6 6" />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                    </svg>
+                  </>
                 )}
               </div>
-            ))
-          )}
+              <div className="ao-name-file"> {year.title}</div>
+              {year.important && <FaStar className="ao-important-star" />}
+            </button>
 
-          {/* Create Year Button */}
-          <div className="ao-create-section">
-            {creatingType === "year" ? (
-              <div className="ao-create-input">
-                <input
-                  value={newItemName}
-                  onChange={(e) => setNewItemName(e.target.value)}
-                  onKeyDown={async (e) => {
-                    if (e.key === "Enter" && newItemName.trim()) {
-                      await handleCreateYear(newItemName.trim());
-                      setNewItemName("");
-                      setCreatingType(null);
-                    }
-                    if (e.key === "Escape") {
-                      setCreatingType(null);
-                    }
-                  }}
-                  placeholder="Enter year name"
-                  autoFocus
-                />
+            {selectedYearId === year._id && (
+              <div className="ao-subsection">
+                {subjectsLoading ? (
+                  <div style={{ padding: "10px", marginLeft: "20px" }}>
+                    <InlineLoader type="dots" text="" />
+                  </div>
+                ) : (
+                  subjects.map((subject) => (
+                    <div key={subject._id} className="ao-subitem">
+                      <button
+                        className={`ao-button ao-subbutton ${
+                          selectedSubjectId === subject._id ? "active" : ""
+                        }`}
+                        onClick={() => handleSubjectClick(subject._id)}
+                        onContextMenu={(e) =>
+                          handleContextMenu(e, "subject", subject)
+                        }
+                      >
+                        {selectedSubjectId === subject._id ? (
+                          <>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
+                            </svg>
+                          </>
+                        ) : (
+                          <>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M9 6l6 6l-6 6" />
+                            </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                            </svg>
+                          </>
+                        )}
+
+                        <div className="ao-name-file"> {subject.name}</div>
+                        {subject.important && (
+                          <FaStar className="ao-important-star" />
+                        )}
+                      </button>
+
+                      {selectedSubjectId === subject._id && (
+                        <div className="ao-subsection">
+                          {chaptersLoading ? (
+                            <div
+                              style={{ padding: "8px", marginLeft: "40px" }}
+                            >
+                              <InlineLoader type="dots" text="" />
+                            </div>
+                          ) : (
+                            chapters.map((chapter) => (
+                              <div key={chapter._id} className="ao-subitem">
+                                <button
+                                  className={`ao-button ao-subbutton ${
+                                    selectedChapterId === chapter._id
+                                      ? "active"
+                                      : ""
+                                  }`}
+                                  onClick={() => {
+                                    handleChapterClick(chapter._id);
+                                  }}
+                                  onContextMenu={(e) =>
+                                    handleContextMenu(e, "chapter", chapter)
+                                  }
+                                >
+                                  {selectedChapterId === chapter._id ? (
+                                    <>
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
+                                      >
+                                        <path
+                                          stroke="none"
+                                          d="M0 0h24v24H0z"
+                                          fill="none"
+                                        />
+                                        <path d="M6 9l6 6l6 -6" />
+                                      </svg>
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
+                                      >
+                                        <path
+                                          stroke="none"
+                                          d="M0 0h24v24H0z"
+                                          fill="none"
+                                        />
+                                        <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
+                                      </svg>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
+                                      >
+                                        <path
+                                          stroke="none"
+                                          d="M0 0h24v24H0z"
+                                          fill="none"
+                                        />
+                                        <path d="M9 6l6 6l-6 6" />
+                                      </svg>
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
+                                      >
+                                        <path
+                                          stroke="none"
+                                          d="M0 0h24v24H0z"
+                                          fill="none"
+                                        />
+                                        <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                                      </svg>
+                                    </>
+                                  )}
+                                  {chapter.title}
+                                  {chapter.important && (
+                                    <FaStar className="ao-important-star" />
+                                  )}
+                                </button>
+                              </div>
+                            ))
+                          )}
+
+                          {/* Create Chapter Button */}
+                          <div className="ao-create-section">
+                            {creatingType === `chapter:${selectedSubjectId}` ? (
+                              <div className="ao-create-input">
+                                <input
+                                  value={newItemName}
+                                  onChange={(e) =>
+                                    setNewItemName(e.target.value)
+                                  }
+                                  onKeyDown={async (e) => {
+                                    if (
+                                      e.key === "Enter" &&
+                                      newItemName.trim()
+                                    ) {
+                                      await handleCreateChapter(
+                                        newItemName.trim()
+                                      );
+                                      setNewItemName("");
+                                      setCreatingType(null);
+                                    }
+                                    if (e.key === "Escape")
+                                      setCreatingType(null);
+                                  }}
+                                  placeholder="Enter chapter title"
+                                  autoFocus
+                                />
+                              </div>
+                            ) : (
+                              <button
+                                className="ao-create-button"
+                                onClick={() => {
+                                  setCreatingType(
+                                    `chapter:${selectedSubjectId}`
+                                  );
+                                  setNewItemName("");
+                                }}
+                              >
+                                <FaPlus /> New Chapter
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+
+                {/* Create Subject Button */}
+                <div className="ao-create-section">
+                  {creatingType === `subject:${selectedYearId}` ? (
+                    <div className="ao-create-input">
+                      <input
+                        value={newItemName}
+                        onChange={(e) => setNewItemName(e.target.value)}
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter" && newItemName.trim()) {
+                            await handleCreateSubject(newItemName.trim());
+                            setNewItemName("");
+                            setCreatingType(null);
+                          }
+                          if (e.key === "Escape") setCreatingType(null);
+                        }}
+                        placeholder="Enter subject name"
+                        autoFocus
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      className="ao-create-button ao-subbutton"
+                      onClick={() => {
+                        setCreatingType(`subject:${selectedYearId}`);
+                        setNewItemName("");
+                      }}
+                    >
+                      <FaPlus /> New Subject
+                    </button>
+                  )}
+                </div>
               </div>
-            ) : (
-              <button
-                className="ao-create-button"
-                onClick={() => {
-                  setCreatingType("year");
-                  setNewItemName("");
-                }}
-              >
-                <FaPlus /> Create New Year
-              </button>
             )}
           </div>
-        </div>
-      </div>
+        ))
+      )}
 
+      {/* Create Year Button */}
+      <div className="ao-create-section">
+        {creatingType === "year" ? (
+          <div className="ao-create-input">
+            <input
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              onKeyDown={async (e) => {
+                if (e.key === "Enter" && newItemName.trim()) {
+                  await handleCreateYear(newItemName.trim());
+                  setNewItemName("");
+                  setCreatingType(null);
+                }
+                if (e.key === "Escape") {
+                  setCreatingType(null);
+                }
+              }}
+              placeholder="Enter year name"
+              autoFocus
+            />
+          </div>
+        ) : (
+          <button
+            className="ao-create-button"
+            onClick={() => {
+              setCreatingType("year");
+              setNewItemName("");
+            }}
+          >
+            <FaPlus /> Create New Year
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
       {/* Main Content */}
       <div className="ao-main">
-        <div className="main-header">
+        <div className="ao-main-header">
           <div className="breadcrumb-stepper">
             {getSteps().map((step, index, arr) => (
               <div
@@ -1693,34 +2038,24 @@ const AcademicOrganizer = () => {
                   step.completed ? "completed" : "current"
                 } ${index === arr.length - 1 ? "last" : ""}`}
               >
-                <span className="label">{step.label}</span>
+                <span className="ao-label">{step.label}</span>
               </div>
             ))}
           </div>
 
-          <div className="actions">
+          <div className="ao-actions">
             <button
-              className="action-btn-1"
+              className="ao-action-btn"
               onClick={() => {
-                setShowNewModal(true);
-                console.log(
-                  "clicking and need fixes : after one click to the new notebook , it creates , and disabled "
-                );
+                setShowNewModal(!showNewModal);
               }}
             >
               <FaPlus /> New
             </button>
-
-            {uploading && (
-              <div className="upload-loader-overlay">
-                <SquaresLoader text="Uploading file..." />
-              </div>
-            )}
-
             {showNewModal && (
-              <NewModal
+              <AcademicUploader_Modal
                 onClose={() => setShowNewModal(false)}
-                onUploadFile={handleUploadFile}
+                onFilesUploaded={handleUploadFile}
                 onCreateNotebook={(newNotebook) => {
                   setMaterials((prev) => ({
                     ...prev,
@@ -1729,6 +2064,11 @@ const AcademicOrganizer = () => {
                 }}
                 selectedChapterId={selectedChapterId}
               />
+            )}
+            {uploading && (
+              <div className="ao-upload-loader-overlay">
+                <SquaresLoader text="Uploading file..." />
+              </div>
             )}
           </div>
         </div>
@@ -1743,7 +2083,7 @@ const AcademicOrganizer = () => {
                   className="recent-card"
                   onClick={() => openInNotes(file)}
                 >
-                  <div className="file-icon">
+                  <div className="ao-file-icon">
                     {file.type === "notebook" && <FaStickyNote />}
 
                     {file.type === "handwritten" &&
@@ -1754,18 +2094,18 @@ const AcademicOrganizer = () => {
                     {file.type === "image" && <FaImage />}
                   </div>
 
-                  <div className="file-info">
-                    <div className="file-name">
+                  <div className="ao-file-info">
+                    <div className="ao-file-name">
                       {file.type === "notebook"
                         ? file.name
                         : file.title || file.name}
                     </div>
-                    <div className="file-date">Today</div>
+                    <div className="ao-file-date">Today</div>
                   </div>
                 </div>
               ))}
               {recentFiles.length === 0 && (
-                <div className="empty-state">No recently accessed files</div>
+                <div className="ao-empty-state">No recently accessed files</div>
               )}
             </div>
           </div>
@@ -1783,8 +2123,8 @@ const AcademicOrganizer = () => {
                     className="ao-file-card"
                     onClick={() => openInNotes(file)}
                   >
-                    <div className="file-icon-container">
-                      <div className="file-icon">
+                    <div className="ao-file-icon-container">
+                      <div className="ao-file-icon">
                         {file.type === "notebook" && <FaStickyNote />}
 
                         {file.type === "handwritten" &&
@@ -1799,7 +2139,7 @@ const AcademicOrganizer = () => {
                         {file.type === "image" && <FaImage />}
                       </div>
                       <button
-                        className="file-action-btn active"
+                        className="ao-file-action-btn active"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleToggleImportant(file);
@@ -1817,31 +2157,33 @@ const AcademicOrganizer = () => {
                 ))}
 
               {allFiles.filter((f) => f.important).length === 0 && (
-                <div className="empty-state">No important files marked yet</div>
+                <div className="ao-empty-state">
+                  No important files marked yet
+                </div>
               )}
             </div>
           </div>
         )}
 
         {activeTab === "shared" && (
-          <div className="shared-files">
-            <div className="shared-header">
+          <div className="ao-shared-files">
+            {/* <div className="ao-shared-header">
               <h3>Shared Notebooks</h3>
               <button
-                className="refresh-btn"
+                className="ao-refresh-btn"
                 onClick={fetchSharedNotebooks}
                 disabled={sharedLoading}
               >
                 {sharedLoading ? "Loading..." : "Refresh"}
               </button>
-            </div>
+            </div> */}
 
             {sharedLoading ? (
-              <div className="loading-container">
+              <div className="ao-loading-container">
                 <SquaresLoader />
               </div>
             ) : sharedError ? (
-              <div className="error-container">
+              <div className="ao-error-container">
                 <p>{sharedError}</p>
                 <button onClick={fetchSharedNotebooks}>Try Again</button>
               </div>
@@ -1853,7 +2195,7 @@ const AcademicOrganizer = () => {
                     className="shared-notebook-card"
                   >
                     <div className="shared-card-header">
-                      <div className="file-icon-container-1">
+                      <div className="ao-file-icon-container">
                         <div className="file-icon-1">
                           {sharedItem.type === "notebook" ? (
                             <FaStickyNote />
@@ -1931,8 +2273,8 @@ const AcademicOrganizer = () => {
                 ))}
 
                 {sharedNotebooks.length === 0 && (
-                  <div className="empty-state">
-                    <div className="empty-icon">
+                  <div className="ao-empty-state">
+                    <div className="ao-empty-icon">
                       <FaShare />
                     </div>
                     <h3>No Shared Notebooks</h3>
@@ -1949,14 +2291,14 @@ const AcademicOrganizer = () => {
 
         {/* <div className="file-manager-container"> */}
         {activeTab === "notes" && selectedFile ? (
-          <div className="file-content-container">
-            <div className="file-header">
-              <h3>{selectedFile.name || selectedFile.title}</h3>
-              <button className="close-btn" onClick={handleCloseFile}>
+          <div className="ao-file-content-container">
+            <div className="ao-file-header">
+              {/* <h3>{selectedFile.name || selectedFile.title}</h3> */}
+              <button className="ao-close-btn" onClick={handleCloseFile}>
                 <FaTimes />
               </button>
             </div>
-            <div className="file-content">
+            <div className="ao-file-content">
               {selectedFile.type === "handwritten" ? (
                 <div className="pdf-preview">
                   {selectedFile.fileUrl ? (
@@ -1968,17 +2310,17 @@ const AcademicOrganizer = () => {
                     />
                   ) : (
                     <div className="preview-placeholder">
-                      <div className="preview-icon">📄</div>
+                      <div className="ao-preview-icon">📄</div>
                       <p>Loading PDF preview...</p>
                     </div>
                   )}
                 </div>
               ) : selectedFile.type === "image" ? (
-                <div className="image-preview">
-                  <div className="placeholder-image" />
+                <div className="ao-image-preview">
+                  <div className="ao-placeholder-image" />
                 </div>
               ) : selectedFile.type === "notebook" ? (
-                <div className="notebook-preview">
+                <div className="ao-notebook-preview">
                   <Notebook
                     notebookId={selectedFile._id}
                     notebookName={selectedFile.name}
@@ -2002,26 +2344,26 @@ const AcademicOrganizer = () => {
           </div>
         ) : (
           activeTab === "notes" && (
-            <div className="content-area">
-              <div className="files-section">
-                <div className="section-header">
-                  <h2 className="section-title">My Files</h2>
-                  <div className="section-actions">
-                    <span className="total-files">
+            <div className="ao-content-area">
+              <div className="ao-files-section">
+                <div className="ao-section-header">
+                  <h2 className="ao-section-title">My Files</h2>
+                  <div className="ao-section-actions">
+                    <span className="ao-total-files">
                       {getAllFiles().length} items
                     </span>
                   </div>
                 </div>
 
-                <div className="files-content-wrapper">
+                <div className="ao-files-content-wrapper">
                   {fileLoading && (
-                    <div className="fileloader-overlay">
+                    <div className="ao-fileloader-overlay">
                       <SquaresLoader />
                     </div>
                   )}
 
                   {error && (
-                    <div className="error">
+                    <div className="ao-error">
                       <strong>⚠️ Error:</strong> {error}
                     </div>
                   )}
@@ -2046,12 +2388,12 @@ const AcademicOrganizer = () => {
                           })
                         }
                       >
-                        <div className="file-icon-container">
-                          <div className="file-icon">
+                        <div className="ao-file-icon-container">
+                          <div className="ao-file-icon">
                             <FaStickyNote />
                           </div>
                           <button
-                            className={`file-action-btn ${
+                            className={`ao-file-action-btn ${
                               notebook.important ? "active" : ""
                             }`}
                             onClick={(e) => {
@@ -2121,8 +2463,8 @@ const AcademicOrganizer = () => {
                           })
                         }
                       >
-                        <div className="file-icon-container">
-                          <div className="file-icon">
+                        <div className="ao-file-icon-container">
+                          <div className="ao-file-icon">
                             {note.fileType === "pdf" ? (
                               <FaFilePdf />
                             ) : (
@@ -2130,7 +2472,7 @@ const AcademicOrganizer = () => {
                             )}
                           </div>
                           <button
-                            className={`file-action-btn ${
+                            className={`ao-file-action-btn ${
                               note.important ? "active" : ""
                             }`}
                             onClick={(e) => {
@@ -2187,10 +2529,10 @@ const AcademicOrganizer = () => {
 
                     {/* Empty State */}
                     {getAllFiles().length === 0 && !fileLoading && (
-                      <div className="empty-state">
+                      <div className="ao-empty-state">
                         {searchTerm
                           ? `No files match "${searchTerm}"`
-                          : "No files uploaded yet. Start by adding your first file!"}
+                          : "Select a Folder !"}
                       </div>
                     )}
                   </div>
@@ -2360,33 +2702,20 @@ const AcademicOrganizer = () => {
         />
       )}
 
-      {/* Move Modal */}
-      {/* {moving && (
-        <MoveModal
-          item={moving}
-          onMove={(destination) => {
-            // Handle move logic here
-            console.log('Moving item:', moving, 'to:', destination);
-            setMoving(null);
-          }}
-          onClose={() => setMoving(null)}
-        />
-      )} */}
-
       {/* Delete Confirmation Modal */}
       {deleteTarget && (
-        <div className="delete-modal-container">
-          <div className="delete-modal">
+        <div className="ao-delete-modal-container">
+          <div className="ao-delete-modal">
             <h3>Confirm Deletion</h3>
             <p>
               Are you sure you want to delete{" "}
               <strong>{deleteTarget.name}</strong>?<br />
               This action cannot be undone.
             </p>
-            <div className="modal-actions">
+            <div className="ao-modal-actions">
               <button onClick={() => setDeleteTarget(null)}>Cancel</button>
               <button
-                className="delete-btn"
+                className="ao-delete-btn"
                 onClick={async () => {
                   // call the correct handler based on mode
                   if (deleteTarget.mode === "item") {

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import axios from "axios";
 import MCQView from "./MCQView";
+
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import "./SummarySection.css";
 
 const SummarySection = ({ summary, pdfFile, onSaveSuccess, pdfId }) => {
@@ -62,7 +64,7 @@ const SummarySection = ({ summary, pdfFile, onSaveSuccess, pdfId }) => {
         .join("\n\n");
 
       const res = await axios.post(
-        "/api/pdf/mcq",
+        `${backendURL}/api/pdf/mcq`,
         { summaryText: rawTextSummary },
         {
           headers: {
@@ -94,7 +96,7 @@ const SummarySection = ({ summary, pdfFile, onSaveSuccess, pdfId }) => {
       console.log("Now:", new Date());
 
       const res = await axios.post(
-        "http://localhost:5000/api/pdf/save-all",
+        `${backendURL}/api/pdf/save-all`,
         formData,
         {
           headers: {

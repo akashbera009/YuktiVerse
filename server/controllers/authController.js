@@ -61,6 +61,60 @@ console.log(user);
   }
 };
 
+export const googleLogin= async(req,res) => {
+    try {
+    const { tokenId } = req.body;
+
+    // Verify Google token
+    const googleRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${tokenId}`);
+    const googleData = await googleRes.json();
+
+    if (googleData.error_description) {
+      return res.status(401).json({ error: "Invalid Google token" });
+    }
+
+    let user = await User.findOne({ email: googleData.email });
+    if (!user) {
+      user = await User.create({
+        name: googleData.name,
+        email: googleData.email,
+        pic: googleData.picture, // Store Google profile pic
+        googleId: googleData.sub
+      });
+    } else if (!user.pic && googleData.picture) {
+      // Update profile pic if missing
+      user.pic = googleData.picture;
+      await user.save();
+    }
+
+    const jwtToken = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+    res.json({ token: jwtToken, user });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+} 
+
+export const updateUser =async (req, res )=>{
+    try {
+    const { name, email, pic } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, email, pic },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
 // @desc Get current user (protected)
 export const getMe = async (req, res) => {
   try {

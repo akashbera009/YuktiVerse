@@ -1,5 +1,5 @@
 import express from "express";
-import { registerUser, loginUser, getMe } from "../controllers/authController.js";
+import { registerUser, loginUser,googleLogin, updateUser, getMe } from "../controllers/authController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 // import User from "../models/User.js";
 // import bcrypt from "bcryptjs";
@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/login", googleLogin);
+router.post("/login", updateUser);
 router.get("/me", authMiddleware, getMe);
 
 

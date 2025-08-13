@@ -251,10 +251,12 @@ const PDFHistory = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get("/api/pdf/history", {
+        const res = await axios.get(`${backendURL}/api/pdf/history`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -284,7 +286,7 @@ const PDFHistory = () => {
     if (!window.confirm("Are you sure you want to delete this PDF?")) return;
 
     try {
-      await axios.delete(`/api/pdf/delete/${id}`, {
+      await axios.delete(`${backendURL}/api/pdf/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

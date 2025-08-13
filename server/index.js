@@ -9,13 +9,18 @@ import connectDB from './config/db.js';
 import authRoutes from "./routes/authRoutes.js";
 
 import geminiRoutes from './routes/gemini.js';
-import pdfRoutes from './routes/pdfRoutes.js';
+// import pdfRoutes from './routes/pdfRoutes.js';
 import handwrittenNotesRoutes from './routes/handwrittenNotes.js';
 
 import notebooksRoutes from './routes/notebooks.js';
 import yearRoutes from './routes/years.js';
 
 import shareRoutes from './routes/shareroute.js';
+
+
+
+import pdfRoutes from './routes/pdfRoutes.js';
+import resumeRoutes from './routes/resumeRoutes.js';
 // import resumeSummerizer from './routes/resumeSummerizer.js';
 
 
@@ -61,6 +66,14 @@ app.use('/years', yearRoutes);  // post: api/years
 
 // share routes ()
 app.use('/api/share', shareRoutes);
+
+
+
+// routes for pdf summrizer
+app.use('/api/pdf', pdfRoutes);
+
+// const resumeRoutes = require('./routes/resumeRoutes');
+app.use('/api/resume', resumeRoutes);
 
 // app.use('/resume/summerize', resumeSummerizer) ; /resume/summarize [/upload-to-get-summary, /save-response, /get-saved-resume-analysis]
 

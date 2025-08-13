@@ -1,0 +1,39 @@
+/* resume-analyzer/ResumeAnalyzer.css */
+.analyzer-container {
+  display: flex;
+  background-color: var(--card-bg);
+  height: 100vh;
+  width: 100%;
+}
+
+.double-bar-container {
+  display: flex;
+}
+
+.fixed-bar {
+  /* Styles for main sidebar */
+}
+
+.collapse-bar {
+  margin-left: 5vw;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* Add this for expanded content when sidebar is collapsed */
+.main-content.expanded {
+  margin-left: -5vw; /* Adjust this value based on your layout */
+}

@@ -9,9 +9,9 @@ export const generateShareLink = async (req, res) => {
   try {
     const { notebookId } = req.params;
     const { type } = req.body;
-console.log(notebookId , type);
+console.log(notebookId , type , req.user.id);
 
-    const userId = req.user._id;
+    const userId = req.user.id;
     let notebook;
     // Check if notebook exists and belongs to user
     if (type == 'handwritten') {
@@ -39,7 +39,7 @@ console.log(notebookId , type);
     });
 
 
-    console.log(sharedNotebook);
+    // console.log(sharedNotebook);
     if (sharedNotebook) {
       // console.log('note founud ' , sharedNotebook.isActive);
 

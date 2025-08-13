@@ -3,6 +3,7 @@ import axios from "axios";
 import MCQView from "./MCQView";
 import MCQTest from "./MCQTest";
 import "./MCQPopup.css";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const MCQPopup = ({ summaryText, pdfId, onClose }) => {
   const [mcqs, setMcqs] = useState(null);
@@ -12,7 +13,7 @@ const MCQPopup = ({ summaryText, pdfId, onClose }) => {
     try {
       console.log(localStorage.getItem("token"));
       const res = await axios.post(
-        "/api/pdf/mcq",
+        `${backendURL}/api/pdf/mcq`,
         { summaryText },
         {
           headers: {
@@ -33,7 +34,7 @@ const MCQPopup = ({ summaryText, pdfId, onClose }) => {
   const saveMCQs = async () => {
     try {
       await axios.post(
-        "/api/pdf/save-mcqs",
+        `${backendURL}/api/pdf/save-mcqs`,
         { pdfId, mcqs },
         {
           headers: {

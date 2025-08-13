@@ -3,6 +3,7 @@ import { FaShare, FaCopy, FaCheck, FaSpinner } from "react-icons/fa";
 import axios from "axios";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 import "./ShareButton.css";
+const token = localStorage.getItem("token");
 
 const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLinkGenerated  }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,12 @@ const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLi
         `${backendURL}/api/share/notebook/${notebookId}/generate`,
         {
           type: type,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
       setShareUrl(response.data.shareUrl);

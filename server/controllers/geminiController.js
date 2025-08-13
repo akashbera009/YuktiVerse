@@ -10,7 +10,7 @@ const createGeminiHandler = (task) => {
       console.log('Received req.body:', req.body);
       const { prompt } = req.body;
       console.log(prompt, task);
-      
+
       if (!prompt) {
         return res.status(400).json({ error: 'Prompt is required' });
       }
@@ -29,11 +29,11 @@ const createCacheableGeminiHandler = (task) => {
   return async (req, res) => {
     try {
       await connectDB(); // ✅ Connect to database
-      
+
       console.log('Received req.body:', req.body);
       const { prompt, textBoxId, notebookId, forceRefresh = false } = req.body;
       console.log('Processing request:', { prompt, task, textBoxId, notebookId, forceRefresh });
-      
+
       if (!prompt) {
         return res.status(400).json({ error: 'Prompt is required' });
       }
@@ -133,13 +133,106 @@ const createCacheableGeminiHandler = (task) => {
       console.log('No caching parameters provided, using default behavior');
       const response = await getGeminiResponse(prompt, task);
       res.json({ task, response });
-      
+
     } catch (error) {
       console.error(`Gemini API Error [${task}]:`, error);
       res.status(500).json({ error: `Failed to handle task: ${task}` });
     }
   };
 };
+
+
+export const resumeAnalysis = async (req, res) => {
+  try {
+    
+    const pdfParse = (await import("pdf-parse")).default;
+    const mammoth = await import("mammoth");
+    const path = await import("path");
+    
+    const file = req.file;
+    console.log("file is " , file);
+    
+    if (!file) return res.status(400).json({ message: "No file uploaded" });
+    
+    const ext = path.extname(file.originalname).toLowerCase();
+    let extractedText = "";
+    
+    if (ext === ".pdf") {
+      const data = await pdfParse(file.buffer);
+      extractedText = data.text;
+    } else if (ext === ".docx") {
+      const result = await mammoth.extractRawText({ buffer: file.buffer });
+      extractedText = result.value;
+    } else {
+      return res.status(400).json({ message: "Unsupported file format" });
+    }
+    
+    const prompt = `
+    You are an expert resume analyzer.
+    
+    Analyze the following resume content and return a clean JSON object with the following fields:
+    
+    {
+      "strengths": [ "..." ],
+      "issues": [ "..." ],
+      "suggestions": [ "..." ],
+      "recommendedRoles": [ "..." ],
+      "scorecard": {
+        "clarity": 0-10,
+        "formatting": 0-10,
+        "relevance": 0-10,
+        "totalFitScore": 0-100
+        }
+        }
+        
+        ONLY return valid JSON. No explanation, no code block.
+        
+        Resume Content:
+        """
+        ${extractedText}
+        """`;
+        
+        const response = await getGeminiResponse(prompt, extractedText);
+        let text = response;
+        // console.log("this is resposmse ", response);
+        
+        text = text.replace(/```json|```/g, "").trim();
+        
+    let parsedJson;
+    try {
+      parsedJson = JSON.parse(text);
+    } catch (parseErr) {
+      return res.status(500).json({
+        message: "Gemini returned invalid JSON",
+        error: parseErr.message,
+        raw: text,
+      });
+    }
+    
+    // 👇 Return buffer as base64 string so frontend can reuse it for /save
+    return res.status(200).json({
+      message: "Analysis complete",
+      analysis: parsedJson,
+      userId: req.user.id,
+      fileInfo: {
+        filename: file.originalname,
+        buffer: file.buffer.toString('base64'),
+        mimetype: file.mimetype
+      }
+    });
+  } catch (err) {
+    console.error("❌ Error during analysis:", err);
+    return res.status(500).json({
+      message: "Analysis failed",
+      error: err.message
+    });
+  }
+};
+
+
+
+
+
 
 // Export specific handlers for each task
 export const askCode = createGeminiHandler(
@@ -148,30 +241,6 @@ export const askCode = createGeminiHandler(
 
 export const mcqGen = createGeminiHandler(
   "Generate 5 multiple choice questions with answers based on this topic."
-);
-
-export const resumeAnalysis = createGeminiHandler(
-  `You are an expert resume analyzer.
-
-    Analyze the following resume content and return a clean JSON object with the following fields:
-
-    {
-    "strengths": [ "..." ],
-    "issues": [ "..." ],
-    "suggestions": [ "..." ],
-    "recommendedRoles": [ "..." ],
-    "scorecard": {
-        "clarity": 0-10,
-        "formatting": 0-10,
-        "relevance": 0-10,
-        "totalFitScore": 0-100
-    }
-    }
-
-    ONLY return valid JSON. No explanation, no code block.
-
-    Resume Content:
-  `
 );
 
 // Use the cacheable handler for shortExplain

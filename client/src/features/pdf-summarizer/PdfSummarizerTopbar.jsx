@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./PdfSummarizerTopbar.css";
 import axios from "axios";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import { useNavigate } from "react-router-dom"; // For redirecting after logout
 
 const PdfSummarizerTopbar = () => {
@@ -15,7 +16,7 @@ const PdfSummarizerTopbar = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const res = await axios.get("http://localhost:5000/api/auth/me", {
+        const res = await axios.get(`${backendURL}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

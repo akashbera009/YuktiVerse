@@ -10,7 +10,7 @@ import HandwrittenNote from '../models/HandwrittenNote.js';
 
 export const createYear = async (req, res) => {
   const { title, important = false } = req.body;
-  const userId = req.user._id;
+  const userId = req.user.id;
 
   if (!title) {
     console.log('❌ Validation error: title is missing');
