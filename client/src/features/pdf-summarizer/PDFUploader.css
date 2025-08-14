@@ -290,10 +290,10 @@
   color: var(--danger);
 }
 
-.upload-btn {
+.pdf-up-upload-btn {
   width: 100%;
   padding: 10px;
-  background: var(--header-gradient);
+  background: var(--accent-primary);
   color: var(--card-bg);
   border: none;
   border-radius: 8px;
@@ -308,25 +308,25 @@
   box-shadow: 0 6px 12px rgba(var(--accent-primary-rgb), 0.2);
 }
 
-.upload-btn:hover:not(:disabled) {
+pdf-up-upload-btn:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow: 0 10px 20px rgba(var(--accent-primary-rgb), 0.3);
 }
 
-.upload-btn:disabled {
+.pdf-up-upload-btn:disabled {
   background: var(--border-divider);
   color: var(--text-secondary);
   cursor: not-allowed;
   box-shadow: none;
 }
 
-.upload-btn svg {
+.pdf-up-upload-btn svg {
   width: 16px;
   height: 16px;
   transition: transform 0.3s ease;
 }
 
-.upload-btn:hover:not(:disabled) svg {
+.pdf-up-upload-btn:hover:not(:disabled) svg {
   transform: translateY(3px);
 }
 

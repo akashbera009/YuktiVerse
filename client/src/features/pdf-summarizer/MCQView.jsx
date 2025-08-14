@@ -53,8 +53,8 @@ const MCQView = ({ mcqs, onSave, saving }) => {
                   key={i}
                   className={`mcq-card__option ${mcq.answer === String.fromCharCode(65 + i) ? 'correct' : ''}`}
                 >
-                  <div className="option-letter">{String.fromCharCode(65 + i)}.</div>
-                  <div className="option-text">{opt}</div>
+                  <div className="option-letter">{String.fromCharCode(65 + i)}</div>
+                  <div className="mcq-option-text">{opt}</div>
                   {mcq.answer === String.fromCharCode(65 + i) && (
                     <div className="correct-badge">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -72,7 +72,7 @@ const MCQView = ({ mcqs, onSave, saving }) => {
 
       <div className="mcq-actions">
         <button
-          className="test-btn"
+          className="test-btn-save"
           onClick={onSave}
           disabled={saving}
         >

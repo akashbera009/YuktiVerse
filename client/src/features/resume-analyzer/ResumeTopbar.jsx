@@ -47,27 +47,27 @@ const ResumeTopbar = () => {
     navigate("/login");
   };
 
-  const getAvatarContent = () => {
-    if (user?.pic) {
-      return (
-        <img src={user.pic} alt="User Avatar" className="resume-avatar" />
-      );
-    }
-    if (user?.email) {
-      return (
-        <div className="resume-avatar-fallback">
-          {user.email.charAt(0).toUpperCase()}
-        </div>
-      );
-    }
-    return (
-      <img
-        src="https://i.pravatar.cc/40"
-        alt="Default Avatar"
-        className="resume-avatar"
-      />
-    );
-  };
+  // const getAvatarContent = () => {
+  //   if (user?.pic) {
+  //     return (
+  //       <img src={user.pic} alt="User Avatar" className="resume-avatar" />
+  //     );
+  //   }
+  //   if (user?.email) {
+  //     return (
+  //       <div className="resume-avatar-fallback">
+  //         {user.email.charAt(0).toUpperCase()}
+  //       </div>
+  //     );
+  //   }
+  //   return (
+  //     <img
+  //       src="https://i.pravatar.cc/40"
+  //       alt="Default Avatar"
+  //       className="resume-avatar"
+  //     />
+  //   );
+  // };
 
   return (
     <div className="resume-topbar">
@@ -96,7 +96,7 @@ const ResumeTopbar = () => {
       </div>
 
       {/* Avatar + Menu */}
-      <div className="resume-avatar-wrapper" ref={menuRef}>
+      {/* <div className="resume-avatar-wrapper" ref={menuRef}>
         <div
           className="resume-topbar-avatar"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -111,7 +111,7 @@ const ResumeTopbar = () => {
             <button onClick={handleLogout}>Logout</button>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

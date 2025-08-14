@@ -436,7 +436,7 @@ export const themes = {
   '--file-icon-bg': 'rgba(104, 211, 145, 0.1)',
   '--loader-bg': '#e2e8f0',
   '--spinner-top': '#1a202c',
-
+    
   /* ==================== */
   /* Borders & Dividers   */
   /* ==================== */

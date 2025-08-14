@@ -377,12 +377,12 @@
 }
 
 /* Save Button */
-.save-button-container {
+.resume-save-button-container {
   text-align: center;
   margin-top: 30px;
 }
 
-.save-button {
+.resume-save-button {
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -400,7 +400,7 @@
   overflow: hidden;
 }
 
-.save-button::before {
+.resume-save-button::before {
   content: '';
   position: absolute;
   top: 0;
@@ -411,37 +411,37 @@
   transition: left 0.5s ease;
 }
 
-.save-button:hover::before {
+.resume-save-button:hover::before {
   left: 100%;
 }
 
-.save-button:hover:not(:disabled) {
+.resume-save-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(104, 211, 145, 0.4);
 }
 
-.save-button:disabled {
+.resume-save-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
 }
 
-.save-button.saving {
+.resume-save-button.saving {
   background: linear-gradient(135deg, #4a5568, #2d3748);
   color: var(--color-text-secondary);
 }
 
-.save-button svg {
+.resume-save-button svg {
   width: 20px;
   height: 20px;
   transition: transform 0.3s ease;
 }
 
-.save-button:hover:not(:disabled) svg {
+.resume-save-button:hover:not(:disabled) svg {
   transform: scale(1.1);
 }
 
-.save-spinner {
+.resume-save-spinner {
   width: 20px;
   height: 20px;
   border: 2px solid transparent;
@@ -450,8 +450,8 @@
   animation: spin 1s linear infinite;
 }
 
-.save-success-msg,
-.save-error-msg {
+.resume-save-success-msg,
+.resume-save-error-msg {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -462,20 +462,20 @@
   animation: slideInUp 0.3s ease;
 }
 
-.save-success-msg {
+.resume-save-success-msg {
   background-color: rgba(16, 185, 129, 0.1);
   color: var(--color-success);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-.save-error-msg {
+.resume-save-error-msg {
   background-color: rgba(239, 68, 68, 0.1);
   color: var(--color-error);
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.save-success-msg svg,
-.save-error-msg svg {
+.resume-save-success-msg svg,
+.resume-save-error-msg svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;

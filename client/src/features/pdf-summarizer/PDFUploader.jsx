@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import SummarySection from "./SummarySection";
 import "./PDFUploader.css";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const PDFUploader = () => {
   const [summary, setSummary] = useState("");
@@ -70,7 +71,7 @@ const PDFUploader = () => {
     try {
       setLoading(true);
       setError("");
-      const res = await axios.post("/api/pdf/summarize", formData, {
+      const res = await axios.post(`${backendURL}/api/pdf/summarize`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "multipart/form-data",
@@ -334,7 +335,7 @@ const PDFUploader = () => {
             )}
 
             <button
-              className="upload-btn"
+              className="pdf-up-upload-btn"
               onClick={handleSummarize}
               disabled={loading || !pdfFile}
             >

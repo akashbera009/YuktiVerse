@@ -348,15 +348,15 @@ const ResumeFeedback = ({ feedback, resumeFile, onDatabaseSaveSuccess }) => {
       </div>
 
       {/* Save Button */}
-      <div className="save-button-container">
+      <div className="resume-save-button-container">
         <button
-          className={`save-button ${isSaving ? "saving" : ""}`}
+          className={`resume-save-button ${isSaving ? "saving" : ""}`}
           onClick={handleSaveToDatabase}
           disabled={isSaving}
         >
           {isSaving ? (
             <>
-              <div className="save-spinner"></div>
+              <div className="resume-save-spinner"></div>
               Saving to Database...
             </>
           ) : (
@@ -377,7 +377,7 @@ const ResumeFeedback = ({ feedback, resumeFile, onDatabaseSaveSuccess }) => {
         </button>
 
         {saveSuccess && (
-          <div className="save-success-msg">
+          <div className="resume-save-success-msg">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -391,7 +391,7 @@ const ResumeFeedback = ({ feedback, resumeFile, onDatabaseSaveSuccess }) => {
         )}
 
         {saveError && (
-          <div className="save-error-msg">
+          <div className="resume-save-error-msg">
             <svg
               viewBox="0 0 24 24"
               fill="none"

@@ -95,6 +95,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
     }
   }, [mode, text]); // Removed didInitial from dependencies
 
+  
   const handleSubmit = async () => {
     if (!prompt.trim()) return;
     const userId = Date.now();
@@ -191,7 +192,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
     setIsExpanded(!isExpanded);
     if (!isExpanded) {
       setSize({ width: Math.min(800, window.innerWidth - 40), height: window.innerHeight - 40 });
-      setPosition({ x: 20, y: 20 });
+      setPosition({ x: 20, y: 20 }); 
     } else {
       setSize({ width: 400, height: '100vh' });
       setPosition({ x: 0, y: 0 });
@@ -227,15 +228,15 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
     '--glass-border': 'rgba(255, 255, 255, 0.1)',
     '--shadow-heavy': '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
     position: isExpanded ? 'fixed' : 'fixed',
-    top: isExpanded ? `${position.y}px` : '0',
+    top: isExpanded ? `${position.y }px` : '0',
     right: isExpanded ? 'auto' : '0',
-    left: isExpanded ? `${position.x}px` : 'auto',
+    left: isExpanded ? `${position.x+ 400}px` : 'auto',
     width: typeof size.width === 'number' ? `${size.width}px` : size.width,
     height: typeof size.height === 'number' ? `${size.height}px` : size.height,
-    background: 'var(--glass-bg)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(20px)',
     border: '1px solid var(--glass-border)',
-    borderLeft: isExpanded ? '1px solid var(--glass-border)' : '1px solid var(--dark-border)',
+    borderLeft: isExpanded ? '1px solid var(--boder-divider)' : '1px solid var(--color-border-primary)',
     borderRadius: isExpanded ? '20px' : '0',
     boxShadow: 'var(--shadow-heavy)',
     zIndex: 1000,
@@ -289,7 +290,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
         alignItems: 'center',
         padding: '20px 24px',
         borderBottom: '1px solid var(--glass-border)',
-        background: 'linear-gradient(135deg, var(--primary), var(--primary-light))',
+        background: 'linear-gradient(135deg, var(--accent-primary), var(--color-accent-info))',
         borderRadius: isExpanded ? '20px 20px 0 0' : '0',
         cursor: isExpanded ? 'grab' : 'default'
       }}>
@@ -304,7 +305,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
           <div style={{
             width: '32px',
             height: '32px',
-            background: 'rgba(255, 255, 255, 0.2)',
+            background: 'var(--border-divider)',
             borderRadius: '10px',
             display: 'flex',
             alignItems: 'center',
@@ -325,7 +326,8 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
               width: '32px',
               height: '32px',
               borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.15)',
+              // background: 'rgba(255, 255, 255, 0.15)', 
+              background: 'var(--bg-popup)', 
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: 'white',
               cursor: 'pointer',
@@ -502,8 +504,8 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
               height: '44px',
               borderRadius: '12px',
               background: prompt.trim() 
-                ? 'linear-gradient(135deg, var(--primary), var(--primary-light))'
-                : 'var(--dark-border)',
+                ? 'linear-gradient(135deg, var(--accent-primary), var(--primary-light))'
+                : 'var(--border-light)',
               border: 'none',
               color: 'white',
               cursor: prompt.trim() ? 'pointer' : 'not-allowed',
@@ -517,7 +519,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
             onMouseEnter={(e) => {
               if (prompt.trim()) {
                 e.target.style.transform = 'scale(1.05)';
-                e.target.style.boxShadow = '0 8px 24px rgba(79, 70, 229, 0.4)';
+                e.target.style.boxShadow = '0 8px 24px var(--accent-primary)';
               }
             }}
             onMouseLeave={(e) => {

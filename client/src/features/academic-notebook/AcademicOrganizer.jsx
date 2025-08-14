@@ -1967,7 +1967,7 @@ const AcademicOrganizer = () => {
                                         setNewItemName("");
                                       }}
                                     >
-                                      <FaPlus /> New Chapter
+                                      <FaPlus />Chapter
                                     </button>
                                   )}
                                 </div>

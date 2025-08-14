@@ -140,12 +140,13 @@ const SummarySection = ({ summary, pdfFile, onSaveSuccess, pdfId }) => {
     (parsedSummary.length > 0 ? parsedSummary[0] : null);
 
   return (
-    <div className="summary-section" ref={summaryRef}>
-      <div className="section-header">
-        <h1 className="section-title">Document Summary</h1>
-        <p className="section-subtitle">
+    <div className="pdf-summary-section" ref={summaryRef}>
+              <p className="pdf-section-subtitle">
           Comprehensive overview of key concepts
         </p>
+      <div className="summary-section-header">
+        <h1 className="summary-section-title">Document Summary</h1>
+
       </div>
 
       <div className="search-container">
@@ -202,7 +203,7 @@ const SummarySection = ({ summary, pdfFile, onSaveSuccess, pdfId }) => {
             </div>
 
             <div className="action-buttons">
-              <button className="copy-btn" onClick={copyToClipboard}>
+              <button className="summary-copy-btn" onClick={copyToClipboard}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -238,7 +239,7 @@ const SummarySection = ({ summary, pdfFile, onSaveSuccess, pdfId }) => {
           {/* Topic View */}
           {currentTopic ? (
             <div className="topic-view">
-              <div className="topic-header">
+              <div className="summary-topic-header">
                 <div className="topic-badge">{selectedTopicIndex + 1}</div>
                 <h3 className="topic-title">{currentTopic.title}</h3>
               </div>

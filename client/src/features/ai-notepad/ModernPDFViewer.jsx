@@ -42,39 +42,22 @@ const ModernPDFViewer = ({
   };
 
   return (
-    <div className="pdf-viewer-container">
-      <div className="pdf-viewer-wrapper">
+    <div className="ao-pdf-viewer-container">
+      <div className="ao-pdf-viewer-wrapper">
         {/* Main Content */}
         <div className={`file-content-2 ${isFullscreen ? 'fullscreen' : ''}`}>
           {type === 'handwritten' ? (
-            <div className="pdf-preview">
+            <div className="ao-pdf-preview">
               {/* Toolbar */}
               <div className="toolbar">
                 <div className="toolbar-section">
-                  <div className="file-info">
+                  <div className="ao-file-info">
                     <FileText className="file-icon-2" />
-                    <span className="file-name">{fileName}</span>
+                    <span className="ao-pdf-file-name">{fileName}</span>
                   </div>
                 </div>
                 
                 <div className="toolbar-section">
-                  {/* <div className="zoom-controls">
-                    <button 
-                      onClick={() => setZoom(Math.max(25, zoom - 25))}
-                      className="toolbar-btn"
-                      disabled={zoom <= 25}
-                    >
-                      <ZoomOut className="btn-icon" />
-                    </button>
-                    <span className="zoom-display">{zoom}%</span>
-                    <button 
-                      onClick={() => setZoom(Math.min(200, zoom + 25))}
-                      className="toolbar-btn"
-                      disabled={zoom >= 200}
-                    >
-                      <ZoomIn className="btn-icon" />
-                    </button>
-                  </div> */}
                   <ShareButton notebookId={fileId} type ={'handwritten'}/>
                   <div className="action-buttons">
                     <button onClick={handleFullscreen} className="toolbar-btn" title="Fullscreen">
@@ -88,7 +71,7 @@ const ModernPDFViewer = ({
               </div>
 
               {/* PDF Viewer */}
-              <div className="pdf-container">
+              <div className="ao-pdf-container">
                 {fileUrl ? (
                   <div className="pdf-wrapper" style={{ transform: `scale(${zoom / 100})` }}>
                     <embed 

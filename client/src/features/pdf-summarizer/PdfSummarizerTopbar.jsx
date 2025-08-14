@@ -47,31 +47,31 @@ const PdfSummarizerTopbar = () => {
     navigate("/login"); // redirect to login page
   };
 
-  const getAvatarContent = () => {
-    if (user?.pic) {
-      return (
-        <img
-          src={user.pic}
-          alt="User Avatar"
-          className="pdf-summarizer-avatar"
-        />
-      );
-    }
-    if (user?.email) {
-      return (
-        <div className="pdf-summarizer-avatar-fallback">
-          {user.email.charAt(0).toUpperCase()}
-        </div>
-      );
-    }
-    return (
-      <img
-        src="https://i.pravatar.cc/40"
-        alt="Default Avatar"
-        className="pdf-summarizer-avatar"
-      />
-    );
-  };
+  // const getAvatarContent = () => {
+  //   if (user?.pic) {
+  //     return (
+  //       <img
+  //         src={user.pic}
+  //         alt="User Avatar"
+  //         className="pdf-summarizer-avatar"
+  //       />
+  //     );
+  //   }
+  //   if (user?.email) {
+  //     return (
+  //       <div className="pdf-summarizer-avatar-fallback">
+  //         {user.email.charAt(0).toUpperCase()}
+  //       </div>
+  //     );
+  //   }
+  //   return (
+  //     <img
+  //       src="https://i.pravatar.cc/40"
+  //       alt="Default Avatar"
+  //       className="pdf-summarizer-avatar"
+  //     />
+  //   );
+  // };
 
   return (
     <div className="pdf-summarizer-topbar">
@@ -99,7 +99,7 @@ const PdfSummarizerTopbar = () => {
       </div>
 
       {/* Avatar & Menu */}
-      <div className="pdf-summarizer-avatar-wrapper" ref={menuRef}>
+      {/* <div className="pdf-summarizer-avatar-wrapper" ref={menuRef}>
         <div
           className="pdf-summarizer-topbar-avatar"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -114,7 +114,7 @@ const PdfSummarizerTopbar = () => {
             <button onClick={handleLogout}>Logout</button>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
