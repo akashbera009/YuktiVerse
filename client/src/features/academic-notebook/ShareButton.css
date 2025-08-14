@@ -15,8 +15,10 @@
 } */
 
 .share-button {
-  background-color: var(--primary);
+  /* background-color: var(--primary); */
+  /* background: red; */
   color: var(--text-color);
+  background: linear-gradient(135deg , var(--accent-primary) , var(--secondary-accent));
   border: none;
   padding: 0.5rem;
   border-radius: 8px;

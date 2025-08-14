@@ -170,7 +170,7 @@
   font-size: 20px;
   margin-right: 16px;
   flex-shrink: 0;
-  color: var(--text-on-primary);
+  color: var(--accent-primary);
 }
 
 .acd-upload-card .acd-card-icon {
@@ -322,7 +322,7 @@
 
 .acd-btn-primary {
   padding: 12px 24px;
-  background: var(--bg-submit-gradient); /* Use specific gradient */
+  background: linear-gradient(135deg , var(--accent-primary) , var(--secondary-accent));;
   border: none;
   border-radius: 10px;
   color: var(--text-on-primary);

@@ -1,18 +1,5 @@
 
-/* Base styles */
 
-/* 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-body {
-  background-color: var(--color-background);
-  color: var(--text-primary);
-} */
 
 .ao-container {
   display: flex;
@@ -20,12 +7,13 @@ body {
   /* margin-left: 5rem; */
 }
 .ao-container.collapsed .ao-main {
-  flex: 1 1 400%;
-  /* margin-left: 80px; */
-  transition: .5s ease-in;
+  /* background-color: red; */
+  margin-left: 80px; 
+  /* margin-right: 2rem; */
+  max-width: calc(100vw - 80px);
 }
 .ao-main{
-  margin-right: 2rem;
+  margin-right:2rem;
 }
 
 /* Top Navigation */
@@ -43,7 +31,6 @@ body {
   border-bottom: 1px solid var(--color-border-primary);
   z-index: 100;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  /* background-color: red; */
 }
 
 .ao-nav-left {
@@ -51,7 +38,13 @@ body {
   align-items: center;
   gap: 1rem;
   /* background-color: red; */
+  /* margin-left: 300px; */
   margin-left: 80px;
+    transition: margin-left 0.3s ease;
+
+}
+.ao-container.collapsed .ao-nav-left {
+  /* margin-left: 380px; */
 }
 
 .ao-collapse{
@@ -294,17 +287,15 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
 } */
 /* Sidebar Wrapper - Outer Container */
 .ao-sidebar-wrapper {
-  position: relative;
-  margin-left: 80px;
-  margin-top: 60px;
+  position: fixed; /* Changed from relative to fixed */
+  left: 80px;
+  top: 60px;
+  bottom: 0;
   transition: width 0.3s ease;
   color: var(--text-color);
-  height: 100vh;
+  height: calc(100vh - 60px);
   width: 300px;
-  position: relative;
-  bottom: 10px;
-  /* left: 10px; */
-  height: 100vh;
+  z-index: 90; /* Added z-index to ensure proper layering */
 }
 
 /* Default open state */
@@ -314,66 +305,64 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
 
 /* Collapsed state */
 .ao-sidebar-wrapper.collapsed {
-  width: 20px;
+  width: 80px;
 }
 
 /* Collapse Toggle Button */
-.collapse-toggle-btn {
-    position: absolute;
-  top: .5rem;
-  right: 0.5rem;
-  /* left: 1000px;
-  bottom: 70vh; */
-  z-index: 10;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-primary);
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
+.ao-collapse-toggle-btn {
+  position: absolute;
+  /* top: 2.5rem; */
+  right: -2rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-primary);
+  background-color: var(--border-divider);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-secondary);
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, transform 0.3s ease, left 2s ease,
+    right 0.3s ease,
+    transform 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 }
 
-.collapse-toggle-btn:hover {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--text-primary);
-  transform: scale(1.05);
+.ao-collapse-toggle-btn:hover {
+  background-color: var(--accent-primary);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--accent-primary), 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.collapse-icon {
+.ao-collapse-icon {
   font-size: 16px;
   transition: transform 0.3s ease;
 }
 
-.collapse-icon.rotated {
+.ao-collapse-icon.rotated {
   transform: rotate(180deg);
 }
 
 /* Inner Sidebar Container */
 .ao-sidebar {
-  height: 100vh;
+  height: 100%;
   width: 100%;
   background-color: var(--color-bg);
   /* background-color: red; */
-  /* margin-top: -3rem; */
   border-right: 1px solid var(--color-border-primary);
-  /* padding: 1rem; */
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   color: var(--text-color);
   box-sizing: border-box;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  /* position: sticky;
-  bottom: 0; */
 }
 
 /* Show sidebar content when open */
+.ao-sidebar-wrapper.collapsed .ao-collapse-toggle-btn{
+  left: 0;
+}
 .ao-sidebar-wrapper.open .ao-sidebar {
   transform: translateX(0);
   opacity: 1;
@@ -403,9 +392,11 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
-  padding-top: 3rem; /* Add top padding to account for the collapse button */
+  /* padding-top: 3.5rem; */
   box-sizing: border-box;
-  background-color: transparent;
+  /* background-color: transparent; */
+  
+  background-color: var(--sidebar-bg);
 }
 
 .ao-section {
@@ -439,20 +430,22 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
 }
 
 .ao-button.active {
-  /* background: rgba(99, 101, 241, 0.084); */
   background: var(--upload-bg);
-   color: var(--accent-primary);
+  color: var(--accent-primary);
   border-left: 2px solid var(--accent-primary);
-  /* color: var(--summary-key); */
   font-size: 0.9rem;
   font-weight: 700;
 }
+
 
 .ao-icon {
   font-size: 1rem;
   color: var(--accent-primary);
 }
 
+.star-icon-ao{
+  font-size:8px ;
+}
 .ao-name-file {
   overflow: hidden;
 }
@@ -535,14 +528,18 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
   flex: 1;
   padding: 1.5rem;
   margin-top: 60px;
-  margin-left: -280px;    
+  margin-left: 380px;    
   height: calc(100vh - 60px);
   overflow-y: auto;
+  overflow-x: auto;
   transition: margin-left 0.3s ease;
   /* width: 100vw; */
+    max-width: calc(100vw - 300px); 
 }
 
 .ao-main-header {
+  
+  margin-left: 10%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -560,9 +557,11 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
 .breadcrumb-step {
   display: flex;
   align-items: center;
-  background: var(--bg-score-circle);
+  /* background: var(--bg-score-circle); */
+  /* background: var(--accent-gradient); */
+  background-color: red;
   /* background-color: var(--popup-bg); */
-  /* background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-light)); */
+  background: linear-gradient(135deg, var(--accent-primary), var(--secondary-accent));
   color: var(--text-primary);
   padding: 0.5rem 1rem;
   position: relative;
@@ -811,8 +810,10 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
 /* Main Content Area */
 .ao-content-area {
   min-height: 70vh;
-  background: var(--popup-bg);
+  background: var(--header-bg);
   border-radius: 32px;
+  
+  /* margin-left: 80px; */
   padding: 2.5rem;
   border: 1px solid var(--border-light);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
@@ -1331,9 +1332,9 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
     transform: translateX(0);
   }
   
-  .ao-main {
+  /* .ao-main {
     margin-left: 0; 
-  }
+  } */
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -2266,3 +2267,5 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
     background-clip: text;
   }
 }
+
+

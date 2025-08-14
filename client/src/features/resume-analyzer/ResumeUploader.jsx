@@ -369,7 +369,7 @@ const ResumeUploader = () => {
             </div>
 
             <button
-              className="upload-btn"
+              className="res-upload-btn"
               onClick={handleUpload}
               disabled={loading || !file}
             >

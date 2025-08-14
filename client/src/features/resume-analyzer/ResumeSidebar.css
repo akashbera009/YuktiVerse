@@ -51,6 +51,8 @@
 }
 
 .resume-sidebar-nav {
+  background-color: var(--sidebar-bg);
+
   flex: 1;
   padding: 15px 10px;
 }

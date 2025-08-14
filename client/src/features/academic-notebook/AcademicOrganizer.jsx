@@ -1442,7 +1442,6 @@ const AcademicOrganizer = () => {
       {/* Top Navigation */}
       <div className="ao-top-nav">
         <div className="ao-nav-left">
-
           <div className="app-name">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1462,65 +1461,67 @@ const AcademicOrganizer = () => {
             Academic ORG
           </div>
         </div>
+        <div className="ao-nav-center">
+          <div className="tabs-sliding" ref={tabsRef}>
+            {/* Animated Background Slider */}
+            <div className="tab-slider" ref={sliderRef} style={sliderStyle} />
 
-        <div className="tabs-sliding" ref={tabsRef}>
-          {/* Animated Background Slider */}
-          <div className="tab-slider" ref={sliderRef} style={sliderStyle} />
-
-          {tabs.map(({ id, label }) => (
-            <button
-              key={id}
-              className={`tab-sliding ${activeTab === id ? "active" : ""}`}
-              onClick={() => handleTabClick(id)}
-              onMouseDown={(e) => {
-                if (e.currentTarget) {
-                  e.currentTarget.style.transform =
-                    "translate3d(0, 1px, 0) scale(0.98)";
-                }
-              }}
-              onMouseUp={(e) => {
-                setTimeout(() => {
+            {tabs.map(({ id, label }) => (
+              <button
+                key={id}
+                className={`tab-sliding ${activeTab === id ? "active" : ""}`}
+                onClick={() => handleTabClick(id)}
+                onMouseDown={(e) => {
+                  if (e.currentTarget) {
+                    e.currentTarget.style.transform =
+                      "translate3d(0, 1px, 0) scale(0.98)";
+                  }
+                }}
+                onMouseUp={(e) => {
+                  setTimeout(() => {
+                    if (e.currentTarget) {
+                      e.currentTarget.style.transform =
+                        "translate3d(0, 0, 0) scale(1)";
+                    }
+                  }, 100);
+                }}
+                onMouseLeave={(e) => {
                   if (e.currentTarget) {
                     e.currentTarget.style.transform =
                       "translate3d(0, 0, 0) scale(1)";
                   }
-                }, 100);
-              }}
-              onMouseLeave={(e) => {
-                if (e.currentTarget) {
-                  e.currentTarget.style.transform =
-                    "translate3d(0, 0, 0) scale(1)";
-                }
-              }}
-            >
-              <span className="tab-text">{label}</span>
-            </button>
-          ))}
+                }}
+              >
+                <span className="tab-text">{label}</span>
+              </button>
+            ))}
+          </div>
         </div>
         {/* chatbot */}
-        <>
-          <button
-            className="chatbot-icon-button"
-            onClick={() => setChatActive((prev) => !prev)} // ✅ Fix: toggle state correctly
-            aria-label="Open YuktiVerse Chat"
-          >
-            <div className="chatbot-icon-ripple" />
-            <div className="chatbot-glow" />
-            <div className="chatbot-icon-container">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="white"
-                className="chatbot-icon"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M18 3a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-4.724l-4.762 2.857a1 1 0 0 1 -1.508 -.743l-.006 -.114v-2h-1a4 4 0 0 1 -3.995 -3.8l-.005 -.2v-8a4 4 0 0 1 4 -4zm-2.8 9.286a1 1 0 0 0 -1.414 .014a2.5 2.5 0 0 1 -3.572 0a1 1 0 0 0 -1.428 1.4a4.5 4.5 0 0 0 6.428 0a1 1 0 0 0 -.014 -1.414m-5.69 -4.286h-.01a1 1 0 1 0 0 2h.01a1 1 0 0 0 0 -2m5 0h-.01a1 1 0 0 0 0 2h.01a1 1 0 0 0 0 -2" />
-              </svg>
-            </div>
-          </button>
-
+        <div className="ao-nav-right">
+          <div className="chatbot-container">
+            <button
+              className="chatbot-icon-button"
+              onClick={() => setChatActive((prev) => !prev)} // ✅ Fix: toggle state correctly
+              aria-label="Open YuktiVerse Chat"
+            >
+              <div className="chatbot-icon-ripple" />
+              <div className="chatbot-glow" />
+              <div className="chatbot-icon-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  className="chatbot-icon"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M18 3a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-4.724l-4.762 2.857a1 1 0 0 1 -1.508 -.743l-.006 -.114v-2h-1a4 4 0 0 1 -3.995 -3.8l-.005 -.2v-8a4 4 0 0 1 4 -4zm-2.8 9.286a1 1 0 0 0 -1.414 .014a2.5 2.5 0 0 1 -3.572 0a1 1 0 0 0 -1.428 1.4a4.5 4.5 0 0 0 6.428 0a1 1 0 0 0 -.014 -1.414m-5.69 -4.286h-.01a1 1 0 1 0 0 2h.01a1 1 0 0 0 0 -2m5 0h-.01a1 1 0 0 0 0 2h.01a1 1 0 0 0 0 -2" />
+                </svg>
+              </div>
+            </button>
+          </div>
           {chatActive && (
             <div ref={panelRef}>
               <AiHelpers
@@ -1530,507 +1531,526 @@ const AcademicOrganizer = () => {
               />
             </div>
           )}
-        </>
 
-        <div className="global-search-container">
-          <div className="search-input-container">
-            <FaSearch className="ao-search-icon" />
-            <input
-              className="global-search-bar"
-              placeholder="Search all files..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onFocus={() => setShowSearchResults(true)}
-              onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
-            />
-          </div>
-
-          {showSearchResults && searchTerm.trim() !== "" && (
-            <div className="global-search-results">
-              {isFetchingAllFiles ? (
-                <SquaresLoader />
-              ) : fetchAllFilesError ? (
-                <div className="ao-error">{fetchAllFilesError}</div>
-              ) : (
-                <>
-                  {searchAllFiles(searchTerm).map((file, index) => (
-                    <div
-                      key={`${file._id}-${index}`}
-                      className="search-result-item"
-                      onClick={() => {
-                        handleFileClick(file);
-                        loadChapterAndOpenFile(file);
-                        setSearchTerm("");
-                        setShowSearchResults(false);
-                      }}
-                    >
-                      <div className="search-result-icon">
-                        {file.type === "notebook" && <FaStickyNote />}
-                        {file.type === "handwritten" && <FaFilePdf />}
-                      </div>
-                      <div className="search-result-name">
-                        {file.type === "notebook" ? file.name : file.title}
-                      </div>
-                      <div className="search-result-path">{file.fullPath}</div>
-                    </div>
-                  ))}
-                  {searchAllFiles(searchTerm).length === 0 && (
-                    <div className="no-results">No matching files found.</div>
-                  )}
-                </>
-              )}
+          <div className="global-search-container">
+            <div className="search-input-container">
+              <FaSearch className="ao-search-icon" />
+              <input
+                className="global-search-bar"
+                placeholder="Search all files..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onFocus={() => setShowSearchResults(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowSearchResults(false), 200)
+                }
+              />
             </div>
-          )}
+
+            {showSearchResults && searchTerm.trim() !== "" && (
+              <div className="global-search-results">
+                {isFetchingAllFiles ? (
+                  <SquaresLoader />
+                ) : fetchAllFilesError ? (
+                  <div className="ao-error">{fetchAllFilesError}</div>
+                ) : (
+                  <>
+                    {searchAllFiles(searchTerm).map((file, index) => (
+                      <div
+                        key={`${file._id}-${index}`}
+                        className="search-result-item"
+                        onClick={() => {
+                          handleFileClick(file);
+                          loadChapterAndOpenFile(file);
+                          setSearchTerm("");
+                          setShowSearchResults(false);
+                        }}
+                      >
+                        <div className="search-result-icon">
+                          {file.type === "notebook" && <FaStickyNote />}
+                          {file.type === "handwritten" && <FaFilePdf />}
+                        </div>
+                        <div className="search-result-name">
+                          {file.type === "notebook" ? file.name : file.title}
+                        </div>
+                        <div className="search-result-path">
+                          {file.fullPath}
+                        </div>
+                      </div>
+                    ))}
+                    {searchAllFiles(searchTerm).length === 0 && (
+                      <div className="no-results">No matching files found.</div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Sidebar */}
-<div className={`ao-sidebar-wrapper ${sidebarOpen ? 'open' : 'collapsed'}`}>
-  <button
-    className="collapse-toggle-btn"
-    onClick={() => setSidebarOpen(!sidebarOpen)}
-    aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-    data-tooltip={sidebarOpen ? "Collapse" : "Expand"}
-  >
-    <FiChevronLeft
-      className={`collapse-icon ${sidebarOpen ? "" : "rotated"}`}
-    />
-  </button>
-  
-  <div className="ao-sidebar">
-    <div className="sidebar-content">
-      {yearsLoading ? (
-        <InlineLoader />
-      ) : (
-        years.map((year) => (
-          <div key={year._id} className="ao-section">
-            <button
-              className={`ao-button ${
-                selectedYearId === year._id ? "active" : ""
-              }`}
-              onClick={() => handleYearClick(year._id)}
-              onContextMenu={(e) => handleContextMenu(e, "year", year)}
-            >
-              <div className="star-icon-ao">
-                {selectedYearId === year._id ? (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M6 9l6 6l6 -6" />
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
-                    </svg>
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M9 6l6 6l-6 6" />
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                    </svg>
-                  </>
-                )}
-              </div>
-              <div className="ao-name-file"> {year.title}</div>
-              {year.important && <FaStar className="ao-important-star" />}
-            </button>
+      <div
+        className={`ao-sidebar-wrapper ${sidebarOpen ? "open" : "collapsed"}`}
+      >
+        <button
+          className="ao-collapse-toggle-btn"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          data-tooltip={sidebarOpen ? "Collapse" : "Expand"}
+        >
+          <FiChevronLeft
+            className={`ao-collapse-icon ${sidebarOpen ? "" : "rotated"}`}
+          />
+        </button>
 
-            {selectedYearId === year._id && (
-              <div className="ao-subsection">
-                {subjectsLoading ? (
-                  <div style={{ padding: "10px", marginLeft: "20px" }}>
-                    <InlineLoader type="dots" text="" />
-                  </div>
-                ) : (
-                  subjects.map((subject) => (
-                    <div key={subject._id} className="ao-subitem">
-                      <button
-                        className={`ao-button ao-subbutton ${
-                          selectedSubjectId === subject._id ? "active" : ""
-                        }`}
-                        onClick={() => handleSubjectClick(subject._id)}
-                        onContextMenu={(e) =>
-                          handleContextMenu(e, "subject", subject)
-                        }
-                      >
-                        {selectedSubjectId === subject._id ? (
-                          <>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M6 9l6 6l6 -6" />
-                            </svg>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
-                            </svg>
-                          </>
-                        ) : (
-                          <>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M9 6l6 6l-6 6" />
-                            </svg>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                            </svg>
-                          </>
-                        )}
-
-                        <div className="ao-name-file"> {subject.name}</div>
-                        {subject.important && (
-                          <FaStar className="ao-important-star" />
-                        )}
-                      </button>
-
-                      {selectedSubjectId === subject._id && (
-                        <div className="ao-subsection">
-                          {chaptersLoading ? (
-                            <div
-                              style={{ padding: "8px", marginLeft: "40px" }}
-                            >
-                              <InlineLoader type="dots" text="" />
-                            </div>
-                          ) : (
-                            chapters.map((chapter) => (
-                              <div key={chapter._id} className="ao-subitem">
-                                <button
-                                  className={`ao-button ao-subbutton ${
-                                    selectedChapterId === chapter._id
-                                      ? "active"
-                                      : ""
-                                  }`}
-                                  onClick={() => {
-                                    handleChapterClick(chapter._id);
-                                  }}
-                                  onContextMenu={(e) =>
-                                    handleContextMenu(e, "chapter", chapter)
-                                  }
-                                >
-                                  {selectedChapterId === chapter._id ? (
-                                    <>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
-                                      >
-                                        <path
-                                          stroke="none"
-                                          d="M0 0h24v24H0z"
-                                          fill="none"
-                                        />
-                                        <path d="M6 9l6 6l6 -6" />
-                                      </svg>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
-                                      >
-                                        <path
-                                          stroke="none"
-                                          d="M0 0h24v24H0z"
-                                          fill="none"
-                                        />
-                                        <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
-                                      </svg>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
-                                      >
-                                        <path
-                                          stroke="none"
-                                          d="M0 0h24v24H0z"
-                                          fill="none"
-                                        />
-                                        <path d="M9 6l6 6l-6 6" />
-                                      </svg>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
-                                      >
-                                        <path
-                                          stroke="none"
-                                          d="M0 0h24v24H0z"
-                                          fill="none"
-                                        />
-                                        <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                                      </svg>
-                                    </>
-                                  )}
-                                  {chapter.title}
-                                  {chapter.important && (
-                                    <FaStar className="ao-important-star" />
-                                  )}
-                                </button>
-                              </div>
-                            ))
-                          )}
-
-                          <div className="ao-create-section">
-                            {creatingType === `chapter:${selectedSubjectId}` ? (
-                              <div className="ao-create-input">
-                                <input
-                                  value={newItemName}
-                                  onChange={(e) =>
-                                    setNewItemName(e.target.value)
-                                  }
-                                  onKeyDown={async (e) => {
-                                    if (
-                                      e.key === "Enter" &&
-                                      newItemName.trim()
-                                    ) {
-                                      await handleCreateChapter(
-                                        newItemName.trim()
-                                      );
-                                      setNewItemName("");
-                                      setCreatingType(null);
-                                    }
-                                    if (e.key === "Escape")
-                                      setCreatingType(null);
-                                  }}
-                                  placeholder="Enter chapter title"
-                                  autoFocus
-                                />
-                              </div>
-                            ) : (
-                              <button
-                                className="ao-create-button"
-                                onClick={() => {
-                                  setCreatingType(
-                                    `chapter:${selectedSubjectId}`
-                                  );
-                                  setNewItemName("");
-                                }}
-                              >
-                                <FaPlus /> New Chapter
-                              </button>
-                            )}
-                          </div>
-                        </div>
+        <div className="ao-sidebar">
+          <div className="sidebar-content">
+            {yearsLoading ? (
+              <InlineLoader />
+            ) : (
+              years.map((year) => (
+                <div key={year._id} className="ao-section">
+                  <button
+                    className={`ao-button ${
+                      selectedYearId === year._id ? "active" : ""
+                    }`}
+                    onClick={() => handleYearClick(year._id)}
+                    onContextMenu={(e) => handleContextMenu(e, "year", year)}
+                  >
+                    <div className="star-icon-ao">
+                      {selectedYearId === year._id ? (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M6 9l6 6l6 -6" />
+                          </svg>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
+                          </svg>
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M9 6l6 6l-6 6" />
+                          </svg>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                          </svg>
+                        </>
                       )}
                     </div>
-                  ))
-                )}
+                    <div className="ao-name-file"> {year.title}</div>
+                    {year.important && <FaStar className="ao-important-star" />}
+                  </button>
 
+                  {selectedYearId === year._id && (
+                    <div className="ao-subsection">
+                      {subjectsLoading ? (
+                        <div style={{ padding: "10px", marginLeft: "20px" }}>
+                          <InlineLoader type="dots" text="" />
+                        </div>
+                      ) : (
+                        subjects.map((subject) => (
+                          <div key={subject._id} className="ao-subitem">
+                            <button
+                              className={`ao-button ao-subbutton ${
+                                selectedSubjectId === subject._id
+                                  ? "active"
+                                  : ""
+                              }`}
+                              onClick={() => handleSubjectClick(subject._id)}
+                              onContextMenu={(e) =>
+                                handleContextMenu(e, "subject", subject)
+                              }
+                            >
+                              {selectedSubjectId === subject._id ? (
+                                <>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
+                                  >
+                                    <path
+                                      stroke="none"
+                                      d="M0 0h24v24H0z"
+                                      fill="none"
+                                    />
+                                    <path d="M6 9l6 6l6 -6" />
+                                  </svg>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
+                                  >
+                                    <path
+                                      stroke="none"
+                                      d="M0 0h24v24H0z"
+                                      fill="none"
+                                    />
+                                    <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
+                                  </svg>
+                                </>
+                              ) : (
+                                <>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
+                                  >
+                                    <path
+                                      stroke="none"
+                                      d="M0 0h24v24H0z"
+                                      fill="none"
+                                    />
+                                    <path d="M9 6l6 6l-6 6" />
+                                  </svg>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
+                                  >
+                                    <path
+                                      stroke="none"
+                                      d="M0 0h24v24H0z"
+                                      fill="none"
+                                    />
+                                    <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                                  </svg>
+                                </>
+                              )}
 
-                <div className="ao-create-section">
-                  {creatingType === `subject:${selectedYearId}` ? (
-                    <div className="ao-create-input">
-                      <input
-                        value={newItemName}
-                        onChange={(e) => setNewItemName(e.target.value)}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter" && newItemName.trim()) {
-                            await handleCreateSubject(newItemName.trim());
-                            setNewItemName("");
-                            setCreatingType(null);
-                          }
-                          if (e.key === "Escape") setCreatingType(null);
-                        }}
-                        placeholder="Enter subject name"
-                        autoFocus
-                        />
+                              <div className="ao-name-file">
+                                {" "}
+                                {subject.name}
+                              </div>
+                              {subject.important && (
+                                <FaStar className="ao-important-star" />
+                              )}
+                            </button>
+
+                            {selectedSubjectId === subject._id && (
+                              <div className="ao-subsection">
+                                {chaptersLoading ? (
+                                  <div
+                                    style={{
+                                      padding: "8px",
+                                      marginLeft: "40px",
+                                    }}
+                                  >
+                                    <InlineLoader type="dots" text="" />
+                                  </div>
+                                ) : (
+                                  chapters.map((chapter) => (
+                                    <div
+                                      key={chapter._id}
+                                      className="ao-subitem"
+                                    >
+                                      <button
+                                        className={`ao-button ao-subbutton ${
+                                          selectedChapterId === chapter._id
+                                            ? "active"
+                                            : ""
+                                        }`}
+                                        onClick={() => {
+                                          handleChapterClick(chapter._id);
+                                        }}
+                                        onContextMenu={(e) =>
+                                          handleContextMenu(
+                                            e,
+                                            "chapter",
+                                            chapter
+                                          )
+                                        }
+                                      >
+                                        {selectedChapterId === chapter._id ? (
+                                          <>
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="24"
+                                              height="24"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"
+                                            >
+                                              <path
+                                                stroke="none"
+                                                d="M0 0h24v24H0z"
+                                                fill="none"
+                                              />
+                                              <path d="M6 9l6 6l6 -6" />
+                                            </svg>
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="24"
+                                              height="24"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              className="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"
+                                            >
+                                              <path
+                                                stroke="none"
+                                                d="M0 0h24v24H0z"
+                                                fill="none"
+                                              />
+                                              <path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" />
+                                            </svg>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="24"
+                                              height="24"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
+                                            >
+                                              <path
+                                                stroke="none"
+                                                d="M0 0h24v24H0z"
+                                                fill="none"
+                                              />
+                                              <path d="M9 6l6 6l-6 6" />
+                                            </svg>
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="24"
+                                              height="24"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              className="icon icon-tabler icons-tabler-outline icon-tabler-folder"
+                                            >
+                                              <path
+                                                stroke="none"
+                                                d="M0 0h24v24H0z"
+                                                fill="none"
+                                              />
+                                              <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                                            </svg>
+                                          </>
+                                        )}
+                                        {chapter.title}
+                                        {chapter.important && (
+                                          <FaStar className="ao-important-star" />
+                                        )}
+                                      </button>
+                                    </div>
+                                  ))
+                                )}
+
+                                <div className="ao-create-section">
+                                  {creatingType ===
+                                  `chapter:${selectedSubjectId}` ? (
+                                    <div className="ao-create-input">
+                                      <input
+                                        value={newItemName}
+                                        onChange={(e) =>
+                                          setNewItemName(e.target.value)
+                                        }
+                                        onKeyDown={async (e) => {
+                                          if (
+                                            e.key === "Enter" &&
+                                            newItemName.trim()
+                                          ) {
+                                            await handleCreateChapter(
+                                              newItemName.trim()
+                                            );
+                                            setNewItemName("");
+                                            setCreatingType(null);
+                                          }
+                                          if (e.key === "Escape")
+                                            setCreatingType(null);
+                                        }}
+                                        placeholder="Enter chapter title"
+                                        autoFocus
+                                      />
+                                    </div>
+                                  ) : (
+                                    <button
+                                      className="ao-create-button"
+                                      onClick={() => {
+                                        setCreatingType(
+                                          `chapter:${selectedSubjectId}`
+                                        );
+                                        setNewItemName("");
+                                      }}
+                                    >
+                                      <FaPlus /> New Chapter
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+
+                      <div className="ao-create-section">
+                        {creatingType === `subject:${selectedYearId}` ? (
+                          <div className="ao-create-input">
+                            <input
+                              value={newItemName}
+                              onChange={(e) => setNewItemName(e.target.value)}
+                              onKeyDown={async (e) => {
+                                if (e.key === "Enter" && newItemName.trim()) {
+                                  await handleCreateSubject(newItemName.trim());
+                                  setNewItemName("");
+                                  setCreatingType(null);
+                                }
+                                if (e.key === "Escape") setCreatingType(null);
+                              }}
+                              placeholder="Enter subject name"
+                              autoFocus
+                            />
+                          </div>
+                        ) : (
+                          <button
+                            className="ao-create-button ao-subbutton"
+                            onClick={() => {
+                              setCreatingType(`subject:${selectedYearId}`);
+                              setNewItemName("");
+                            }}
+                          >
+                            <FaPlus /> New Subject
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <button
-                    className="ao-create-button ao-subbutton"
-                    onClick={() => {
-                      setCreatingType(`subject:${selectedYearId}`);
-                        setNewItemName("");
-                      }}
-                      >
-                      <FaPlus /> New Subject
-                    </button>
                   )}
                 </div>
-              </div>
+              ))
             )}
-            </div>
-          ))
-        )}
-        
-        <div className="ao-create-section">
-        {creatingType === "year" ? (
-          <div className="ao-create-input">
-            <input
-              value={newItemName}
-              onChange={(e) => setNewItemName(e.target.value)}
-              onKeyDown={async (e) => {
-                if (e.key === "Enter" && newItemName.trim()) {
-                  await handleCreateYear(newItemName.trim());
-                  setNewItemName("");
-                  setCreatingType(null);
-                }
-                if (e.key === "Escape") {
-                  setCreatingType(null);
-                }
-              }}
-              placeholder="Enter year name"
-              autoFocus
-              />
-          </div>
-        ) : (
-          <button
-          className="ao-create-button"
-          onClick={() => {
-            setCreatingType("year");
-            setNewItemName("");
-          }}
-          >
-            <FaPlus /> Create New Year
-          </button>
-        )}
-      </div>
-    </div>
-    </div>
-    </div>
-    
-   
 
-    {/* Main Content */}
-    <div className="ao-main">
+            <div className="ao-create-section">
+              {creatingType === "year" ? (
+                <div className="ao-create-input">
+                  <input
+                    value={newItemName}
+                    onChange={(e) => setNewItemName(e.target.value)}
+                    onKeyDown={async (e) => {
+                      if (e.key === "Enter" && newItemName.trim()) {
+                        await handleCreateYear(newItemName.trim());
+                        setNewItemName("");
+                        setCreatingType(null);
+                      }
+                      if (e.key === "Escape") {
+                        setCreatingType(null);
+                      }
+                    }}
+                    placeholder="Enter year name"
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <button
+                  className="ao-create-button"
+                  onClick={() => {
+                    setCreatingType("year");
+                    setNewItemName("");
+                  }}
+                >
+                  <FaPlus /> Create New Year
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="ao-main">
         <div className="ao-main-header">
           <div className="breadcrumb-stepper">
             {getSteps().map((step, index, arr) => (
@@ -2039,7 +2059,7 @@ const AcademicOrganizer = () => {
                 className={`breadcrumb-step ${
                   step.completed ? "completed" : "current"
                 } ${index === arr.length - 1 ? "last" : ""}`}
-                >
+              >
                 <span className="ao-label">{step.label}</span>
               </div>
             ))}
@@ -2051,12 +2071,12 @@ const AcademicOrganizer = () => {
               onClick={() => {
                 setShowNewModal(!showNewModal);
               }}
-              >
+            >
               <FaPlus /> New
             </button>
             {showNewModal && (
               <AcademicUploader_Modal
-              onClose={() => setShowNewModal(false)}
+                onClose={() => setShowNewModal(false)}
                 onFilesUploaded={handleUploadFile}
                 onCreateNotebook={(newNotebook) => {
                   setMaterials((prev) => ({
@@ -2065,8 +2085,8 @@ const AcademicOrganizer = () => {
                   }));
                 }}
                 selectedChapterId={selectedChapterId}
-                />
-              )}
+              />
+            )}
             {uploading && (
               <div className="ao-upload-loader-overlay">
                 <SquaresLoader text="Uploading file..." />
@@ -2074,7 +2094,6 @@ const AcademicOrganizer = () => {
             )}
           </div>
         </div>
-  
 
         {activeTab === "recent" && (
           <div className="recent-files">
@@ -2082,9 +2101,9 @@ const AcademicOrganizer = () => {
             <div className="recent-grid">
               {recentFiles.map((file, index) => (
                 <div
-                key={index}
-                className="recent-card"
-                onClick={() => openInNotes(file)}
+                  key={index}
+                  className="recent-card"
+                  onClick={() => openInNotes(file)}
                 >
                   <div className="ao-file-icon">
                     {file.type === "notebook" && <FaStickyNote />}

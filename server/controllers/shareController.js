@@ -128,10 +128,8 @@ export const revokeShareLink = async (req, res) => {
 // Get all shared notebooks by user
 export const getUserSharedNotebooks = async (req, res) => {
   try {
-    // const userId = req.user._id;
-    const userId = req.params.userId;
-    // const userId = '689738740562829489a60a41';
-    // console.log(userId);
+    const userId = req.user.id;
+    console.log("shared id user id ",req.user  );
 
     const sharedNotebooks = await SharedNotebook.find({
       userId,
