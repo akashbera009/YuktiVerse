@@ -5,12 +5,12 @@
 
 /* CSS Variables matching the sliding tabs theme */
 :root {
-  --loader-bg: #1e293b;
-  --loader-border: #334155;
-  --loader-primary: #6366f1;
-  --loader-primary-light: #8b5cf6;
-  --loader-text: #94a3b8;
-  --loader-text-light: #cbd5e1;
+  --loader-bg: var(--card-bg);
+  --loader-border: var(--border-divider);
+  --loader-primary: var(--accent-primary);
+  --loader-primary-light: var(--secondary-accent);
+  --loader-text: var(--text-primary);
+  --loader-text-light: var(--text-secondary);
   --loader-surface: #334155;
   --loader-shadow-dark: rgba(0, 0, 0, 0.4);
   --loader-shadow-light: rgba(255, 255, 255, 0.03);
@@ -122,7 +122,7 @@
 }
 
 .loader-squares .square {
-  background: var(--loader-primary);
+  background: linear-gradient(135deg , var(--secondary-accent) , var(--loader-primary));
   border-radius: 4px;
   animation: squareMorph .9s ease-in-out infinite;
   /* Neumorphic square effect */

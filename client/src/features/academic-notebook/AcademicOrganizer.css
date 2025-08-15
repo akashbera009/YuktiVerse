@@ -926,18 +926,20 @@ font-family: 'Plus Jakarta Sans', sans-serif; */
 .ao-files-content-wrapper {
   position: relative;
   z-index: 1;
+  
 }
 
 .ao-fileloader-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--header-bg);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 20px;
   z-index: 10;
+  min-height: 50vh;
 }
 
 /* Modern Grid Layout */

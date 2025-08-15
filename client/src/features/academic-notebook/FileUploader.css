@@ -302,7 +302,7 @@
 
 .up-upload-btn {
   flex: 1;
-  background: var(--bg-submit-gradient);
+  background: var(--accent-primary);
   /* Use specific gradient */
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;

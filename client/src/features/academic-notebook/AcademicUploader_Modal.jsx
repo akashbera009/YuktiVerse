@@ -22,6 +22,7 @@ export default function AcademicUploader_Modal({
   onCreateNotebook,
   // oncreated,
   selectedChapterId,
+  passSetShowNewModal,
 }) {
   const [showNotebookForm, setShowNotebookForm] = useState(false);
   // const [showModal, setShowModal] = useState(true);
@@ -98,6 +99,8 @@ export default function AcademicUploader_Modal({
           (err.response?.data?.error || err.message)
       );
     } finally {
+      onClose()
+      passSetShowNewModal(false);
       setIsSaving(false);
     }
   };
@@ -111,129 +114,128 @@ export default function AcademicUploader_Modal({
   return (
     <>
       {/* {showModal && ( */}
+      <div
+        className={`acd-modal-backdrop ${isVisible ? "acd-visible" : ""} ${
+          isClosing ? "acd-closing" : ""
+        }`}
+        onClick={() => !showUploader && handleClose()}
+      >
         <div
-          className={`acd-modal-backdrop ${isVisible ? "acd-visible" : ""} ${
-            isClosing ? "acd-closing" : ""
-          }`}
-          onClick={() => !showUploader && handleClose()}
+          className={`acd-modal ${isVisible ? "acd-visible" : ""}`}
+          onClick={(e) => e.stopPropagation()}
         >
+          {!showUploader && (
+            <button className="acd-close-btn-mod" onClick={handleClose}>
+              <FaTimes />
+            </button>
+          )}
+
+          <div className="acd-modal-header"></div>
+
+          <div className="acd-modal-actions">
+            {/* <label className="action-card upload-card image"> */}
+            <button
+              className="acd-action-card acd-upload-card"
+              onClick={() => setShowUploader(true)}
+            >
+              <div className="acd-card-icon">
+                <FaUpload />
+              </div>
+              <div className="acd-card-content">
+                <h4>Advanced Uploader</h4>
+                <p>Use the drag & drop uploader</p>
+              </div>
+              <div className="acd-card-arrow">→</div>
+            </button>
+
+            <button
+              className="acd-action-card acd-notebook-card"
+              onClick={() => setShowNotebookForm(true)}
+            >
+              <div className="acd-card-icon">
+                <FaStickyNote />
+              </div>
+              <div className="acd-card-content">
+                <h4>New Notebook</h4>
+                <p>Create a blank notebook</p>
+              </div>
+              <div className="acd-card-arrow">→</div>
+            </button>
+          </div>
+        </div>
+
+        {/* Notebook Form Modal */}
+        {showNotebookForm && (
           <div
-            className={`acd-modal ${isVisible ? "acd-visible" : ""}`}
-            onClick={(e) => e.stopPropagation()}
+            className={`acd-modal-overlay acd-notebook-form-overlay ${
+              showNotebookForm ? "acd-visible" : ""
+            }`}
+            onClick={() => setShowNotebookForm(false)}
           >
-            {!showUploader && (
-              <button className="acd-close-btn-mod" onClick={handleClose}>
+            <div
+              className="acd-modal-content acd-notebook-form"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="acd-close-btn-mod"
+                onClick={() => setShowNotebookForm(false)}
+              >
                 <FaTimes />
               </button>
-            )}
 
-            <div className="acd-modal-header"></div>
-
-            <div className="acd-modal-actions">
-              {/* <label className="action-card upload-card image"> */}
-              <button
-                className="acd-action-card acd-upload-card"
-                onClick={() => setShowUploader(true)}
-              >
-                <div className="acd-card-icon">
-                  <FaUpload />
+              <div className="acd-form-content">
+                <div className="acd-input-group">
+                  <label>Notebook Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter notebook name..."
+                    value={notebookName}
+                    onChange={(e) => setNotebookName(e.target.value)}
+                    autoFocus
+                    className="acd-modern-input"
+                  />
                 </div>
-                <div className="acd-card-content">
-                  <h4>Advanced Uploader</h4>
-                  <p>Use the drag & drop uploader</p>
-                </div>
-                <div className="acd-card-arrow">→</div>
-              </button>
 
-              <button
-                className="acd-action-card acd-notebook-card"
-                onClick={() => setShowNotebookForm(true)}
-              >
-                <div className="acd-card-icon">
-                  <FaStickyNote />
-                </div>
-                <div className="acd-card-content">
-                  <h4>New Notebook</h4>
-                  <p>Create a blank notebook</p>
-                </div>
-                <div className="acd-card-arrow">→</div>
-              </button>
-            </div>
-          </div>
-
-          {/* Notebook Form Modal */}
-          {showNotebookForm && (
-            <div
-              className={`acd-modal-overlay acd-notebook-form-overlay ${
-                showNotebookForm ? "acd-visible" : ""
-              }`}
-              onClick={() => setShowNotebookForm(false)}
-            >
-              <div
-                className="acd-modal-content acd-notebook-form"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  className="acd-close-btn-mod"
-                  onClick={() => setShowNotebookForm(false)}
-                >
-                  <FaTimes />
-                </button>
-
-                <div className="acd-form-content">
-                  <div className="acd-input-group">
-                    <label>Notebook Name</label>
-                    <input
-                      type="text"
-                      placeholder="Enter notebook name..."
-                      value={notebookName}
-                      onChange={(e) => setNotebookName(e.target.value)}
-                      autoFocus
-                      className="acd-modern-input"
-                    />
-                  </div>
-
-                  <div className="acd-form-actions">
-                    <button
-                      className="acd-btn-secondary"
-                      onClick={() => setShowNotebookForm(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="acd-btn-primary"
-                      onClick={createNotebook}
-                      disabled={!notebookName.trim() || isSaving}
-                    >
-   
-                      {isSaving ? (
-                        <>
-                          <div className="acd-spinner"></div>
-                          Creating...
-                        </>
-                      ) : (
-                        <>
-                          <FaPlus />
-                          Create Notebook
-                        </>
-                      )}
-                    </button>
-                  </div>
+                <div className="acd-form-actions">
+                  <button
+                    className="acd-btn-secondary"
+                    onClick={() => setShowNotebookForm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="acd-btn-primary"
+                    onClick={createNotebook}
+                    disabled={!notebookName.trim() || isSaving}
+                  >
+                    {isSaving ? (
+                      <>
+                        <div className="acd-spinner"></div>
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <FaPlus />
+                        Create Notebook
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {showUploader && (
-            <FileUploader
-              onFilesUploaded={handleBatchUpload}
-              onClose={() => {
-                setShowUploader(false); // Hide the uploader
-                handleClose(); // Close the main modal
-              }}
-            />
-          )}
-        </div>
+        {showUploader && (
+          <FileUploader
+            onFilesUploaded={handleBatchUpload}
+            onClose={() => {
+              setShowUploader(false); // Hide the uploader
+              handleClose(); // Close the main modal
+            }}
+          />
+        )}
+      </div>
     </>
   );
 }

@@ -1940,6 +1940,7 @@ useEffect(() => {
                   }));
                 }}
                 selectedChapterId={selectedChapterId}
+                passSetShowNewModal = {setShowNewModal}
               />
             )}
             {uploading && (
