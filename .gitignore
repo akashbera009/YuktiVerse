@@ -1,8 +1,8 @@
 .env
 
-server/routes/codeFiles.js
-server/models/CodeFile.js
-server/controllers/codeFileController.js
+# server/routes/codeFiles.js
+# server/models/CodeFile.js
+# server/controllers/codeFileController.js
 
-client/src/features/codefiles/
-z
+# client/src/features/codefiles/
+# z

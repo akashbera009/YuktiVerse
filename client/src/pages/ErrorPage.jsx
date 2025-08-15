@@ -193,8 +193,9 @@ const ErrorPage = () => {
           }
 
           .error-message {
-            font-size: clamp(1.2rem, 4vw, 1.8rem);
-            margin-bottom: 2rem;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            margin-bottom: 1rem;
+            margin-top: -1rem;
             opacity: ${textVisible ? 0.9 : 0};
             transform: translateY(${textVisible ? 0 : 30}px);
             transition: all 0.8s ease 0.5s;
@@ -205,7 +206,7 @@ const ErrorPage = () => {
           /* Yukti Verse Card */
           .yukti-verse {
             max-width: 700px;
-            margin: 3rem auto;
+            margin: 0rem auto;
             padding: 2.5rem;
             background: rgba(26, 22, 37, 0.8);
             border: 1px solid rgba(124, 58, 237, 0.2);

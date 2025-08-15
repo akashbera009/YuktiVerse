@@ -350,7 +350,7 @@ const ResumeFeedback = ({ feedback, resumeFile, onDatabaseSaveSuccess }) => {
       {/* Save Button */}
       <div className="resume-save-button-container">
         <button
-          className={`resume-save-button ${isSaving ? "saving" : ""}`}
+          className={`resume-save-button-res ${isSaving ? "saving" : ""}`}
           onClick={handleSaveToDatabase}
           disabled={isSaving}
         >

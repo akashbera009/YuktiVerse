@@ -114,10 +114,12 @@ const Sidebar = () => {
     <div className="sidebar-container">
       <ul className="sidebar-menu">
         <li className="sidebar-logo">
-          <img
-            src="https://i.ibb.co/5gzS19h7/Chat-GPT-Image-Aug-13-2025-12-04-20-AM-removebg-preview.png"
-            alt=""
-          />
+          <Link to="/" title>
+            <img
+              src="https://i.ibb.co/5gzS19h7/Chat-GPT-Image-Aug-13-2025-12-04-20-AM-removebg-preview.png"
+              alt=""
+            />
+          </Link>
         </li>
 
         <li

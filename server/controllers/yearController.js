@@ -27,7 +27,6 @@ export const createYear = async (req, res) => {
     await year.validate();  // explicit check
     const saved = await year.save();
 
-    console.log('✅ Year saved:', saved);
     return res.status(201).json(saved);
 
   } catch (err) {
@@ -37,16 +36,12 @@ export const createYear = async (req, res) => {
 };
 
 export const listYears = async (req, res) => {
-  console.log(req.user);
-  
   try {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ error: 'Unauthorized: No user info found' });
     }
-        // console.log(req.user ," ", req.user._id);
 
     const years = await Year.find({ user: req.user.id }).lean();
-console.log(years);
 
     if (!years || years.length === 0) {
       return res.status(404).json({ message: 'No years found for this user.' });

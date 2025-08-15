@@ -382,12 +382,12 @@
   margin-top: 30px;
 }
 
-.resume-save-button {
+.resume-save-button-res {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   padding: 16px 32px;
-  background: var(--gradient-accent);
+  background: var(--accent-primary);
   color: var(--color-background);
   border: none;
   border-radius: 12px;
@@ -400,7 +400,7 @@
   overflow: hidden;
 }
 
-.resume-save-button::before {
+.resume-save-button-res::before {
   content: '';
   position: absolute;
   top: 0;
@@ -411,33 +411,33 @@
   transition: left 0.5s ease;
 }
 
-.resume-save-button:hover::before {
+.resume-save-button-res:hover::before {
   left: 100%;
 }
 
-.resume-save-button:hover:not(:disabled) {
+.resume-save-button-res:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(104, 211, 145, 0.4);
 }
 
-.resume-save-button:disabled {
+.resume-save-button-res:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
 }
 
-.resume-save-button.saving {
+.resume-save-button-res.saving {
   background: linear-gradient(135deg, #4a5568, #2d3748);
   color: var(--color-text-secondary);
 }
 
-.resume-save-button svg {
+.resume-save-button-res svg {
   width: 20px;
   height: 20px;
   transition: transform 0.3s ease;
 }
 
-.resume-save-button:hover:not(:disabled) svg {
+.resume-save-button-res:hover:not(:disabled) svg {
   transform: scale(1.1);
 }
 
