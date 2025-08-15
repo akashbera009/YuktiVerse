@@ -48,6 +48,13 @@ const LandingPage = () => {
 
   const navigate = useNavigate();
 
+    const handleGetStarted = () => {
+  if (localStorage.getItem("token")) {
+    navigate("/feature/academic-org");
+  } else {
+    navigate("/login", { state: { from: "/feature/academic-org" } });
+  }}
+
   return (
     <>
       <div className="particles-bg">
@@ -125,7 +132,7 @@ const LandingPage = () => {
                   variants={itemVariants}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate("/login")}
+                  onClick={handleGetStarted}
                 >
                   Get Started
                 </motion.button>

@@ -13,11 +13,24 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [mounted, setMounted] = useState(false);
+  const [backgroundAnimationKey, setBackgroundAnimationKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Debounced background animation trigger - same as register component
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBackgroundAnimationKey(prev => prev + 1);
+    }, 500); // 500ms delay for smooth animation
+
+    return () => clearTimeout(timer);
+  }, [email, password]);
+
+  
+  const redirectPath = location.state?.from || "/feature/academic-org";
 
   const validateForm = () => {
     const newErrors = {};
@@ -37,8 +50,12 @@ function Login() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+      setIsLoading(true); // ✅ Set loading to true at the start
+  setErrors({}); 
     try {
       const res = await axios.post(`${backendURL}/api/auth/login`, {
         email,
@@ -46,20 +63,27 @@ function Login() {
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.id);
-      console.log(res);
+      // console.log(res);
 
-      console.log("token is", localStorage.getItem("token"));
+      // console.log("token is", localStorage.getItem("token"));
 
       // alert("Logged in successfully");
-      const navigateLink = `/feature/academic-org`;
-      navigate(navigateLink);
+      // const navigateLink = `/feature/academic-org`;
+      // navigate(navigateLink);
+
+            setTimeout(() => {
+        navigate(redirectPath, { replace: true }); // redirect to intended page
+      }, 800);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || "Login failed");
-    }
+    }finally {
+    setIsLoading(false); // ✅ Always set loading to false when done
+  }
   };
 
   if (!mounted) return null;
+
   const containerStyle = {
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%)',
@@ -69,7 +93,8 @@ function Login() {
     padding: '16px',
     position: 'relative',
     overflow: 'hidden',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
   };
 
   const backgroundStyle = {
@@ -84,18 +109,21 @@ function Login() {
     borderRadius: '50%',
     mixBlendMode: 'screen',
     filter: 'blur(40px)',
-    opacity: '0.3',
-    animation: `float ${10 + Math.random() * 20}s ease-in-out infinite`,
-    animationDelay: `${i * 0.5}s`,
-    background: i % 3 === 0 
+    opacity: '0.4',
+    animation: `float ${12 + Math.random() * 15}s ease-in-out infinite`,
+    animationDelay: `${i * 0.7 + backgroundAnimationKey * 0.1}s`,
+    background: i % 4 === 0 
       ? 'linear-gradient(45deg, #8b5cf6, #06b6d4)' 
-      : i % 3 === 1
+      : i % 4 === 1
       ? 'linear-gradient(45deg, #ec4899, #f59e0b)'
-      : 'linear-gradient(45deg, #10b981, #3b82f6)',
-    width: `${Math.random() * 200 + 100}px`,
-    height: `${Math.random() * 200 + 100}px`,
+      : i % 4 === 2
+      ? 'linear-gradient(45deg, #10b981, #3b82f6)'
+      : 'linear-gradient(45deg, #a855f7, #ec4899)',
+    width: `${Math.random() * 250 + 120}px`,
+    height: `${Math.random() * 250 + 120}px`,
     left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`
+    top: `${Math.random() * 100}%`,
+    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
   });
 
   const cardStyle = {
@@ -103,44 +131,58 @@ function Login() {
     zIndex: '10',
     width: '100%',
     maxWidth: '448px',
-    backdropFilter: 'blur(20px)',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-    padding: '32px',
+    backdropFilter: 'blur(25px)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: '28px',
+    border: '1px solid rgba(255, 255, 255, 0.18)',
+    boxShadow: '0 32px 64px -12px rgba(0, 0, 0, 0.4)',
+    padding: '40px',
     transform: 'scale(1)',
-    transition: 'all 0.5s ease'
+    transition: 'all 0.6s ease'
   };
 
   const logoContainerStyle = {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '64px',
-    height: '64px',
-    background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-    borderRadius: '16px',
-    marginBottom: '16px',
+    width: '72px',
+    height: '72px',
+    background: 'linear-gradient(135deg, #8b5cf6, #ec4899, #3b82f6)',
+    borderRadius: '20px',
+    marginBottom: '20px',
     transform: 'rotate(0deg)',
-    transition: 'transform 0.3s ease'
+    transition: 'transform 0.4s ease',
+    position: 'relative',
+    overflow: 'hidden'
+  };
+
+  const logoShimmerStyle = {
+    position: 'absolute',
+    top: '-50%',
+    left: '-50%',
+    width: '200%',
+    height: '200%',
+    background: 'linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent)',
+    animation: 'shimmer 3s ease-in-out infinite'
   };
 
   const titleStyle = {
-    fontSize: '30px',
-    fontWeight: '700',
+    fontSize: '36px',
+    fontWeight: '800',
     background: 'linear-gradient(135deg, #ffffff, #e9d5ff, #fce7f3)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     marginBottom: '8px',
-    textAlign: 'center'
+    textAlign: 'center',
+    letterSpacing: '-0.02em'
   };
 
   const subtitleStyle = {
     color: '#d1d5db',
-    fontSize: '14px',
+    fontSize: '16px',
     textAlign: 'center',
-    marginBottom: '32px'
+    marginBottom: '40px',
+    opacity: '0.8'
   };
 
   const inputContainerStyle = {
@@ -150,137 +192,111 @@ function Login() {
 
   const iconStyle = {
     position: 'absolute',
-    left: '16px',
+    left: '18px',
     top: '50%',
     transform: 'translateY(-50%)',
     color: '#9ca3af',
-    transition: 'color 0.3s ease',
-    pointerEvents: 'none'
+    transition: 'all 0.3s ease',
+    pointerEvents: 'none',
+    zIndex: '2'
   };
 
   const inputStyle = {
     width: '100%',
-    paddingLeft: '48px',
-    paddingRight: '16px',
-    paddingTop: '16px',
-    paddingBottom: '16px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '12px',
+    paddingLeft: '54px',
+    paddingRight: '10px',
+    paddingTop: '10px',
+    paddingBottom: '10px',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    border: '1.5px solid rgba(255, 255, 255, 0.15)',
+    borderRadius: '14px',
     color: '#ffffff',
     fontSize: '16px',
     outline: 'none',
-    backdropFilter: 'blur(8px)',
-    transition: 'all 0.3s ease'
+    backdropFilter: 'blur(10px)',
+    transition: 'all 0.3s ease',
+    fontWeight: '400'
   };
 
   const passwordInputStyle = {
     ...inputStyle,
-    paddingRight: '48px'
+    paddingRight: '54px'
   };
 
   const toggleButtonStyle = {
     position: 'absolute',
-    right: '16px',
+    right: '18px',
     top: '50%',
     transform: 'translateY(-50%)',
     background: 'none',
     border: 'none',
     color: '#9ca3af',
     cursor: 'pointer',
-    transition: 'color 0.3s ease'
-  };
-
-  const errorStyle = {
-    color: '#f87171',
-    fontSize: '14px',
-    marginTop: '8px'
-  };
-
-  const buttonStyle = {
-    width: '100%',
-    padding: '16px 24px',
-    background: 'linear-gradient(135deg, #8b5cf6, #ec4899, #3b82f6)',
-    color: '#ffffff',
-    fontWeight: '600',
-    borderRadius: '12px',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '12px',
-    boxShadow: '0 10px 25px rgba(139, 92, 246, 0.25)',
-    transform: 'scale(1)',
-    transition: 'all 0.2s ease',
-    marginTop: '24px'
-  };
-
-  const disabledButtonStyle = {
-    ...buttonStyle,
-    opacity: '0.7',
-    cursor: 'not-allowed'
-  };
-
-  const spinnerStyle = {
-    width: '20px',
-    height: '20px',
-    border: '2px solid rgba(255, 255, 255, 0.3)',
-    borderTop: '2px solid #ffffff',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite'
-  };
-
-  const footerStyle = {
-    marginTop: '32px',
-    textAlign: 'center'
-  };
-
-  const linkStyle = {
-    color: '#a78bfa',
-    textDecoration: 'none',
-    fontWeight: '500',
-    transition: 'color 0.3s ease'
-  };
-
-  const dividerStyle = {
-    margin: '24px 0',
+    transition: 'all 0.3s ease',
+    zIndex: '2',
+    padding: '4px',
+    borderRadius: '6px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
   };
 
-  const dividerLineStyle = {
-    borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-    flexGrow: '1'
+  const errorStyle = {
+    color: '#f87171',
+    fontSize: '13px',
+    marginTop: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
   };
 
-  const dividerTextStyle = {
-    padding: '0 16px',
-    color: '#9ca3af',
-    fontSize: '12px'
-  };
-
-  const socialContainerStyle = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '16px',
-    marginTop: '24px'
-  };
-
-  const socialButtonStyle = {
+  const buttonStyle = {
+    width: '100%',
+    padding: '18px 28px',
+    background: 'linear-gradient(135deg, #8b5cf6, #ec4899, #3b82f6)',
+    color: '#ffffff',
+    fontWeight: '700',
+    borderRadius: '14px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '17px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '12px 16px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '12px',
-    color: '#ffffff',
-    cursor: 'pointer',
+    gap: '12px',
+    boxShadow: '0 12px 28px rgba(139, 92, 246, 0.35)',
+    transform: 'scale(1)',
     transition: 'all 0.3s ease',
-    backdropFilter: 'blur(8px)'
+    marginTop: '32px',
+    letterSpacing: '0.02em'
+  };
+
+  const disabledButtonStyle = {
+    ...buttonStyle,
+    opacity: '0.6',
+    cursor: 'not-allowed',
+    transform: 'scale(1)'
+  };
+
+  const spinnerStyle = {
+    width: '22px',
+    height: '22px',
+    border: '2.5px solid rgba(255, 255, 255, 0.25)',
+    borderTop: '2.5px solid #ffffff',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite'
+  };
+
+  const footerStyle = {
+    marginTop: '36px',
+    textAlign: 'center'
+  };
+
+  const linkStyle = {
+    color: '#c4b5fd',
+    textDecoration: 'none',
+    fontWeight: '600',
+    transition: 'all 0.3s ease'
   };
 
   return (
@@ -289,58 +305,73 @@ function Login() {
       <style>
         {`
           @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(120deg); }
-            66% { transform: translateY(-60px) rotate(240deg); }
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+            33% { transform: translateY(-40px) rotate(120deg) scale(1.1); }
+            66% { transform: translateY(-70px) rotate(240deg) scale(0.9); }
           }
           @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
           }
+          @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+          }
           .login-card:hover {
             transform: scale(1.02);
+            box-shadow: 0 40px 80px -12px rgba(0, 0, 0, 0.5);
           }
           .logo-container:hover {
-            transform: rotate(12deg);
+            transform: rotate(15deg) scale(1.1);
           }
           .login-input:focus {
             background-color: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 0 2px #8b5cf6;
             border-color: transparent;
+            transform: translateY(-2px);
           }
           .login-input:focus + .input-icon {
-            color: #a78bfa;
+            color: #c4b5fd;
+            transform: translateY(-50%) scale(1.1);
+          }
+          .password-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #c4b5fd;
           }
           .login-button:hover:not(:disabled) {
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-2px);
             background: linear-gradient(135deg, #7c3aed, #db2777, #2563eb);
+            box-shadow: 0 16px 32px rgba(139, 92, 246, 0.4);
           }
           .login-button:active:not(:disabled) {
-            transform: scale(0.95);
-          }
-          .social-button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(0.98) translateY(0px);
           }
           .login-link:hover {
-            color: #c4b5fd;
+            color: #e9d5ff;
             text-decoration: underline;
+            text-decoration-color: #c4b5fd;
+          }
+          .login-input:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
           }
         `}
       </style>
 
       {/* Animated background elements */}
-      <div style={backgroundStyle}>
+      <div style={backgroundStyle} key={backgroundAnimationKey}>
         {/* Floating orbs */}
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={orbStyle(i)} />
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={`${backgroundAnimationKey}-${i}`} style={orbStyle(i)} />
         ))}
 
         {/* Grid pattern */}
         <div style={{
           position: 'absolute',
           inset: '0',
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          opacity: '0.2'
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b5cf6' fill-opacity='0.03'%3E%3Cpath d='M50 50c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zM10 10c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm60 60c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: '0.15',
+          transition: 'opacity 0.8s ease'
         }} />
       </div>
 
@@ -348,12 +379,13 @@ function Login() {
       <div style={cardStyle} className="login-card">
         
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={logoContainerStyle} className="logo-container">
-            <Sparkles size={32} color="#ffffff" />
+            <div style={logoShimmerStyle}></div>
+            <Sparkles size={36} color="#ffffff" />
           </div>
           <h1 style={titleStyle}>Welcome Back</h1>
-          <p style={subtitleStyle}>Sign in to continue your journey</p>
+          <p style={subtitleStyle}>Sign in to continue your journey with YuktiVerse</p>
         </div>
 
         {/* Form */}
@@ -369,11 +401,13 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               style={inputStyle}
               className="login-input"
-              placeholder="Enter your email"
+              placeholder="Enter your email address"
               required
             />
             {errors.email && (
-              <p style={errorStyle}>{errors.email}</p>
+              <p style={errorStyle}>
+                ⚠️ {errors.email}
+              </p>
             )}
           </div>
 
@@ -395,24 +429,29 @@ function Login() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               style={toggleButtonStyle}
+              className="password-toggle"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
             {errors.password && (
-              <p style={errorStyle}>{errors.password}</p>
+              <p style={errorStyle}>
+                ⚠️ {errors.password}
+              </p>
             )}
           </div>
 
           {/* Submit error */}
           {errors.submit && (
             <div style={{
-              padding: '12px',
-              borderRadius: '8px',
+              padding: '14px',
+              borderRadius: '10px',
               backgroundColor: 'rgba(239, 68, 68, 0.1)',
               border: '1px solid rgba(239, 68, 68, 0.2)',
-              marginBottom: '16px'
+              marginBottom: '20px'
             }}>
-              <p style={{ ...errorStyle, margin: '0', textAlign: 'center' }}>{errors.submit}</p>
+              <p style={{ ...errorStyle, margin: '0', textAlign: 'center', fontSize: '14px' }}>
+                ❌ {errors.submit}
+              </p>
             </div>
           )}
 
@@ -440,40 +479,16 @@ function Login() {
 
         {/* Footer */}
         <div style={footerStyle}>
-          <p style={{ color: '#d1d5db', fontSize: '14px', margin: '0' }}>
+          <p style={{ color: '#d1d5db', fontSize: '15px', margin: '0' }}>
             Don't have an account?{" "}
             <a href="/register" style={linkStyle} className="login-link">
               Create one here
             </a>
           </p>
         </div>
-
-        {/* Social divider */}
-        {/* <div style={dividerStyle}>
-          <div style={dividerLineStyle}></div>
-          <span style={dividerTextStyle}>OR CONTINUE WITH</span>
-          <div style={dividerLineStyle}></div>
-        </div> */}
-
-        {/* Social buttons */}
-        {/* <div style={socialContainerStyle}>
-          <button style={socialButtonStyle} className="social-button">
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-          </button>
-          <button style={socialButtonStyle} className="social-button">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-            </svg>
-          </button>
-        </div> */}
       </div>
     </div>
   );
 };
 
-export default  Login;
+export default Login;
