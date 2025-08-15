@@ -28,8 +28,8 @@ const Popover = ({
         textBoxId,
         notebookId,
         forceRefresh,
-      });
-
+      }); 
+      
       const response = await axios.post(
         `${backendURL}/api/ai-help/short-explain`,
         {

@@ -141,6 +141,9 @@
   max-width: 90vw;
   backdrop-filter: blur(10px);
   background: var(--glass-bg);
+  
+  max-width: 400px;
+  min-width: 300px;
   border-radius: 20px;
   box-shadow: var(--shadow-heavy);
   border: 1px solid var(--dark-border);
@@ -200,6 +203,7 @@
 .ai-popover-content {
   padding: 20px;
   color: var(--dark-text);
+  background-color: var(--card-bg);
   line-height: 1.6;
 }
 
@@ -256,7 +260,7 @@
 }
 
 .ai-action-btn.primary {
-  background: var(--primary);
+  background: linear-gradient(135deg , var(--accent-primary), var(--secondary-accent));
   color: white;
 }
 

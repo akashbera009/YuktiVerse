@@ -1,5 +1,5 @@
 :root {
-  --primary: #6366f1;
+  /* --primary: #6366f1;
   --primary-light: #818cf8;
   --primary-hover: #3730a3;
   --secondary: #10b981;
@@ -20,7 +20,7 @@
   --text-primary: var(--dark-text);
   --text-secondary: #94a3b8;
   --background-color: var(--light-bg);
-  --card-bg: var(--light-card);
+  --card-bg: var(--light-card); */
 
   --border-radius: 12px;
   --border-radius-sm: 8px;
@@ -81,7 +81,7 @@
 .shared-notebook-container {
   width: 100%;
   min-height: 100vh;
-  background: var(--background-color);
+  background: var(--color-surface);
   background-image: 
     radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
@@ -97,13 +97,13 @@
   right: 0;
   bottom: 0;
   z-index: 9999;
-  background: var(--dark-bg);
+  background: var(--color-surface-light);
 }
 
 /* Header */
 .shared-notebook-header {
   width: 100%;
-  background: var(--glass-bg);
+  background: var(--header-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
@@ -128,7 +128,7 @@
   position: relative;
   width: 60px;
   height: 60px;
-  background: var(--gradient-primary);
+  background: var(--accent-primary);
   border-radius: var(--border-radius-lg);
   display: flex;
   align-items: center;
@@ -168,13 +168,16 @@
   margin: 0 0 var(--spacing-xs) 0;
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-primary);
-  background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
-  -webkit-background-clip: text;
+  /* color: var(--text-primary); */
+  /* background: linear-gradient(135deg, var(--text-primary), var(--primary-light)); */
+  /* -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background-clip: text; */
 }
-
+.shared-title h1{
+  color: var(--text-primary);
+  /* color: wheat; */
+}
 .shared-meta {
   display: flex;
   flex-wrap: wrap;
@@ -216,7 +219,7 @@
 }
 
 .action-btn {
-  background: var(--card-bg);
+  background: var(--accent-primary);
   border: 1px solid var(--light-border);
   color: var(--text-primary);
   padding: var(--spacing-sm) var(--spacing-md);

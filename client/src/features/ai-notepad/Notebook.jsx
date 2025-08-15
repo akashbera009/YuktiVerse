@@ -194,7 +194,7 @@ const token = localStorage.getItem('token');
           <div className="handle-dots">•••</div>
           <div className="text-box-buttons">
             <button
-              className="ai-button"
+              className="ai-button-1"
               onClick={(e) => handleAIButton(box.id, e)}
               title="AI Assistant"
               ref={(el) => (aiButtonRefs.current[box.id] = el)}

@@ -126,7 +126,7 @@ function Login() {
     transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
   });
 
-  const cardStyle = {
+  const cardStyle2 = {
     position: 'relative',
     zIndex: '10',
     width: '100%',
@@ -317,7 +317,7 @@ function Login() {
             0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
             100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
           }
-          .login-card:hover {
+          .login-card-2:hover {
             transform: scale(1.02);
             box-shadow: 0 40px 80px -12px rgba(0, 0, 0, 0.5);
           }
@@ -376,7 +376,7 @@ function Login() {
       </div>
 
       {/* Main login card */}
-      <div style={cardStyle} className="login-card">
+      <div style={cardStyle2} className="login-card2">
         
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>

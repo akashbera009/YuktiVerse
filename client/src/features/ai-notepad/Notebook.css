@@ -123,7 +123,7 @@
 .text-box::placeholder {
   color: rgba(30, 27, 75, 0.4); /* dark-text faded */
 }
-.ai-button, .delete-button-2 {
+.ai-button-1, .delete-button-2 {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -140,8 +140,11 @@
 .delete-button-2{
   background: var(--dark-card);
 }
-.ai-button:hover {
-  /* background: linear-gradient(135deg, #6e8efb, #a777e3); */
+.ai-button-1 {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+}
+.ai-button-1:hover {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
   transform: scale(1.1);
 }
 
