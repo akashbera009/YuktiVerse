@@ -16,8 +16,8 @@ const ResumeSidebar = ({ onSectionChange, activeSection, isCollapsed, toggleSide
       label: "Previous Uploads",
       icon: <FiArchive />
     },
-    { id: "roadmap", label: "Skill Roadmap", icon: <FiBarChart2 /> },
-    { id: "templates", label: "Resume Templates", icon: <FiBookOpen /> },
+    // { id: "roadmap", label: "Skill Roadmap", icon: <FiBarChart2 /> },
+    // { id: "templates", label: "Resume Templates", icon: <FiBookOpen /> },//
   ];
 
   return (

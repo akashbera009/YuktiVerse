@@ -5,7 +5,7 @@ import {
   FaMoon,
   FaEdit,
   FaTrash,
-  FaStar,
+  FaStar, FaCode,
   FaSignOutAlt,
 } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
@@ -178,6 +178,17 @@ const Sidebar = () => {
           <Link to="/feature/pdf-summarizer" title="PDF Summarizer">
             <FaBook className="menu-icon" />
             <span>PDF</span>
+          </Link>
+        </li>
+        <li
+          className={`sidebar-menu-item ${
+            location.pathname === "/feature/code-editor" ? "active" : ""
+          }`}
+        >
+          <Link to="/feature/code-editor" title="code-editor">
+            <FaCode className="menu-icon" />
+              
+            <span>Code</span>
           </Link>
         </li>
       </ul>

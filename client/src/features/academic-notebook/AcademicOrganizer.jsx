@@ -326,7 +326,7 @@ useEffect(() => {
           },
         }
       );
-      // console.log(response);
+      console.log(response);
 
       setSharedNotebooks(response.data);
     } catch (err) {

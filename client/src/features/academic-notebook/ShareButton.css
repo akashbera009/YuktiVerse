@@ -76,9 +76,9 @@
   border-radius: 12px;
 }
 .share-modal {
-  background-color: var(--dark-card);
+  background-color: var(--card-bg);
   border-radius: 12px;
-  box-shadow: var(--shadow-medium);
+  box-shadow: var(--shadow-primary);
   width: 90%;
   max-width: 480px;
   overflow: hidden;
@@ -103,14 +103,15 @@
   align-items: center;
   padding: 1.5rem;
   border-bottom: 1px solid var(--dark-border);
-  background: var(--primary-gradient);
-  color: var(--light-text);
+  /* background: var(--primary-gradient); */
+  color: var(--secondary-accent);
 }
 
 .share-modal-header h3 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
+    color: var(--secondary-accent);
 }
 
 .close-modal {
@@ -119,7 +120,7 @@ font-size: 2rem;
   border: none;
   font-size: 2rem;
   /* padding: 10px; */
-  /* color: var(--text-secondary); */
+  color: var(--danger);
   cursor: pointer;
   border-radius: 4px;
   transition: var(--transition-fast);
@@ -127,7 +128,7 @@ font-size: 2rem;
 
 .close-modal:hover {
   /* background-color: var(--light-border); */
-  color: var(--dark-text);
+  color: var(--danger);
 }
 
 .share-modal-content {
@@ -157,22 +158,22 @@ font-size: 2rem;
 .share-link-input {
   flex: 1;
   padding: 0.75rem;
-  border: 1px solid var(--dark-border);
+  border: 1px solid var(--border-divider);
   border-radius: 8px;
   font-size: 0.875rem;
-  color: var(--secondary);
+  color: var(--color-accent-info);
   background-color: var(--dark-card);
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
 
 .share-link-input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(255, 161, 22, 0.2); /* using --primary */
+  /* border-color: var(--success); */
+  box-shadow: 0 0 0 1px var(--loader-bg) ; /* using --primary */
 }
 
 .copy-button {
-  background-color: var(--primary);
+  background-color: var(--accent-primary);
   color: var(--text-color);
   border: none;
   padding: 0.75rem;

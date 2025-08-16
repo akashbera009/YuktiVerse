@@ -414,9 +414,9 @@ const token = localStorage.getItem('token');
               )}
 
               <div className="save-controls" ref={dropdownRef}>
-                <button className="menu-button">
+                {/* <button className="menu-button">
                   <FaExpand />
-                </button>
+                </button> */}
 
                 <button
                   className="note-save-button"

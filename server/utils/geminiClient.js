@@ -35,6 +35,8 @@ export const getGeminiResponse = async (prompt, task = '') => {
     );
 
     const generatedText = response.data.candidates[0]?.content?.parts[0]?.text;
+    // console.log(generatedText);
+    
     return generatedText || 'No response from Gemini.';
   } catch (err) {
     console.error('Gemini API Error:', err.response?.data || err.message);

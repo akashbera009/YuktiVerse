@@ -21,6 +21,8 @@ import Register from "./Authentication/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import ErrorPage from "./pages/ErrorPage";
+import CodeFilesDashboard from "./features/codefiles/CodeFilesDashboard";
+import CodingContest from "./features/codefiles/CodingContest";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -61,6 +63,8 @@ function App() {
           }
         >
           <Route path="academic-org" element={<AcademicOrganizer />} />
+          <Route path="code-editor" element={< CodeFilesDashboard />} />
+          <Route path="code-contest" element={< CodingContest/>} />
           <Route path="resume-analyzer" element={<ResumeAnalyzer />} />
           <Route path="pdf-summarizer" element={<Pdf_main />} />
         </Route>

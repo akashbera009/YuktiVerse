@@ -5,6 +5,8 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 import "./ShareButton.css";
 const token = localStorage.getItem("token");
 
+const frontenedURL = import.meta.env.VITE_FRONTENED_URL;
+
 const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLinkGenerated  }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
@@ -30,7 +32,7 @@ const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLi
       console.log(response.data.shareId);
          onShareLinkGenerated();
 
-      setShareUrl(`${__BASE_URL__}share/notebook/${response.data.shareId}`);
+        setShareUrl(`${frontenedURL}/share/notebook/${response.data.shareId}`);
     } catch (error) {
       console.error("Error generating share link:", error);
       // Handle error - show toast or message
@@ -46,15 +48,17 @@ const ShareButton = ({ notebookId, className = "", type = "notebook" , onShareLi
     }
   };
 
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error("Failed to copy:", error);
-    }
-  };
+const handleCopyLink = async () => {
+  const urlToCopy = shareUrl ; 
+  try {
+    await navigator.clipboard.writeText(urlToCopy);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } catch (error) {
+    console.error("Failed to copy:", error);
+  }
+};
+
 
   const handleClose = () => {
     setIsOpen(false);

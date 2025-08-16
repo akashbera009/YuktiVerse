@@ -19,10 +19,13 @@ import shareRoutes from './routes/shareroute.js';
 
 
 
+import codeFiles from './routes/codefile/codeFiles.js';
+// import codeFileShare from './routes/codefile/codeFileShare.js';
+
+
 import pdfRoutes from './routes/pdfRoutes.js';
 import resumeRoutes from './routes/resumeRoutes.js';
 // import resumeSummerizer from './routes/resumeSummerizer.js';
-
 
 
 
@@ -67,6 +70,8 @@ app.use('/years', yearRoutes);  // post: api/years
 // share routes ()
 app.use('/api/share', shareRoutes);
 
+// code files 
+app.use('/api/codefiles', codeFiles);
 
 
 // routes for pdf summrizer

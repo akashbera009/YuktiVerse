@@ -92,7 +92,7 @@ const ResumeTopbar = () => {
           <path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5" />
           <path d="M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10" />
         </svg>{" "}
-        YuktiVerse Resume Analyzer
+        Resume Verse
       </div>
 
       {/* Avatar + Menu */}
