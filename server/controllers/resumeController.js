@@ -120,7 +120,6 @@ export const deleteResume = async (req, res) => {
       _id: req.params.id,
       userId: req.user.id
     });
-    console.log(deleted);
     
     if (!deleted) {
       console.log("⚠️ Resume not found for this user");

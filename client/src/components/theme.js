@@ -454,7 +454,7 @@ export const themes = {
   '--no-topic-border': 'rgba(255, 255, 255, 0.1)',
   '--modal-border': 'rgba(104, 211, 145, 0.15)',
   '--popup-border': 'rgba(104, 211, 145, 0.2)',
-  '--error-border': 'rgba(245, 101, 101, 0.2)',
+  '--error-border': 'rgba(245, 101, 101, 0.2)', 
   '--database-popup-border': 'rgba(104, 211, 145, 0.3)',
 
   /* ==================== */

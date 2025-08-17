@@ -4,7 +4,7 @@ import User from "../models/User.js";
 
 // Generate JWT token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET,  { expiresIn: process.env.JWT_EXPIRES_IN } );
+  return jwt.sign({ id }, process.env.JWT_SECRET );
 };
 
 // @desc Register new user
@@ -13,17 +13,17 @@ export const registerUser = async (req, res) => {
 
   try {
     let user = await User.findOne({ email });
-    console.log(user);
+    // console.log(user);
     
     if (user) return res.status(400).json({ msg: "User already exists" });
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
-console.log(salt , hashed);
+// console.log(salt , hashed);
 
     user = new User({ name, email, password: hashed });
     await user.save();
-    console.log(user);
+    // console.log(user);
     
 
     res.status(201).json({
@@ -39,15 +39,15 @@ console.log(salt , hashed);
 // @desc Login user
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-console.log(email ,password);
+console.log(email);
 
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "Invalid credentials" });
-console.log(user);
+// console.log(user);
 
-    const isMatch = await bcrypt.compare(password, user.password);~
-    console.log(isMatch);
+    const isMatch = await bcrypt.compare(password, user.password);
+    // console.log(isMatch);
     
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 

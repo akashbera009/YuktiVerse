@@ -290,7 +290,7 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
         alignItems: 'center',
         padding: '20px 24px',
         borderBottom: '1px solid var(--glass-border)',
-        background: 'linear-gradient(135deg, var(--accent-primary), var(--color-accent-info))',
+        background: 'linear-gradient(135deg, var(--accent-primary), var(--secondary-accent))',
         borderRadius: isExpanded ? '20px 20px 0 0' : '0',
         cursor: isExpanded ? 'grab' : 'default'
       }}>
@@ -326,8 +326,8 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
               width: '32px',
               height: '32px',
               borderRadius: '8px',
-              // background: 'rgba(255, 255, 255, 0.15)', 
-              background: 'var(--bg-popup)', 
+              // background: 'var(--category-bg)',
+              background: 'var(--category-bg)', 
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: 'white',
               cursor: 'pointer',
@@ -339,11 +339,11 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
               backdropFilter: 'blur(10px)'
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+              // e.target.style.background = 'rgba(255, 255, 255, 0.25)';
               e.target.style.transform = 'scale(1.05)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+              // e.target.style.background = 'rgba(255, 255, 255, 0.15)';
               e.target.style.transform = 'scale(1)';
             }}
           >
@@ -357,8 +357,8 @@ const AiHelpers = ({ text, onClose, mode = 'chatbot' }) => {
               width: '32px',
               height: '32px',
               borderRadius: '8px',
-              background: 'rgba(239, 68, 68, 0.9)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: 'var(--category-bg)',
+              border:'1px solid var(--error-border)',
               color: 'white',
               cursor: 'pointer',
               display: 'flex',

@@ -102,7 +102,7 @@ const AcademicOrganizer = () => {
 
   // ✅ FIX 2: Clear all user-specific data when component mounts
   const clearUserData = () => {
-    console.log("[Clear] Clearing all user-specific data");
+    // console.log("[Clear] Clearing all user-specific data");
     setYears([]);
     setSubjects([]);
     setChapters([]);
@@ -133,7 +133,7 @@ useEffect(() => {
 
       // If userId changed or user logged out
       if (newUserId !== userId || !newUserId || !newToken) {
-        console.log(`[Auth] User changed from ${userId} to ${newUserId}`);
+        // console.log(`[Auth] User changed from ${userId} to ${newUserId}`);
         clearUserData();
         
         if (newUserId && newToken) {
@@ -950,7 +950,7 @@ useEffect(() => {
     try {
       const chapter = chapters.find((ch) => ch._id === chapterId);
       if (!chapter) return;
-      console.log(chapter);
+      // console.log(chapter);
 
       const updated = await axios.patch(
         `${backendURL}/years/subjects/chapters/${chapterId}`,
@@ -1474,11 +1474,11 @@ useEffect(() => {
                   >
                     <div className="star-icon-ao">
                       {selectedYearId === year._id ? (
-                        <>
+                        <> 
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
+                            width="20"
+                            height="20"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -1510,8 +1510,8 @@ useEffect(() => {
                         <>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
+                            width="20"
+                            height="20"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -1569,8 +1569,8 @@ useEffect(() => {
                                 <>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
+                                    width="20"
+                                    height="20"
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="currentColor"
@@ -1610,8 +1610,8 @@ useEffect(() => {
                                 <>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
+                                    width="20"
+                                    height="20"
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="currentColor"
@@ -1696,8 +1696,8 @@ useEffect(() => {
                                           <>
                                             <svg
                                               xmlns="http://www.w3.org/2000/svg"
-                                              width="24"
-                                              height="24"
+                                              width="20"
+                                              height="20"
                                               viewBox="0 0 24 24"
                                               fill="none"
                                               stroke="currentColor"
@@ -1737,8 +1737,8 @@ useEffect(() => {
                                           <>
                                             <svg
                                               xmlns="http://www.w3.org/2000/svg"
-                                              width="24"
-                                              height="24"
+                                              width="20"
+                                              height="20"
                                               viewBox="0 0 24 24"
                                               fill="none"
                                               stroke="currentColor"
@@ -1822,7 +1822,7 @@ useEffect(() => {
                                       }}
                                     >
                                       <FaPlus />
-                                      Chapter
+                                      Create Chapter
                                     </button>
                                   )}
                                 </div>
@@ -1858,7 +1858,7 @@ useEffect(() => {
                               setNewItemName("");
                             }}
                           >
-                            <FaPlus /> New Subject
+                            <FaPlus /> Create Subject
                           </button>
                         )}
                       </div>
@@ -1896,7 +1896,7 @@ useEffect(() => {
                     setNewItemName("");
                   }}
                 >
-                  <FaPlus /> Create New Year
+                  <FaPlus /> Create Year
                 </button>
               )}
             </div>

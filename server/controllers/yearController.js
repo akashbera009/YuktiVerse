@@ -46,7 +46,8 @@ export const listYears = async (req, res) => {
     if (!years || years.length === 0) {
       return res.status(404).json({ message: 'No years found for this user.' });
     }
-
+    console.log(years);
+    
     res.status(200).json(years);
   } catch (err) {
     console.error('❗ Error fetching years:', err.message || err);

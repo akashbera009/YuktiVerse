@@ -184,17 +184,17 @@ const MobileNotSupported = () => {
             {createAnimatedText('Mobile Experience Under Construction')}
           </div>
           <div className="mns-message-secondary">
-            {createAnimatedText('Our mobile platform is being engineered for optimal performance')}
+            {/* {createAnimatedText('Our mobile platform is being engineered for optimal performance')} */}
           </div>
         </div>
 
         {/* CTA Section */}
         <div className="mns-cta">
-          <div className="mns-cta-badge">
+          {/* <div className="mns-cta-badge">
             <span className="mns-cta-icon">🚀</span>
             <span className="mns-cta-text">Coming Soon</span>
             <div className="mns-cta-pulse"></div>
-          </div>
+          </div> */}
           
           <div className="mns-recommendation">
             <div className="mns-rec-icon">💻</div>

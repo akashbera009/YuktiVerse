@@ -8,7 +8,6 @@ import { v2 as cloudinary } from 'cloudinary';
 
 // Upload a handwritten note
 export const uploadNote = async (req, res) => {
-  console.log("coming to the upload thing ");
   
   try {
     const { chapter, title } = req.body;
@@ -30,7 +29,7 @@ export const uploadNote = async (req, res) => {
     const public_id  = uploadResult.public_id;
     const important = false ; 
 
-    console.log(chapter , title , fileType , fileUrl , public_id , important);
+    // console.log(chapter , title , fileType , fileUrl , public_id , important);
     const note = await HandwrittenNote.create({
       user: req.user.id,
       chapter,
@@ -49,7 +48,6 @@ export const uploadNote = async (req, res) => {
 
 // emnio ei fuunction ta lagbe bole mone hoina , kaorn eta pore ekabre chapter diye list kore ana hobe notebook ermotoi 
 export const getHandWrittenNotes = async (req, res) => {
-  console.log("get hand notes");
   
   try {
     const { chapter } = req.query;

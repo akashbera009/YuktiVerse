@@ -24,7 +24,7 @@ export const uploadOnCloudinary = async (localFilePath) => {
       resource_type: 'auto', // handles images, videos, pdf, etc.
     });
 
-    console.log('✅ File uploaded to Cloudinary:', response);
+    // console.log('✅ File uploaded to Cloudinary:', response);
 
     fs.unlinkSync(localFilePath);
 

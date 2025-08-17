@@ -7,9 +7,9 @@ import mongoose from 'mongoose';
 const createGeminiHandler = (task) => {
   return async (req, res) => {
     try {
-      console.log('Received req.body:', req.body);
+      // console.log('Received req.body:', req.body);
       const { prompt } = req.body;
-      console.log(prompt, task);
+      // console.log(prompt, task);
 
       if (!prompt) {
         return res.status(400).json({ error: 'Prompt is required' });
@@ -30,10 +30,9 @@ const createCacheableGeminiHandler = (task) => {
 
   return async (req, res) => {
     try {
-      console.log("fund ");
       await connectDB();
 
-      console.log("Received req.body:", req.body);
+      // console.log("Received req.body:", req.body);
       const { prompt, textBoxId, notebookId, forceRefresh = false } = req.body;
 
       if (!prompt) {
@@ -42,7 +41,7 @@ const createCacheableGeminiHandler = (task) => {
 
       // ✅ If notebook + textbox provided, try cache
       if (textBoxId && notebookId) {
-        console.log(`Processing cache request for notebook: ${notebookId}, textBox: ${textBoxId}`);
+        // console.log(`Processing cache request for notebook: ${notebookId}, textBox: ${textBoxId}`);
 
         if (!forceRefresh) {
           try {
@@ -57,7 +56,7 @@ const createCacheableGeminiHandler = (task) => {
             if (existingNotebook) {
               const existingTextBox = existingNotebook.content?.textBoxes?.[0];
               if (existingTextBox?.airesponse?.trim()) {
-                console.log(`Returning cached AI response for textBox: ${textBoxId}`);
+                // console.log(`Returning cached AI response for textBox: ${textBoxId}`);
                 return res.json({
                   task,
                   response: existingTextBox.airesponse,
@@ -73,7 +72,7 @@ const createCacheableGeminiHandler = (task) => {
         // No cache hit → Call Gemini
         console.log("Calling Gemini API for new response...");
         let response = await getGeminiResponse(prompt, task);
-        console.log(response);
+        // console.log(response);
 
         // 🧹 Remove markdown formatting
         response = removeMd(response || "").trim();
@@ -111,7 +110,7 @@ const createCacheableGeminiHandler = (task) => {
             return res.json({ task, response, fromCache: false, cached: false });
           }
 
-          console.log(`AI response cached successfully for textBox: ${textBoxId}`);
+          // console.log(`AI response cached successfully for textBox: ${textBoxId}`);
           return res.json({ task, response, fromCache: false, cached: true });
         } catch (updateError) {
           console.error("Database update error:", updateError);
@@ -144,7 +143,6 @@ export const resumeAnalysis = async (req, res) => {
     const path = await import("path");
 
     const file = req.file;
-    console.log("file is ", file);
 
     if (!file) return res.status(400).json({ message: "No file uploaded" });
 
@@ -239,7 +237,7 @@ export const mcqGen = createGeminiHandler(
 
 // Use the cacheable handler for shortExplain
 export const shortExplain = createCacheableGeminiHandler(`You are to act as a short explainer.
-Explain the topic in exactly 1 plain sentences, under 40 words.
+Explain the topic in exactly 1 plain sentences, under 20 words.
 Never ask clarifying questions.
 Never list options or give bullet points.
 Never request more context.

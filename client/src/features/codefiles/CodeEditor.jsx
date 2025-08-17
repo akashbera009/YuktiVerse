@@ -15,7 +15,10 @@ import {
   FaMagic,
   FaCode,
   FaHistory,
+  FaCheckCircle,
+  FaTimesCircle,
   FaPlus,
+  FaPlay,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -108,7 +111,65 @@ const parseAiResponse = (response) => {
     explanation: explanation.replace(/\[CODE_BLOCK_REMOVED\]/g, "").trim(),
   };
 };
+// Add this helper function with your other helper functions
+const parseExecutionResult = (result) => {
+  const lines = result.split("\n").filter((line) => line.trim());
+  const parsed = {
+    status: "UNKNOWN",
+    output: "",
+    executionTime: "",
+    memoryUsage: "",
+    rawResult: result,
+  };
 
+  lines.forEach((line) => {
+    if (line.startsWith("Execution Status:")) {
+      parsed.status = line.replace("Execution Status:", "").trim();
+    } else if (line.startsWith("Output:")) {
+      // Extract everything after "Output:" including code blocks
+      const outputStart = result.indexOf("Output:") + "Output:".length;
+      const executionTimeStart = result.indexOf("Execution Time:");
+      const outputEnd =
+        executionTimeStart > -1 ? executionTimeStart : result.length;
+      parsed.output = result.substring(outputStart, outputEnd).trim();
+
+      // Clean up code blocks
+      parsed.output = parsed.output
+        .replace(/```[\w]*\n?/g, "") // Remove opening code blocks
+        .replace(/```$/g, "") // Remove closing code blocks
+        .trim();
+    } else if (line.startsWith("Execution Time:")) {
+      parsed.executionTime = line.replace("Execution Time:", "").trim();
+    } else if (line.startsWith("Memory Usage:")) {
+      parsed.memoryUsage = line.replace("Memory Usage:", "").trim();
+    }
+  });
+
+  return parsed;
+};
+
+// Helper function to get status icon and color
+const getStatusDisplay = (status) => {
+  const normalizedStatus = status.toLowerCase();
+  if (normalizedStatus.includes("success")) {
+    return {
+      icon: FaCheckCircle,
+      color: "var(--color-success)",
+      text: "SUCCESS",
+    };
+  } else if (
+    normalizedStatus.includes("error") ||
+    normalizedStatus.includes("failed")
+  ) {
+    return { icon: FaTimesCircle, color: "var(--color-error)", text: "ERROR" };
+  } else {
+    return {
+      icon: FaExclamationCircle,
+      color: "var(--color-warning)",
+      text: "UNKNOWN",
+    };
+  }
+};
 const CodeEditor = ({
   codeFileId = null,
   initialData = null,
@@ -160,6 +221,28 @@ const CodeEditor = ({
   const textareaRef = useRef(null);
   const saveTimeoutRef = useRef(null);
   const aiResponseRef = useRef(null);
+
+  // run code
+  // Add these new state variables with your existing ones
+  const [showRunModal, setShowRunModal] = useState(false);
+  const [runResult, setRunResult] = useState(null);
+  const [isRunning, setIsRunning] = useState(false);
+  const [runHistory, setRunHistory] = useState([]);
+
+  // escape to close modal
+  // Add this useEffect for ESC key handling
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape" && showRunModal) {
+        setShowRunModal(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [showRunModal]);
 
   // Load code file data on mount if ID is provided
   useEffect(() => {
@@ -301,6 +384,62 @@ const CodeEditor = ({
       // console.log('saved');
     } catch (error) {
       console.error("Auto-save failed:", error);
+    }
+  };
+
+  //run the code function
+  const handleRunCode = async () => {
+    if (!codeFile.content.trim() || isRunning) return;
+
+    setIsRunning(true);
+    setShowRunModal(true);
+    setRunResult(null);
+
+    // console.log(codeFile.content,codeFile.prog_language, codeFile.description );
+
+    try {
+      const response = await axios.post(
+        `${backendURL}/api/codefiles/run`, // or your preferred endpoint
+        {
+          code: codeFile.content,
+          language: codeFile.prog_language,
+          question: codeFile.description || "Test the code execution",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = response.data.result || response.data;
+      const parsedResult = parseExecutionResult(result);
+
+      const newRunResult = {
+        id: Date.now(),
+        result: result,
+        parsedResult: parsedResult, // Add this line
+        language: codeFile.prog_language,
+        timestamp: new Date().toISOString(),
+        codeSnippet: codeFile.content.substring(0, 100) + "...",
+      };
+
+      setRunResult(newRunResult);
+      setRunHistory((prev) => [newRunResult, ...prev.slice(0, 9)]); // Keep last 10 runs
+    } catch (error) {
+      console.error("Code execution failed:", error);
+      const errorResult = {
+        id: Date.now(),
+        result: "EXECUTION ERROR - Unable to run code. Please try again.",
+        language: codeFile.prog_language,
+        timestamp: new Date().toISOString(),
+        codeSnippet: codeFile.content.substring(0, 100) + "...",
+        error: true,
+      };
+      setRunResult(errorResult);
+    } finally {
+      setIsRunning(false);
     }
   };
 
@@ -738,6 +877,8 @@ const CodeEditor = ({
               style={{
                 padding: "0.25rem 0.75rem",
                 borderRadius: "9999px",
+
+                textShadow: "0px 0px 5px black",
                 fontSize: "0.75rem",
                 fontWeight: "bold",
                 color: "white",
@@ -870,33 +1011,11 @@ const CodeEditor = ({
           display: "flex",
           alignItems: "center",
           gap: "2rem",
-          padding: "1rem",
+          padding: ".4rem",
           borderBottom: "1px solid var(--color-border-primary)",
           backgroundColor: "var(--color-surface)",
         }}
       >
-        {/* <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <label style={{ fontWeight: 'bold' }}>Language:</label>
-          <select
-            value={codeFile.prog_language}
-            onChange={(e) => {
-              setCodeFile({...codeFile, language: e.target.value});
-              setHasUnsavedChanges(true);
-            }}
-            style={{
-              border: '1px solid var(--color-border-secondary)',
-              borderRadius: '0.25rem',
-              padding: '0.5rem',
-              backgroundColor: 'var(--card-bg)',
-              color: 'var(--text-primary)'
-            }}
-          >
-            {Object.entries(LANGUAGE_CONFIG).map(([key, config]) => (
-              <option key={key} value={key}>{config.label}</option>
-            ))}
-          </select>
-        </div> */}
-
         <div
           style={{
             display: "flex",
@@ -906,13 +1025,13 @@ const CodeEditor = ({
             flexWrap: "wrap",
           }}
         >
-          <label style={{ fontWeight: "bold" }}>Tags:</label>
+          <label style={{ fontWeight: "600" }}>Tags:</label>
           {codeFile.tags.map((tag, index) => (
             <span
               key={index}
               style={{
-                backgroundColor: "var(--secondary-accent)",
-                padding: "0.25rem 0.75rem",
+                backgroundColor: "var(--accent-primary)",
+                padding: "0.25rem 0.5rem",
                 borderRadius: "9999px",
                 fontSize: "0.875rem",
                 display: "flex",
@@ -952,6 +1071,392 @@ const CodeEditor = ({
             }}
           />
         </div>
+        <button
+          onClick={handleRunCode}
+          disabled={!codeFile.content.trim() || isRunning}
+          style={{
+            background: isRunning
+              ? "var(--success)"
+              : "var(--color-accent-info)",
+            color: isRunning ? "var(--text-secondary)" : "white",
+            padding: "0.5rem 1rem",
+            border: "none",
+            marginRight: "1rem",
+            borderRadius: "0.25rem",
+            cursor:
+              isRunning || !codeFile.content.trim() ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            fontWeight: "bold",
+            opacity: isRunning || !codeFile.content.trim() ? 0.6 : 1,
+          }}
+        >
+          {isRunning ? (
+            <FaSpinner style={{ animation: "spin 1s linear infinite" }} />
+          ) : (
+            <FaPlay />
+          )}
+          {isRunning ? "Running..." : "RUN"}
+        </button>
+        {/* Run Code Modal */}
+        {showRunModal && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "var(--color-overlay)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 50,
+            }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowRunModal(false);
+              }
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "var(--card-bg)",
+                borderRadius: "0.5rem",
+                border: "1px solid var(--color-border-primary)",
+                padding: "1.5rem",
+                minWidth: "600px",
+                maxWidth: "70vw",
+                maxHeight: "80vh",
+                overflow: "auto",
+              }}
+            >
+              {/* Header */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "1.5rem",
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: "1.25rem",
+                    fontWeight: "bold",
+                    margin: 0,
+                    color: "var(--text-primary)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <FaPlay style={{ color: "var(--accent-info)" }} />
+                  Code Execution Result
+                </h3>
+                <button
+                  onClick={() => setShowRunModal(false)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    fontSize: "1.5rem",
+                    cursor: "pointer",
+                    color: "var(--text-secondary)",
+                    padding: "0.25rem",
+                  }}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              {/* Content */}
+              {/* Enhanced Content */}
+              {isRunning ? (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "1rem",
+                    padding: "2rem",
+                    color: "var(--accent-info)",
+                  }}
+                >
+                  <FaSpinner
+                    style={{
+                      animation: "spin 1s linear infinite",
+                      fontSize: "2rem",
+                    }}
+                  />
+                  <span>Executing your {codeFile.prog_language} code...</span>
+                </div>
+              ) : runResult ? (
+                <div>
+                  {/* Execution Summary */}
+                  <div
+                    style={{
+                      backgroundColor: "var(--color-surface)",
+                      borderRadius: "0.5rem",
+                      padding: "1rem",
+                      marginBottom: "1.5rem",
+                      border: "1px solid var(--color-border-secondary)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "1rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        <span
+                          style={{
+                            padding: "0.25rem 0.75rem",
+                            borderRadius: "9999px",
+                            fontSize: "0.75rem",
+                            fontWeight: "bold",
+                            color: "white",
+                            backgroundColor:
+                              LANGUAGE_CONFIG[runResult.language]?.color ||
+                              "#666666",
+                          }}
+                        >
+                          {LANGUAGE_CONFIG[runResult.language]?.label ||
+                            runResult.language}
+                        </span>
+
+                        {runResult.parsedResult &&
+                          (() => {
+                            const statusDisplay = getStatusDisplay(
+                              runResult.parsedResult.status
+                            );
+                            return (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.5rem",
+                                  padding: "0.25rem 0.75rem",
+                                  borderRadius: "9999px",
+                                  backgroundColor: `${statusDisplay.color}20`,
+                                  color: statusDisplay.color,
+                                  fontSize: "0.75rem",
+                                  fontWeight: "bold",
+                                  border: `1px solid ${statusDisplay.color}40`,
+                                }}
+                              >
+                                <statusDisplay.icon />
+                                {statusDisplay.text}
+                              </div>
+                            );
+                          })()}
+                      </div>
+
+                      <span
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        {new Date(runResult.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+
+                    {/* Performance Metrics */}
+                    {runResult.parsedResult &&
+                      (runResult.parsedResult.executionTime ||
+                        runResult.parsedResult.memoryUsage) && (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "2rem",
+                            fontSize: "0.85rem",
+                            color: "var(--text-secondary)",
+                          }}
+                        >
+                          {runResult.parsedResult.executionTime && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                              }}
+                            >
+                              <span style={{ fontWeight: "bold" }}>
+                                ⏱️ Time:
+                              </span>
+                              <span>
+                                {runResult.parsedResult.executionTime}
+                              </span>
+                            </div>
+                          )}
+                          {runResult.parsedResult.memoryUsage && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                              }}
+                            >
+                              <span style={{ fontWeight: "bold" }}>
+                                💾 Memory:
+                              </span>
+                              <span>{runResult.parsedResult.memoryUsage}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                  </div>
+
+                  {/* Output Section */}
+                  <div
+                    style={{
+                      marginBottom: "1.5rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "0.75rem",
+                        paddingBottom: "0.5rem",
+                        borderBottom: "1px solid var(--color-border-secondary)",
+                      }}
+                    >
+                      <h4
+                        style={{
+                          margin: 0,
+                          fontSize: "1rem",
+                          fontWeight: "bold",
+                          color: "var(--text-primary)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        📋 Output
+                      </h4>
+                      <button
+                        onClick={() => {
+                          const outputText =
+                            runResult.parsedResult?.output || runResult.result;
+                          navigator.clipboard.writeText(outputText);
+                          toast.success("Output copied!");
+                        }}
+                        style={{
+                          padding: "0.25rem 0.5rem",
+                          borderRadius: "0.25rem",
+                          border: "1px solid var(--color-border-secondary)",
+                          backgroundColor: "var(--card-bg)",
+                          color: "var(--text-primary)",
+                          cursor: "pointer",
+                          fontSize: "0.75rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                        }}
+                      >
+                        <FaCopy /> Copy
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        backgroundColor: "var(--card-bg)",
+                        border: "1px solid var(--color-border-secondary)",
+                        borderRadius: "0.5rem",
+                        padding: "1rem",
+                        fontFamily: "'Fira Code', 'Courier New', monospace",
+                        fontSize: "0.9rem",
+                        lineHeight: "1.6",
+                        maxHeight: "300px",
+                        overflow: "auto",
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {runResult.error ? (
+                        <div style={{ color: "var(--color-error)" }}>
+                          {runResult.result}
+                        </div>
+                      ) : (
+                        <div style={{ color: "var(--text-primary)" }}>
+                          {runResult.parsedResult?.output || runResult.result}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <button
+                      onClick={() => handleRunCode()}
+                      disabled={isRunning}
+                      style={{
+                        padding: "0.5rem 1rem",
+                        borderRadius: "0.25rem",
+                        border: "1px solid var(--accent-info)",
+                        background: isRunning
+                          ? "var(--success)"
+                          : "var(--color-accent-info)",
+                        color: "var(--accent-info)",
+                        cursor: isRunning ? "not-allowed" : "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      <FaPlay /> Run Again
+                    </button>
+                    <button
+                      onClick={() => setShowRunModal(false)}
+                      style={{
+                        padding: "0.5rem 1rem",
+                        borderRadius: "0.25rem",
+                        border: "none",
+                        backgroundColor: "var(--danger)",
+                        color: "white",
+                        cursor: "pointer",
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "2rem",
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  <FaExclamationCircle
+                    style={{ fontSize: "2rem", marginBottom: "1rem" }}
+                  />
+                  <p>No execution result available.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main 3-Section Layout */}
@@ -1008,7 +1513,6 @@ const CodeEditor = ({
             placeholder="Start writing your code here..."
           />
         </div>
-    
 
         {/* middle Section - AI Response */}
         <div
@@ -1018,6 +1522,7 @@ const CodeEditor = ({
             flexDirection: "column",
             backgroundColor: "var(--card-bg)",
             minWidth: "300px",
+            borderLeft: "2px solid var(--border-divider)",
           }}
         >
           <div
@@ -1179,12 +1684,13 @@ const CodeEditor = ({
                 </p>
               </div>
             )}
+
+            
           </div>
         </div>
 
-
         {/* right Section - AI Assistant Buttons */}
-            <div
+        <div
           style={{
             width: "200px",
             display: "flex",
@@ -1396,8 +1902,7 @@ const CodeEditor = ({
             flexDirection: "column",
             overflow: "scroll",
           }}
-        > 
-
+        >
           <div
             style={{
               padding: "0.75rem 1rem",

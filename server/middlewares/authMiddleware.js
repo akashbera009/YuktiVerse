@@ -10,21 +10,16 @@ import jwt from "jsonwebtoken";
 const authMiddleware = (req, res, next) => {
 // console.log(req.user);
 
-  const token = req.header("Authorization")?.split(" ")[1];
-  // console.log("this is token ", token);
-  // console.log(token);
+  const token = req.header("Authorization")?.split(" ")[1]; 
   
   if (!token) return res.status(401).json({ msg: "No token, authorization denied" });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log(decoded);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
     
-    req.user = decoded; // { id: userId }
-    // console.log("req.user " , req.user);
+    req.user = decoded;  
     
-    next();
-    // console.log("passde");
+    next(); 
     
   } catch (err) {
     console.log(err);

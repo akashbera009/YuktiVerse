@@ -19,7 +19,7 @@ import shareRoutes from './routes/shareroute.js';
 
 
 
-import codeFiles from './routes/codefile/codeFiles.js';
+import codeFiles from './routes/codeFiles.js';
 // import codeFileShare from './routes/codefile/codeFileShare.js';
 
 
@@ -49,7 +49,7 @@ app.listen(PORT, () => {
 
 // auth 
 app.use("/api/auth", authRoutes);
-console.log("JWT_SECRET:", process.env.JWT_SECRET);
+// console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 // genini routes 
 app.use('/api/ai-help', geminiRoutes);

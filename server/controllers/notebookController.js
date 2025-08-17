@@ -36,8 +36,6 @@ export const createNotebook = async (req, res) => {
 
 // Updated getNotebookById to use note_id
 export const getNotebookById = async (req, res) => {
-  // console.log(req.user.id);
-  // console.log( req.params.id);
   
   try {
     

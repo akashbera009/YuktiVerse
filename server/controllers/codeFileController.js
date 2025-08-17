@@ -1,7 +1,7 @@
-import CodeFile from '../../models/codefile/CodeFile.js';
+import CodeFile from '../models/CodeFile.js';
 import mongoose from 'mongoose';
 
-import { getGeminiResponse } from '../../utils/geminiClient.js';
+import { getGeminiResponse } from '../utils/geminiClient.js';
 
 const ALLOWED_LANGUAGES = [
   'javascript','python','java','cpp','c','html','css',
@@ -84,6 +84,8 @@ export const getAllCodeFiles = async (req, res) => {
   try {
     const userId = req.user.id;
 
+    console.log(req.user.id);
+    
     if (!userId) {
       return res.status(400).json({
         success: false,
@@ -99,8 +101,7 @@ export const getAllCodeFiles = async (req, res) => {
     }
 
     // Find all files for the given userId
-    const codeFiles = await CodeFile.find({ userId }).select('-__v'); // remove __v, keep content by default
-console.log(codeFiles);
+    const codeFiles = await CodeFile.find({ userId }).select('-__v');  
 
     return res.json({
       success: true,
@@ -183,8 +184,7 @@ export const updateCodeFile = async (req, res) => {
       { _id: id, userId: req.user.id }, // ✅ use req.user.id
       updateData,
       { new: true, runValidators: true }
-    );
-// console.log(codeFile);
+    ); 
 
     if (!codeFile) {
       return res.status(404).json({
@@ -246,6 +246,47 @@ console.log(fileId);
     });
   }
 };
+
+
+// controllers/codeController.js
+export const runCode = async (req, res) => {
+  try {
+    const { code, language = 'javascript', question } = req.body;
+
+    if (!code) {
+      return res.status(400).json({ error: "Code is required" });
+    }
+
+    // You can reuse your existing verifyCode logic or create a simpler version
+    const prompt = `
+Execute and analyze this ${language} code:
+
+Code:
+${code}
+
+${question ? `Context: ${question}` : ''}
+
+Provide the output in this format:
+Execution Status: [SUCCESS/ERROR]
+Output: [actual output or error message]
+Execution Time: [estimated time]
+Memory Usage: [estimated memory]
+
+Be concise and clear.`;
+    
+    const result = await getGeminiResponse(prompt);
+
+    res.json({ 
+      result: result.trim(),
+      language,
+      executedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Code Execution Error:", error.message);
+    res.status(500).json({ error: "Failed to execute code" });
+  }
+};
+
 
 // Rename code file
 export const renameCodeFile = async (req, res) => {
@@ -600,10 +641,15 @@ const getTopicVariations = (topic) => {
   return variations[Math.floor(Math.random() * variations.length)];
 };
 
+
+
+
+
 export const generateCodingQuestion = async (req, res) => {
   
   try {
     const { topic, difficulty, language = 'javascript' } = req.body;
+
 
     if (!topic || !difficulty) {
       return res.status(400).json({ error: "Topic and difficulty are required" });

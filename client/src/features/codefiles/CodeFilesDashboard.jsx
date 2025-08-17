@@ -24,7 +24,7 @@ import {
 import CodeEditor from "./CodeEditor"; // Assuming the CodeEditor component is in the same directory
 import axios from "axios";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
-import { Link  } from "react-router-dom";
+import { Link } from "react-router-dom";
 let userId = localStorage.getItem("userId");
 const token = localStorage.getItem("token");
 
@@ -699,28 +699,28 @@ const CodeFilesDashboard = () => {
                     cursor: "pointer",
                     backgroundColor:
                       selectedFile?._id === file._id
-                        ? "var(--card-bg)"
-                        : "transparent",
+                        ? "var(--upload-bg)"
+                        : "var(--feature-card-bg)",
                     border: `1px solid ${
                       selectedFile?._id === file._id
                         ? "var(--accent-primary)"
-                        : "var(--border-divider)"
+                        : "var(--color-border-secondary)"
                     }`,
                     transition: "all 0.2s ease",
                     ":hover": {
-                      backgroundColor: "var(--color-surface)",
+                      backgroundColor: "var(--sidebar-bg)",
                     },
                   }}
-                  onMouseEnter={(e) => {
-                    if (selectedFile?._id !== file._id) {
-                      e.target.style.backgroundColor = "var(--color-surface)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (selectedFile?._id !== file._id) {
-                      e.target.style.backgroundColor = "transparent";
-                    }
-                  }}
+                  // onMouseEnter={(e) => {
+                  //   if (selectedFile?._id !== file._id) {
+                  //     e.target.style.backgroundColor = "var(--sidebar-bg)";
+                  //   }
+                  // }}
+                  // onMouseLeave={(e) => {
+                  //   if (selectedFile?._id !== file._id) {
+                  //     e.target.style.backgroundColor = "transparent";
+                  //   }
+                  // }}
                 >
                   <div
                     style={{
@@ -811,6 +811,7 @@ const CodeFilesDashboard = () => {
                             fontSize: "0.7rem",
                             fontWeight: "bold",
                             color: "white",
+                            textShadow: "0px 0px 5px black",
                             backgroundColor: getLanguageColor(
                               file.prog_language
                             ),
@@ -1019,7 +1020,7 @@ const CodeFilesDashboard = () => {
               boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
               transition:
                 "left 180ms ease, transform 180ms ease, background-color 180ms ease",
-              zIndex: 1100,
+              zIndex: 1,
               padding: 0,
             }}
           >
@@ -1174,28 +1175,29 @@ const CodeFilesDashboard = () => {
 
                   <span>New File</span>
                 </button>
- <Link to= {`/feature/code-contest`}>
-<button
-                  style={{
-                    padding: "1rem 2rem",
-                    borderRadius: "0.5rem",
-                    cursor: "pointer",
-                    backgroundColor: "transparent",
-                    backgroundColor: "var(--accent-primary)",
-                    fontSize: "1rem",
-                    fontWeight: "bold",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                  }}
+                <Link
+                  to={`/feature/code-contest`}
+                  style={{ textDecoration: "none" }}
                 >
-                  {/* <FaSearch /> */}
-                  <FaCode />
-                  <span>Code Contest</span>
-                </button>
-                 
- </Link>
-                
+                  <button
+                    style={{
+                      padding: "1rem 2rem",
+                      borderRadius: "0.5rem",
+                      cursor: "pointer",
+                      backgroundColor: "transparent",
+                      backgroundColor: "var(--accent-primary)",
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {/* <FaSearch /> */}
+                    <FaCode />
+                    <span>Code Contest</span>
+                  </button>
+                </Link>
               </div>
 
               <div

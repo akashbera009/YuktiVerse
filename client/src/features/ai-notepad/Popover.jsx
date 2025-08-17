@@ -206,7 +206,7 @@ const Popover = ({
           )}
         </div>
         <div className="ai-popover-footer">
-          <div className="ai-powered">Powered by AI</div>
+          <div className="ai-powered">Yukti AI</div>
           <div className="ai-actions">
             <button
               className="ai-action-btn secondary"

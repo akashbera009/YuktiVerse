@@ -6,8 +6,7 @@ import pdfParse from 'pdf-parse';
 import { getGeminiResponse } from '../utils/geminiClient.js';
 import PDFDocument from '../models/PDFDocument.js';
 import MCQ from '../models/MCQ.js';
-
-// ✅ Summarize and link to user (optional saving logic can be added later if needed)
+ 
 export const summarizePDF = async (req, res) => {
   try {
     const pdfBuffer = req.file.buffer;
