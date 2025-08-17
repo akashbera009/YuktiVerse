@@ -649,6 +649,7 @@ export const generateCodingQuestion = async (req, res) => {
   
   try {
     const { topic, difficulty, language = 'javascript' } = req.body;
+console.log("controller for generation ");
 
 
     if (!topic || !difficulty) {
@@ -720,7 +721,8 @@ IMPORTANT: Make this question unique, creative, and include 2 diverse test cases
 `;
 
     const questionText = await getGeminiResponse(prompt);
-
+    console.log("response for coding generation ", questionText);
+    
     res.json({
       question: questionText,
       language,
@@ -742,7 +744,7 @@ IMPORTANT: Make this question unique, creative, and include 2 diverse test cases
 export const verifyCode = async (req, res) => {
   try {
     const { code, question, language = 'javascript' } = req.body;
-
+  
     if (!code || !question) {
       return res.status(400).json({ error: "Code and question are required" });
     }

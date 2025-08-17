@@ -943,7 +943,7 @@ const CodeEditor = ({
             <FaDownload />
           </button>
 
-          <button
+          {/* <button
             onClick={handleShare}
             disabled={isSharing || codeFile.isShared}
             style={{
@@ -960,7 +960,7 @@ const CodeEditor = ({
             }}
           >
             <FaShare />
-          </button>
+          </button> */}
 
           <button
             onClick={handleSave}

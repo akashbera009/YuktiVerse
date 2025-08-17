@@ -52,9 +52,9 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return <SplashScreen onLoaded={() => setIsLoading(false)} />;
-  }
+  // if (isLoading) {
+  //   return <SplashScreen onLoaded={() => setIsLoading(false)} />;
+  // }
   if (isMobile) return <MobileNotSupported />;
   
   return (

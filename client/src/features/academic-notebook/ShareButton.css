@@ -79,6 +79,7 @@
   background-color: var(--card-bg);
   border-radius: 12px;
   box-shadow: var(--shadow-primary);
+  border: 2px solid var(--color-border-primary);
   width: 90%;
   max-width: 480px;
   overflow: hidden;
