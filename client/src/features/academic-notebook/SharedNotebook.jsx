@@ -370,7 +370,10 @@ const SharedNotebook = () => {
           <div className="shared-notebook-info">
             <div className="shared-icon">
               <div className="icon-inner">
-                <FaShare />
+               <img
+              src="https://i.ibb.co/5gzS19h7/Chat-GPT-Image-Aug-13-2025-12-04-20-AM-removebg-preview.png"
+              alt=""
+            />
               </div>
               <div className="icon-badge">
                 <FaEye />

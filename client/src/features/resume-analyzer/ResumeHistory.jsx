@@ -323,7 +323,7 @@ View full analysis: ${resume.cloudinaryUrl}
             >
               <div className="row-main" onClick={() => toggleRow(resume._id)}>
                 <div className="file-info">
-                  <div className="file-icon">📄</div>
+                  <div className="file-icon"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-text"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg></div>
                   <div className="file-details">
                     <h3 className="filename">{resume.filename}</h3>
                     <div className="file-meta">
@@ -441,10 +441,10 @@ View full analysis: ${resume.cloudinaryUrl}
                 <div className="row-details">
                   <div className="analysis-section">
                     <div className="analysis-block">
-                      <h4>🧠 Key Highlights</h4>
+                      <h4><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-blocks"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 4a1 1 0 0 1 1 -1h5a1 1 0 0 1 1 1v5a1 1 0 0 1 -1 1h-5a1 1 0 0 1 -1 -1z" /><path d="M3 14h12a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h3a2 2 0 0 1 2 2v12" /></svg> Key Highlights</h4>
                       <div className="highlights-grid">
                         <div className="strengths">
-                          <h5>✅ Strengths</h5>
+                          <h5><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.564 13.708a.504.504 0 0 0-.496-.565H7a.506.506 0 0 1-.461-.702l3.907-9.128a.5.5 0 0 1 .46-.313h4.518c.353 0 .594.36.465.694l-2.225 5.712a.506.506 0 0 0 .464.694H17c.412 0 .647.479.398.813l-7.47 10.046c-.062.083-.191.03-.18-.072z"/></svg> Strengths</h5>
                           <ul>
                             {resume.analysisResult?.strengths
                               ?.slice(0, 3)
@@ -455,7 +455,10 @@ View full analysis: ${resume.cloudinaryUrl}
                         </div>
 
                         <div className="issues">
-                          <h5>⚠️ Areas for Improvement</h5>
+                          <h5>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><path fill="currentColor" d="M464 688a48 48 0 1 0 96 0a48 48 0 1 0-96 0m72-112c4.4 0 8-3.6 8-8V296c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8zm400-188h-59.3c-2.6 0-5 1.2-6.5 3.3L763.7 538.1l-49.9-68.8a7.92 7.92 0 0 0-6.5-3.3H648c-6.5 0-10.3 7.4-6.5 12.7l109.2 150.7a16.1 16.1 0 0 0 26 0l165.8-228.7c3.8-5.3 0-12.7-6.5-12.7m-44 306h-64.2c-5.5 0-10.6 2.9-13.6 7.5a352.2 352.2 0 0 1-49.8 62.2A355.9 355.9 0 0 1 651.1 840a355 355 0 0 1-138.7 27.9c-48.1 0-94.8-9.4-138.7-27.9a355.9 355.9 0 0 1-113.3-76.3A353.1 353.1 0 0 1 184 650.5c-18.6-43.8-28-90.5-28-138.5s9.4-94.7 28-138.5c17.9-42.4 43.6-80.5 76.4-113.2s70.9-58.4 113.3-76.3a355 355 0 0 1 138.7-27.9c48.1 0 94.8 9.4 138.7 27.9c42.4 17.9 80.5 43.6 113.3 76.3c19 19 35.6 39.8 49.8 62.2c2.9 4.7 8.1 7.5 13.6 7.5H892c6 0 9.8-6.3 7.2-11.6C828.8 178.5 684.7 82 517.7 80C278.9 77.2 80.5 272.5 80 511.2C79.5 750.1 273.3 944 512.4 944c169.2 0 315.6-97 386.7-238.4A8 8 0 0 0 892 694"/></svg>
+                            
+                         Areas for Improvement</h5>
                           <ul>
                             {resume.analysisResult?.issues
                               ?.slice(0, 2)
@@ -467,7 +470,7 @@ View full analysis: ${resume.cloudinaryUrl}
                       </div>
                       <br></br>
                       <div className="keywords">
-                        <h5>🔑 Top Keywords</h5>
+                        <h5><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M0 2.965C0 1.88.88 1 1.965 1h2.807c1.085 0 1.965.88 1.965 1.965v.561c0 1.086-.88 1.965-1.965 1.965H1.965A1.965 1.965 0 0 1 0 3.526zm1.965-.28a.28.28 0 0 0-.28.28v.561a.28.28 0 0 0 .28.281h2.807a.28.28 0 0 0 .28-.28v-.562a.28.28 0 0 0-.28-.28zm6.175.561c0-.465.377-.842.842-.842h6.176a.842.842 0 1 1 0 1.684H8.982a.84.84 0 0 1-.842-.842M.28 8.298c0-.465.378-.842.843-.842H11.79a.842.842 0 1 1 0 1.684H1.123a.84.84 0 0 1-.842-.842M.28 13.35c0-.464.378-.841.843-.841h13.474a.842.842 0 1 1 0 1.684H1.123a.84.84 0 0 1-.842-.842" clip-rule="evenodd"/><path fill="currentColor" d="M14.877 9.14a.842.842 0 1 0 0-1.684a.842.842 0 0 0 0 1.684"/></svg> Top Keywords</h5>
                         <div className="keyword-tags">
                           {[
                             "Leadership",

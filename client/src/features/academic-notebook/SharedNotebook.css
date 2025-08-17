@@ -1,5 +1,5 @@
 :root {
-  /* --primary: #6366f1;
+  --primary: #6366f1;
   --primary-light: #818cf8;
   --primary-hover: #3730a3;
   --secondary: #10b981;
@@ -20,7 +20,7 @@
   --text-primary: var(--dark-text);
   --text-secondary: #94a3b8;
   --background-color: var(--light-bg);
-  --card-bg: var(--light-card); */
+  --card-bg: var(--light-card);
 
   --border-radius: 12px;
   --border-radius-sm: 8px;
@@ -128,8 +128,10 @@
   position: relative;
   width: 60px;
   height: 60px;
-  background: var(--accent-primary);
+  /* background: var(--accent-primary); */
   border-radius: var(--border-radius-lg);
+  border: 1px solid var(--accent-primary);
+  background-color:  #00ffff46;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,7 +144,9 @@
   box-shadow: var(--shadow-xl);
 }
 
-.icon-inner {
+.icon-inner img {
+  height: 80px;
+  width: 80px;
   color: white;
   font-size: 1.5rem;
 }
