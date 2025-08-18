@@ -755,7 +755,9 @@ body {
 }
 
 .cancel-btn {
-  background: var(--cancel-btn-bg);
+  /* background: var(--cancel-btn-bg);   */
+  border:  1px solid var(--accent-primary);
+  border:  1px solid red;
   color: var(--cancel-btn-color);
 }
 
@@ -765,12 +767,12 @@ body {
 }
 
 .confirm-btn {
-  background: var(--confirm-btn-bg);
+  background: var(--danger);
   color: white;
 }
 
 .confirm-btn:hover {
-  background: var(--confirm-btn-hover);
+  background: var(--danger);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }

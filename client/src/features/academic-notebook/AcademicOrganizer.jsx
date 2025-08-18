@@ -349,7 +349,7 @@ useEffect(() => {
       return;
     }
     const currentUserId = localStorage.getItem("userId");
-    const currentToken = localStorage.getToken("token");
+    const currentToken = localStorage.getItem("token");
     try {
       await axios.delete(
         `${backendURL}/api/share/notebook/${currentUserId}/${shareId}`,

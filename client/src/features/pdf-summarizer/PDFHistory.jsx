@@ -124,6 +124,7 @@ const SummaryModal = ({ summary, onClose }) => {
 // MCQ Modal Component
 
 import { FiCheckCircle } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 const MCQModal = ({ mcqs, onClose }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -266,7 +267,8 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
         setDocuments(res.data);
       } catch (err) {
         console.error("Fetch error:", err);
-        showNotification("Failed to fetch PDF history", "error");
+        // showNotification("Failed to fetch PDF history", "error");
+        toast.error("Failder to fetch PDF history ")
       } finally {
         setLoading(false);
       }
@@ -293,10 +295,12 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
       });
 
       setDocuments((prev) => prev.filter((doc) => doc._id !== id));
-      showNotification("PDF deleted successfully", "success");
+      // showNotification("", "success");
+      toast.success("PDF deleted successfully")
     } catch (err) {
       console.error("Delete error:", err);
-      showNotification("Failed to delete PDF", "error");
+      // showNotification("", "error");
+      toast.error("Failed to delete PDF"); 
     }
   };
 

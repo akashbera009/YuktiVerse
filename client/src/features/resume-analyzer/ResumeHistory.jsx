@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./ResumeHistory.css";
+import { toast } from "react-toastify";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const ResumeHistory = () => {
@@ -85,10 +86,12 @@ const ResumeHistory = () => {
 
       // Close modal and show success notification
       closeDeleteModal();
-      showNotification("Resume deleted successfully!", "success");
+      // showNotification("Resume deleted successfully!", "success");
+      toast.success("Resume Deleted Successfully")
     } catch (err) {
       closeDeleteModal();
-      showNotification("Failed to delete resume. Please try again.", "error");
+      // showNotification("Failed to delete resume. Please try again.", "error");
+      toast.error("Failed to delete resume. Please try again.")
       console.error(err);
     }
   };

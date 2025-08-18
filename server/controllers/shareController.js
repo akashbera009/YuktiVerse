@@ -94,7 +94,8 @@ console.log(notebookId , type , req.user.id);
 // Revoke share link
 export const revokeShareLink = async (req, res) => {
   try {
-    const { shareId, userId } = req.params;
+    const {shareId} = req.params;
+const userId = req.user.id; 
     // const userId = req.user.id;
     // console.log("rmeove" , shareId , userId);
 
