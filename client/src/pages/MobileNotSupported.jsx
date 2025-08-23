@@ -216,7 +216,7 @@ const MobileNotSupported = () => {
       </div>
 
       {/* Footer Info */}
-      {/* <div className="mns-footer">
+      <div className="mns-footer">
         <div className="mns-device-info">
           <span className="mns-device-indicator"></span>
           <span className="mns-device-text">
@@ -224,7 +224,7 @@ const MobileNotSupported = () => {
              deviceType.includes('tablet') ? '📋 Tablet' : '🖥️ Desktop'} Device Detected
           </span>
         </div>
-      </div> */}
+      </div> 
 
       {/* Ambient Light Effects */}
       <div className="mns-ambient-lights">

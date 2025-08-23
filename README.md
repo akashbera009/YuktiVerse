@@ -36,8 +36,11 @@ This README gives an overview, architecture, installation & deployment steps, ke
 The landing page presents the **Yutivars universe** and the four feature "verses" as modules of the ecosystem. Each route is protected (JWT) and the app emphasizes the AI-first product vision.
 
 > *Screenshots and GIFs go well here — include landing, notebook, resume-analyzer, pdf summarizer, and code-editor views.*
-![Landing Page](./assets/landing-page.png)
-![Notebook Verse Example](./assets/notebook-verse.png)
+![Landing Page](https://i.ibb.co/JWjh2Pyk/Screenshot-2025-08-23-202745.png)
+![Notebook Verse Example](https://i.ibb.co/prQn5q1Y/Screenshot-2025-08-23-202943.png)
+![Resume Verse Example](https://i.ibb.co/LzPs2JhX/Screenshot-2025-08-23-203117.png)
+![PDF Verse Example](https://i.ibb.co/WW3txZ3M/Screenshot-2025-08-23-203217.png)
+![Code Verse Example](https://i.ibb.co/LDkgX2Jp/Screenshot-2025-08-23-203232.png)
 
 ---
 ### Live Demo (public)
