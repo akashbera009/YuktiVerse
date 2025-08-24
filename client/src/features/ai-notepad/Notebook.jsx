@@ -102,7 +102,7 @@ const token = localStorage.getItem('token');
         }
       );
 
-      console.log("Notebook updated:", response.data);
+      // console.log("Notebook updated:", response.data);
       // Optionally show a toast or UI feedback
     } catch (error) {
       console.error("Error saving notebook:", error);

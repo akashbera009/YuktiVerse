@@ -8,7 +8,7 @@ const SplashScreen = ({ onLoaded }) => {
     // Simulate loading time
     const timer = setTimeout(() => {
       onLoaded();
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [onLoaded]);

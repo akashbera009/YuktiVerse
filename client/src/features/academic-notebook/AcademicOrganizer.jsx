@@ -33,10 +33,24 @@ import { SquaresLoader, InlineLoader } from "../../components/Loader";
 import AiHelpers from "../ai-notepad/AiHelpers";
 import { toast } from "react-toastify";
 
-let userId = localStorage.getItem("userId");
-const token = localStorage.getItem("token");
+// let userId = localStorage.getItem("userId");
+// const token = localStorage.getItem("token");
 
 const AcademicOrganizer = () => {
+  const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(null);
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    const storedToken = localStorage.getItem("token");
+
+    setUserId(storedUserId);
+    setToken(storedToken);
+
+    // optionally, you can fetch user data here
+      // if (storedToken) {
+      //   console.log("Token found:", storedToken);
+      // }
+  }, []);
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedChapter, setSelectedChapter] = useState(null);
@@ -101,6 +115,7 @@ const AcademicOrganizer = () => {
   const [fileLoading, setFileLoading] = useState(false);
 
   // ✅ FIX 2: Clear all user-specific data when component mounts
+
   const clearUserData = () => {
     // console.log("[Clear] Clearing all user-specific data");
     setYears([]);
@@ -125,17 +140,16 @@ const AcademicOrganizer = () => {
     setShowSearchResults(false);
   };
 
-useEffect(() => {
+  useEffect(() => {
     const handleStorageChange = () => {
       const newUserId = localStorage.getItem("userId");
       const newToken = localStorage.getItem("token");
-      
 
       // If userId changed or user logged out
       if (newUserId !== userId || !newUserId || !newToken) {
         // console.log(`[Auth] User changed from ${userId} to ${newUserId}`);
         clearUserData();
-        
+
         if (newUserId && newToken) {
           // New user logged in, refetch data
           userId = newUserId;
@@ -146,13 +160,12 @@ useEffect(() => {
       }
     };
     // Listen for storage changes (logout/login)
-    window.addEventListener('storage', handleStorageChange);
-    
+    window.addEventListener("storage", handleStorageChange);
+
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
-
 
   // ✅ Close on click outside
   useEffect(() => {
@@ -179,36 +192,35 @@ useEffect(() => {
   };
 
   // ✅ FIX: Add initial useEffect to fetch years and all files on component mount
-  useEffect(() => {
-    console.log("[Component Mount] AcademicOrganizer mounted");
-    
-    const currentUserId = localStorage.getItem("userId");
-    const currentToken = localStorage.getItem("token");
-    
-    if (currentUserId && currentToken) {
-      userId = currentUserId; // Update global variable
-      // fetchYears();
-      fetchAllFiles();
-    } else {
-      console.log("[Component Mount] No auth credentials found");
-      setYearsLoading(false);
-    }
-  }, []);
+  // useEffect(() => {
+  //   console.log("[Component Mount] AcademicOrganizer mounted");
 
+  //   const currentUserId = localStorage.getItem("userId");
+  //   const currentToken = localStorage.getItem("token");
+
+  //   if (currentUserId && currentToken) {
+  //     userId = currentUserId; // Update global variable
+  //     // fetchYears();
+  //     fetchAllFiles();
+  //   } else {
+  //     console.log("[Component Mount] No auth credentials found");
+  //     setYearsLoading(false);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const fetchYears = async () => {
       const currentUserId = localStorage.getItem("userId");
       const currentToken = localStorage.getItem("token");
-      
+
       if (!currentUserId || !currentToken) {
         console.log("[API] No auth credentials, skipping years fetch");
-              setYearsLoading(false);
+        setYearsLoading(false);
         return;
       }
-      
+
       try {
-              setYearsLoading(true);
+        setYearsLoading(true);
         const res = await axios.get(`${backendURL}/years`, {
           headers: {
             Authorization: `Bearer ${currentToken}`,
@@ -216,7 +228,7 @@ useEffect(() => {
           },
         });
         console.log(res);
-        
+
         setYears(res.data);
       } catch (err) {
         console.error("Error fetching years:", err);
@@ -226,13 +238,12 @@ useEffect(() => {
           localStorage.removeItem("userId");
           clearUserData();
         }
-      }finally {
+      } finally {
         setYearsLoading(false);
       }
     };
     fetchYears();
   }, []);
-
 
   // sharing useeffect
   useEffect(() => {
@@ -302,17 +313,20 @@ useEffect(() => {
     }
   }, [selectedSubjectId]);
 
-    useEffect(() => {
-    if (showSearchResults && searchTerm.trim() !== "" && allFiles.length === 0) {
+  useEffect(() => {
+    if (
+      showSearchResults &&
+      searchTerm.trim() !== "" &&
+      allFiles.length === 0
+    ) {
       fetchAllFiles();
     }
   }, [showSearchResults, searchTerm]);
   // shareing relaetd
   const fetchSharedNotebooks = async () => {
-    
     const currentUserId = localStorage.getItem("userId");
     const currentToken = localStorage.getItem("token");
-        if (!currentUserId || !currentToken) return;
+    if (!currentUserId || !currentToken) return;
     try {
       setSharedLoading(true);
       setSharedError(null);
@@ -408,7 +422,7 @@ useEffect(() => {
   const fetchAllFiles = async () => {
     const currentUserId = localStorage.getItem("userId");
     const currentToken = localStorage.getItem("token");
-        
+
     if (!currentUserId || !currentToken) {
       console.log("[fetchAllFiles] No auth credentials available");
       return;
@@ -505,7 +519,9 @@ useEffect(() => {
           }
         }
       }
-      console.log(`Loaded ${allFilesData.length} files for search for user ${currentUserId}`);
+      console.log(
+        `Loaded ${allFilesData.length} files for search for user ${currentUserId}`
+      );
       setAllFiles(allFilesData);
     } catch (err) {
       console.error("Error fetching all files:", err);
@@ -593,7 +609,7 @@ useEffect(() => {
           },
         });
         // console.log(res)  ;
-        
+
         setNotebookContent(res.data);
         // setFileLoading(false);
         setViewerType("notebook");
@@ -604,10 +620,10 @@ useEffect(() => {
       }
     } else if (file.type === "handwritten") {
       setViewerType("pdf"); // we'll use file.fileUrl to view this
-          setFileLoading(false);
+      setFileLoading(false);
     } else {
       console.warn("Unknown file type");
-          setFileLoading(false);
+      setFileLoading(false);
     }
   };
 
@@ -617,11 +633,11 @@ useEffect(() => {
     setFileLoading(null);
   };
 
-    // Function to load chapter context and open file from search results
+  // Function to load chapter context and open file from search results
   const loadChapterAndOpenFile = async (file) => {
     try {
       console.log("Opening file from search:", file);
-      
+
       // Set the hierarchy to navigate to the file's location
       setSelectedYearId(file.yearId);
       setSelectedYear(file.yearTitle);
@@ -1018,7 +1034,6 @@ useEffect(() => {
 
   // Toggle important notebook
   const toggleImportantNotebook = async (noteId) => {
-
     await axios.patch(`${backendURL}/api/notebooks/${noteId}/important`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -1474,7 +1489,7 @@ useEffect(() => {
                   >
                     <div className="star-icon-ao">
                       {selectedYearId === year._id ? (
-                        <> 
+                        <>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -1940,7 +1955,7 @@ useEffect(() => {
                   }));
                 }}
                 selectedChapterId={selectedChapterId}
-                passSetShowNewModal = {setShowNewModal}
+                passSetShowNewModal={setShowNewModal}
               />
             )}
             {uploading && (
@@ -2074,7 +2089,7 @@ useEffect(() => {
                   >
                     <div className="shared-card-header">
                       <div className="ao-file-icon-container-share">
-                                           {sharedItem.isActive && (
+                        {sharedItem.isActive && (
                           <div className="share-indicator">
                             <FaGlobe />
                           </div>
@@ -2089,7 +2104,6 @@ useEffect(() => {
                           )}
                         </div>
                         {/* Show globe icon only if isActive */}
-     
                       </div>
 
                       <div className="shared-actions">
@@ -2266,29 +2280,29 @@ useEffect(() => {
                             type: "notebook",
                           })
                         }
-                      > <button
-                            className={`ao-file-action-btn ${
-                              notebook.important ? "active" : ""
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleImportant(notebook, "notebook");
-                            }}
-                            title={
-                              notebook.important
-                                ? "Remove from favorites"
-                                : "Add to favorites"
-                            }
-                          >
-                            <FaStar />
-                          </button>
+                      >
+                        {" "}
+                        <button
+                          className={`ao-file-action-btn ${
+                            notebook.important ? "active" : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleImportant(notebook, "notebook");
+                          }}
+                          title={
+                            notebook.important
+                              ? "Remove from favorites"
+                              : "Add to favorites"
+                          }
+                        >
+                          <FaStar />
+                        </button>
                         <div className="ao-file-icon-container">
                           <div className="ao-file-icon">
                             <FaStickyNote />
                           </div>
-                         
                         </div>
-
                         <div className="file-details">
                           <div className="ao-file-meta">
                             <svg
@@ -2342,22 +2356,22 @@ useEffect(() => {
                           })
                         }
                       >
-                            <button
-                            className={`ao-file-action-btn ${
-                              note.important ? "active" : ""
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleImportant(note, "handwritten");
-                            }}
-                            title={
-                              note.important
-                                ? "Remove from favorites"
-                                : "Add to favorites"
-                            }
-                          >
-                            <FaStar />
-                          </button>
+                        <button
+                          className={`ao-file-action-btn ${
+                            note.important ? "active" : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleImportant(note, "handwritten");
+                          }}
+                          title={
+                            note.important
+                              ? "Remove from favorites"
+                              : "Add to favorites"
+                          }
+                        >
+                          <FaStar />
+                        </button>
                         <div className="ao-file-icon-container">
                           <div className="ao-file-icon">
                             {note.fileType === "pdf" ? (
@@ -2366,7 +2380,6 @@ useEffect(() => {
                               <FaImage />
                             )}
                           </div>
-                      
                         </div>
 
                         <div className="file-details">

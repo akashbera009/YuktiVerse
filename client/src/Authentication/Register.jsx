@@ -124,7 +124,7 @@ const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true); 
     try {
       const res = await axios.post(`${backendURL}/api/auth/register`, formData);
 
@@ -144,6 +144,8 @@ const navigate = useNavigate();
         autoClose: 3000,
         theme: "dark",
       });
+    }finally {
+      setIsLoading(false);  
     }
   };
 
